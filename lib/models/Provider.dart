@@ -1,11 +1,13 @@
 import 'dart:io';
+import 'package:audiotagger/audiotagger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart';
+import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ProviderClass extends ChangeNotifier {
-  List<FileSystemEntity> allSongs = [];
+  List allSongs = [];
 
   void getAllSongs() async {
     PermissionStatus permissionStatus = await Permission.storage.request();
@@ -22,14 +24,14 @@ class ProviderClass extends ChangeNotifier {
       for (FileSystemEntity folder in allFolders) {
         if (FileSystemEntity.isFileSync(folder.path) &&
             basename(folder.path).endsWith('mp3')) {
-          allSongs.add(folder);
+          allSongs.add(await songInfo(folder.path));
         } else if (FileSystemEntity.isDirectorySync(folder.path)) {
           getAllFiles(folder.path);
         }
       }
-      for (var song in allSongs) {
-        print('mp3 found -- ${song.path}');
-      }
+      // for (var song in allSongs) {
+      //   print('mp3 found -- $song');
+      // }
     } else {
       permissionStatus = await Permission.storage.request();
     }
@@ -40,7 +42,7 @@ class ProviderClass extends ChangeNotifier {
   Future<List<FileSystemEntity>> getAllFolders(List paths) async {
     List<FileSystemEntity> allFolders = [];
     for (var dir in paths) {
-      print('storage path is $dir');
+      // print('storage path is $dir');
       allFolders.addAll([...dir.listSync()]);
     }
     return allFolders;
@@ -51,7 +53,7 @@ class ProviderClass extends ChangeNotifier {
     for (FileSystemEntity file in Directory(path).listSync()) {
       if (FileSystemEntity.isFileSync(file.path) &&
           basename(file.path).endsWith('mp3')) {
-        allSongs.add(file);
+        allSongs.add(await songInfo(file.path));
       } else if (FileSystemEntity.isDirectorySync(file.path) &&
           !basename(file.path).startsWith('.') &&
           !file.path.contains('/Android')) {
@@ -61,5 +63,22 @@ class ProviderClass extends ChangeNotifier {
         print('no mp3 found');
       }
     }
+  }
+
+  Future<Map<String, dynamic>> songInfo(String file) async {
+    var filePath = file.toString().replaceAll('\'', '').split('File: ').last;
+    var audioTagger = Audiotagger();
+    var info = await audioTagger.readTagsAsMap(
+      path: filePath,
+    );
+    var image = await audioTagger.readArtwork(
+      path: filePath,
+    );
+    return {
+      'path': filePath,
+      'image': image,
+      'title': info['title'],
+      'artist': info['artist'],
+    };
   }
 }

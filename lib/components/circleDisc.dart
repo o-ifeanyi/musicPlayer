@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
 
 class CircleDisc extends StatelessWidget {
+  final imageBytes;
+  CircleDisc(this.imageBytes);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 30),
-      child: Center(
-        child: CircleAvatar(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          radius: 10,
-        ),
-      ),
+      child: Center(child: Icon(Icons.music_note, color: Colors.grey[200], size: 150,),),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.grey[300],
+        color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),

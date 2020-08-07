@@ -22,7 +22,6 @@ class _PlayingFromState extends State<PlayingFrom> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   CustomButton(
-                    isRaised: true,
                     diameter: 50,
                     child: Icon(Icons.arrow_back),
                     onPressed: () => Navigator.pop(context),
@@ -36,7 +35,6 @@ class _PlayingFromState extends State<PlayingFrom> {
                     ],
                   ),
                   CustomButton(
-                    isRaised: true,
                     diameter: 50,
                     child: Icon(Icons.more_vert),
                   ),
@@ -52,15 +50,13 @@ class _PlayingFromState extends State<PlayingFrom> {
                   CustomButton(
                     diameter: 50,
                     child: Icon(Icons.fast_rewind),
-                    isRaised: true,
                   ),
-                  isPotrait
-                      ? Expanded(child: CircleDisc())
-                      : SizedBox.shrink(),
+                  // isPotrait
+                  //     ? Expanded(child: CircleDisc())
+                  //     : SizedBox.shrink(),
                   CustomButton(
                     diameter: 50,
                     child: Icon(Icons.fast_forward),
-                    isRaised: true,
                   ),
                 ],
               ),
@@ -76,7 +72,6 @@ class _PlayingFromState extends State<PlayingFrom> {
                     subtitle: Text('Artist name'),
                     trailing: CustomButton(
                       diameter: 50,
-                      isRaised: index == 3 ? false : true,
                       child: Icon(index == 3 ? Icons.pause : Icons.play_arrow),
                     ),
                   );
