@@ -21,12 +21,6 @@ class _LibraryState extends State<Library> {
   }
 
   @override
-  void initState() {
-    Provider.of<ProviderClass>(context, listen: false).getAllSongs();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(

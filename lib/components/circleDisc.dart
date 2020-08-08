@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 class CircleDisc extends StatelessWidget {
-  final imageBytes;
-  CircleDisc(this.imageBytes);
 
   @override
   Widget build(BuildContext context) {

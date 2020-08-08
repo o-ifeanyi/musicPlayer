@@ -51,9 +51,9 @@ class _PlayingFromState extends State<PlayingFrom> {
                     diameter: 50,
                     child: Icon(Icons.fast_rewind),
                   ),
-                  // isPotrait
-                  //     ? Expanded(child: CircleDisc())
-                  //     : SizedBox.shrink(),
+                  isPotrait
+                      ? Expanded(child: CircleDisc())
+                      : SizedBox.shrink(),
                   CustomButton(
                     diameter: 50,
                     child: Icon(Icons.fast_forward),

@@ -11,6 +11,7 @@ void main() {
       providers: [
         ChangeNotifierProvider(create: (_) => ProviderClass()),
         ChangeNotifierProvider(create: (_) => PlayListDB()),
+        ChangeNotifierProvider(create: (_) => SongController()),
       ],
       child: MyApp(),
     ),

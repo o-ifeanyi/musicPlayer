@@ -7,9 +7,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ProviderClass extends ChangeNotifier {
+  ProviderClass () {
+    print('searching');
+    getAllSongs();
+  }
   List allSongs = [];
 
-  void getAllSongs() async {
+  Future<void> getAllSongs() async {
     PermissionStatus permissionStatus = await Permission.storage.request();
     if (permissionStatus.isGranted && Platform.isAndroid) {
       List<Directory> deviceStorages = await getExternalStorageDirectories();
@@ -25,13 +29,11 @@ class ProviderClass extends ChangeNotifier {
         if (FileSystemEntity.isFileSync(folder.path) &&
             basename(folder.path).endsWith('mp3')) {
           allSongs.add(await songInfo(folder.path));
+          notifyListeners();
         } else if (FileSystemEntity.isDirectorySync(folder.path)) {
           getAllFiles(folder.path);
         }
       }
-      // for (var song in allSongs) {
-      //   print('mp3 found -- $song');
-      // }
     } else {
       permissionStatus = await Permission.storage.request();
     }
@@ -42,7 +44,6 @@ class ProviderClass extends ChangeNotifier {
   Future<List<FileSystemEntity>> getAllFolders(List paths) async {
     List<FileSystemEntity> allFolders = [];
     for (var dir in paths) {
-      // print('storage path is $dir');
       allFolders.addAll([...dir.listSync()]);
     }
     return allFolders;
@@ -54,13 +55,13 @@ class ProviderClass extends ChangeNotifier {
       if (FileSystemEntity.isFileSync(file.path) &&
           basename(file.path).endsWith('mp3')) {
         allSongs.add(await songInfo(file.path));
+        notifyListeners();
       } else if (FileSystemEntity.isDirectorySync(file.path) &&
           !basename(file.path).startsWith('.') &&
           !file.path.contains('/Android')) {
         getAllFiles(file.path);
-        print(file);
       } else {
-        print('no mp3 found');
+        // print('no mp3 found');
       }
     }
   }
@@ -71,12 +72,8 @@ class ProviderClass extends ChangeNotifier {
     var info = await audioTagger.readTagsAsMap(
       path: filePath,
     );
-    var image = await audioTagger.readArtwork(
-      path: filePath,
-    );
     return {
       'path': filePath,
-      'image': image,
       'title': info['title'],
       'artist': info['artist'],
     };
