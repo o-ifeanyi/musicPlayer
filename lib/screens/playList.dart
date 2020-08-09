@@ -15,12 +15,23 @@ class PlayList extends StatefulWidget {
 
 class _PlayListState extends State<PlayList> {
   bool isPlaying = false;
+  SongController player;
+  var nowPlaying;
   List allSongs;
 
   @override
   void initState() {
+    player = Provider.of<SongController>(context, listen: false);
     allSongs = Provider.of<ProviderClass>(context, listen: false).allSongs;
     super.initState();
+  }
+
+  @override
+  void deactivate() {
+    if (player.nowPlaying != null) {
+      player.disposePlayer();
+    }
+    super.deactivate();
   }
 
   @override
@@ -49,9 +60,9 @@ class _PlayListState extends State<PlayList> {
                       Text(
                         widget.playListName,
                         style: TextStyle(
-                          fontSize: Config.textSize(context, 6),
-                          fontWeight: FontWeight.w400,
-                        ),
+                            fontSize: Config.textSize(context, 5),
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Acme'),
                       ),
                       CustomButton(
                         child: Icons.search,
@@ -71,13 +82,14 @@ class _PlayListState extends State<PlayList> {
                       return Consumer<SongController>(
                         builder: (context, controller, child) {
                           return ListTile(
+                            selected: player.nowPlaying == allSongs[index],
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => NowPlaying(
                                           currentSong: allSongs[index],
-                                          isPlaying: true,
+                                          isPlaying: isPlaying,
                                         )),
                               );
                             },
@@ -93,19 +105,41 @@ class _PlayListState extends State<PlayList> {
                               allSongs[index]['title'],
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontSize: Config.textSize(context, 4),
-                                fontWeight: FontWeight.w400,
-                              ),
+                                  fontSize: Config.textSize(context, 3.5),
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'Acme'),
                             ),
                             subtitle: Text(
                               allSongs[index]['artist'],
                               style: TextStyle(
-                                fontSize: Config.textSize(context, 3),
-                              ),
+                                  fontSize: Config.textSize(context, 3),
+                                  fontFamily: 'Acme'),
                             ),
                             trailing: CustomButton(
-                              child: Icons.play_arrow,
+                              child: player.nowPlaying == allSongs[index] &&
+                                      isPlaying
+                                  ? Icons.pause
+                                  : Icons.play_arrow,
                               diameter: 12,
+                              onPressed: () async {
+                                nowPlaying = allSongs[index];
+                                if (player.nowPlaying == null) {
+                                  nowPlaying = allSongs[index];
+                                  await player.setUp(allSongs[index], context);
+                                  isPlaying = true;
+                                } else if (player.nowPlaying == nowPlaying) {
+                                  isPlaying ? player.pause() : player.play();
+                                  setState(() {
+                                    isPlaying = !isPlaying;
+                                  });
+                                } else if (player.nowPlaying != nowPlaying) {
+                                  player.disposePlayer();
+                                  nowPlaying = allSongs[index];
+                                  player.setUp(allSongs[index], context);
+                                  isPlaying = true;
+                                }
+                                setState(() {});
+                              },
                             ),
                           );
                         },
@@ -140,9 +174,9 @@ class _PlayListState extends State<PlayList> {
                 child: Text(
                   'SHUFFLE',
                   style: TextStyle(
-                    fontSize: Config.textSize(context, 4),
-                    fontWeight: FontWeight.w500,
-                  ),
+                      fontSize: Config.textSize(context, 4),
+                      fontWeight: FontWeight.w500,
+                      fontFamily: 'Acme'),
                 ),
               ),
             ),

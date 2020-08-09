@@ -30,24 +30,26 @@ class _NowPlayingState extends State<NowPlaying> {
   }
 
   Future<void> setUp() async {
-    setState(() {
-      isPlaying = true;
-    });
     player = Provider.of<SongController>(context, listen: false);
-    await player.setUp(widget.currentSong, context);
+    if (player.nowPlaying == null) {
+      await player.setUp(widget.currentSong, context);
+    } else if (player.nowPlaying == widget.currentSong) {
+      
+      print('same song');
+    } else if (player.nowPlaying != widget.currentSong) {
+      player.disposePlayer();
+      nowPlaying = widget.currentSong;
+      player.setUp(widget.currentSong, context);
+    }
+    setState(() {
+        isPlaying = true;
+      });
   }
 
   @override
   void initState() {
     setUp();
-
     super.initState();
-  }
-
-  @override
-  void deactivate() {
-    player.disposePlayer();
-    super.deactivate();
   }
 
   @override
@@ -75,8 +77,10 @@ class _NowPlayingState extends State<NowPlaying> {
                   Text(
                     'Now Playing',
                     style: TextStyle(
-                        fontSize: Config.textSize(context, 6),
-                        fontWeight: FontWeight.w400),
+                      fontSize: Config.textSize(context, 5),
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Acme',
+                    ),
                   ),
                   CustomButton(
                     diameter: 12,
@@ -91,9 +95,9 @@ class _NowPlayingState extends State<NowPlaying> {
                 ],
               ),
               isPotrait
-                  ? Expanded(child: RotateWidget(CircleDisc(), isPlaying))
+                  ? Expanded(child: RotateWidget(CircleDisc(20), isPlaying))
                   : SizedBox(
-                      height: Config.xMargin(context, 3),
+                      height: Config.xMargin(context, 1),
                     ),
               SizedBox(
                 height: Config.xMargin(context, 3),
@@ -103,20 +107,25 @@ class _NowPlayingState extends State<NowPlaying> {
                   return Text(
                     controller.nowPlaying['title'] ?? '',
                     style: TextStyle(
-                        fontSize: Config.textSize(context, 4),
-                        fontWeight: FontWeight.w400),
+                      fontSize: Config.textSize(context, 3.5),
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Acme',
+                    ),
                     textAlign: TextAlign.center,
                   );
                 },
               ),
               SizedBox(
-                height: Config.xMargin(context, 3),
+                height: Config.xMargin(context, 1),
               ),
               Consumer<SongController>(
                 builder: (context, controller, child) {
                   return Text(
                     controller.nowPlaying['artist'] ?? '',
-                    style: TextStyle(fontSize: Config.textSize(context, 3)),
+                    style: TextStyle(
+                      fontSize: Config.textSize(context, 3),
+                      fontFamily: 'Acme',
+                    ),
                   );
                 },
               ),
@@ -145,12 +154,16 @@ class _NowPlayingState extends State<NowPlaying> {
                         Text(
                           controller.timePlayed,
                           style: TextStyle(
-                              fontSize: Config.textSize(context, 3)),
+                            fontSize: Config.textSize(context, 3),
+                            fontFamily: 'Acme',
+                          ),
                         ),
                         Text(
                           controller.timeLeft,
                           style: TextStyle(
-                              fontSize: Config.textSize(context, 3)),
+                            fontSize: Config.textSize(context, 3),
+                            fontFamily: 'Acme',
+                          ),
                         ),
                       ],
                     );
@@ -160,7 +173,7 @@ class _NowPlayingState extends State<NowPlaying> {
                 },
               ),
               SizedBox(
-                height: Config.xMargin(context, 6),
+                height: Config.xMargin(context, 3),
               ),
               Consumer<SongController>(
                 builder: (context, controller, child) {
@@ -171,8 +184,8 @@ class _NowPlayingState extends State<NowPlaying> {
                               100) /
                           100.0,
                       backgroundColor: Colors.grey[300],
-                      valueColor: AlwaysStoppedAnimation(
-                          Theme.of(context).accentColor),
+                      valueColor:
+                          AlwaysStoppedAnimation(Theme.of(context).accentColor),
                     );
                   } else {
                     return SizedBox.shrink();
@@ -213,10 +226,7 @@ class _NowPlayingState extends State<NowPlaying> {
                       await player.skip(next: true, context: context);
                     },
                   ),
-                  CustomButton(
-                    diameter: 12,
-                    child: Icons.shuffle
-                  ),
+                  CustomButton(diameter: 12, child: Icons.shuffle),
                 ],
               ),
             ],

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:musicPlayer/models/config.dart';
 
 class CircleDisc extends StatelessWidget {
+  final double iconSize;
+  CircleDisc(this.iconSize);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -10,7 +12,7 @@ class CircleDisc extends StatelessWidget {
         child: Icon(
           Icons.music_note,
           color: Colors.grey[200],
-          size: Config.yMargin(context, 15),
+          size: Config.yMargin(context, iconSize),
         ),
       ),
       decoration: BoxDecoration(

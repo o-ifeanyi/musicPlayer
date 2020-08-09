@@ -33,8 +33,9 @@ class CustomCard extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: Config.textSize(context, 4),
+                    fontSize: Config.textSize(context, 3.5),
                     fontWeight: FontWeight.w400,
+                    fontFamily: 'Acme'
                   ),
                 ),
               ],
@@ -44,6 +45,7 @@ class CustomCard extends StatelessWidget {
                     '$numOfSongs Songs',
                     style: TextStyle(
                       fontSize: Config.textSize(context, 3),
+                      fontFamily: 'Acme'
                     ),
                   )
                 : SizedBox.shrink(),

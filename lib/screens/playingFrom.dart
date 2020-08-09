@@ -30,15 +30,17 @@ class _PlayingFromState extends State<PlayingFrom> {
                     children: <Widget>[
                       Text('Playing From',
                           style: TextStyle(
-                            fontSize: Config.textSize(context, 6),
+                            fontSize: Config.textSize(context, 5),
                             fontWeight: FontWeight.w400,
+                            fontFamily: 'Acme'
                           ),
                           textAlign: TextAlign.center),
                       SizedBox(height: 5),
                       Text(
                         'Playlist Name',
                         style: TextStyle(
-                          fontSize: Config.textSize(context, 4),
+                          fontSize: Config.textSize(context, 3.5),
+                          fontFamily: 'Acme'
                         ),
                       ),
                     ],
@@ -60,7 +62,7 @@ class _PlayingFromState extends State<PlayingFrom> {
                     diameter: 12,
                     child: Icons.fast_rewind,
                   ),
-                  isPotrait ? Expanded(child: CircleDisc()) : SizedBox.shrink(),
+                  isPotrait ? Expanded(child: CircleDisc(10)) : SizedBox.shrink(),
                   CustomButton(
                     diameter: 12,
                     child: Icons.fast_forward,
@@ -78,14 +80,16 @@ class _PlayingFromState extends State<PlayingFrom> {
                     title: Text(
                       'Song name',
                       style: TextStyle(
-                        fontSize: Config.textSize(context, 4),
+                        fontSize: Config.textSize(context, 3.5),
                         fontWeight: FontWeight.w400,
+                        fontFamily: 'Acme'
                       ),
                     ),
                     subtitle: Text(
                       'Artist name',
                       style: TextStyle(
                         fontSize: Config.textSize(context, 3),
+                        fontFamily: 'Acme'
                       ),
                     ),
                     trailing: CustomButton(

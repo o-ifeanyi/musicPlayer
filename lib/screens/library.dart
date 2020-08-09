@@ -41,8 +41,9 @@ class _LibraryState extends State<Library> {
                         Text(
                           'Library',
                           style: TextStyle(
-                            fontSize: Config.textSize(context, 6),
+                            fontSize: Config.textSize(context, 5),
                             fontWeight: FontWeight.w400,
+                            fontFamily: 'Acme'
                           ),
                         ),
                         CustomButton(
@@ -84,8 +85,9 @@ class _LibraryState extends State<Library> {
                     child: Text(
                       'PlayList',
                       style: TextStyle(
-                        fontSize: Config.textSize(context, 6),
+                        fontSize: Config.textSize(context, 5),
                         fontWeight: FontWeight.w400,
+                        fontFamily: 'Acme'
                       ),
                     ),
                   ),
@@ -112,8 +114,9 @@ class _LibraryState extends State<Library> {
                     child: Text(
                       'Recent',
                       style: TextStyle(
-                        fontSize: Config.textSize(context, 6),
+                        fontSize: Config.textSize(context, 5),
                         fontWeight: FontWeight.w400,
+                        fontFamily: 'Acme'
                       ),
                     ),
                   ),
@@ -161,8 +164,9 @@ class _LibraryState extends State<Library> {
                           Text(
                             'Middle child',
                             style: TextStyle(
-                              fontSize: Config.textSize(context, 4),
+                              fontSize: Config.textSize(context, 3.5),
                               fontWeight: FontWeight.w400,
+                              fontFamily: 'Acme'
                             ),
                           ),
                           SizedBox(
@@ -172,6 +176,7 @@ class _LibraryState extends State<Library> {
                             'J Cole',
                             style: TextStyle(
                               fontSize: Config.textSize(context, 3),
+                              fontFamily: 'Acme'
                             ),
                           ),
                         ],
