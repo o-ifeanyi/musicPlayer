@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/customButton.dart';
-import 'package:musicPlayer/constants.dart';
 import 'package:musicPlayer/models/Provider.dart';
+import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:musicPlayer/screens/nowPlaying.dart';
 import 'package:provider/provider.dart';
@@ -22,13 +22,16 @@ class _PlayListState extends State<PlayList> {
     allSongs = Provider.of<ProviderClass>(context, listen: false).allSongs;
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
       body: Stack(
         children: <Widget>[
-          Padding(
+          Container(
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
             padding: const EdgeInsets.only(bottom: 80),
             child: Column(
               children: <Widget>[
@@ -39,17 +42,20 @@ class _PlayListState extends State<PlayList> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       CustomButton(
-                        child: Icon(Icons.arrow_back),
-                        diameter: 50,
+                        child: Icons.arrow_back,
+                        diameter: 12,
                         onPressed: () => Navigator.pop(context),
                       ),
                       Text(
                         widget.playListName,
-                        style: kHeadingText,
+                        style: TextStyle(
+                          fontSize: Config.textSize(context, 6),
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                       CustomButton(
-                        child: Icon(Icons.search),
-                        diameter: 50,
+                        child: Icons.search,
+                        diameter: 12,
                       ),
                     ],
                   ),
@@ -77,18 +83,29 @@ class _PlayListState extends State<PlayList> {
                             },
                             contentPadding: EdgeInsets.only(right: 20),
                             leading: IconButton(
-                              icon: Icon(Icons.more_vert),
+                              icon: Icon(
+                                Icons.more_vert,
+                                size: Config.xMargin(context, 6),
+                              ),
                               onPressed: null,
                             ),
                             title: Text(
                               allSongs[index]['title'],
                               overflow: TextOverflow.ellipsis,
-                              style: kSubHeadingText,
+                              style: TextStyle(
+                                fontSize: Config.textSize(context, 4),
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
-                            subtitle: Text(allSongs[index]['artist']),
+                            subtitle: Text(
+                              allSongs[index]['artist'],
+                              style: TextStyle(
+                                fontSize: Config.textSize(context, 3),
+                              ),
+                            ),
                             trailing: CustomButton(
-                              child: Icon(Icons.play_arrow),
-                              diameter: 50,
+                              child: Icons.play_arrow,
+                              diameter: 12,
                             ),
                           );
                         },
@@ -103,7 +120,6 @@ class _PlayListState extends State<PlayList> {
             alignment: Alignment.bottomCenter,
             child: Container(
               height: 70,
-              width: double.infinity,
               margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(50),
@@ -123,7 +139,10 @@ class _PlayListState extends State<PlayList> {
               child: Center(
                 child: Text(
                   'SHUFFLE',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900),
+                  style: TextStyle(
+                    fontSize: Config.textSize(context, 4),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),

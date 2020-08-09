@@ -11,26 +11,28 @@ class PlayListDB extends ChangeNotifier{
       padding: const EdgeInsets.only(
         right: 20.0,
         bottom: 20.0,
+        top: 20.0,
       ),
       child: CustomCard(
-        height: 240,
-        width: 240,
+        height: 30,
+        width: 30,
         label: 'Favourites',
         numOfSongs: 0,
-        child: Icon(Icons.favorite_border),
+        child: Icons.favorite_border,
       ),
     ),
     Padding(
       padding: const EdgeInsets.only(
         right: 20.0,
         bottom: 20.0,
+        top: 20.0,
       ),
       child: CustomCard(
-        height: 240,
-        width: 240,
+        height: 30,
+        width: 30,
         label: 'Create playlist',
         numOfSongs: 0,
-        child: Icon(Icons.add),
+        child: Icons.add,
       ),
     ),
   ];
@@ -40,26 +42,28 @@ class PlayListDB extends ChangeNotifier{
       padding: const EdgeInsets.only(
         right: 20.0,
         bottom: 20.0,
+        top: 20.0,
       ),
       child: CustomCard(
-        height: 240,
-        width: 240,
+        height: 30,
+        width: 30,
         label: 'Recently added',
         numOfSongs: 0,
-        child: Icon(Icons.playlist_add),
+        child: Icons.playlist_add,
       ),
     ),
     Padding(
       padding: const EdgeInsets.only(
         right: 20.0,
         bottom: 20.0,
+        top: 20.0,
       ),
       child: CustomCard(
-        height: 240,
-        width: 240,
+        height: 30,
+        width: 30,
         label: 'Recently played',
         numOfSongs: 0,
-        child: Icon(Icons.playlist_play),
+        child: Icons.playlist_play,
       ),
     ),
   ];

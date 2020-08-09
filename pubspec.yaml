@@ -31,7 +31,7 @@ dependencies:
   hive: ^1.4.2
   just_audio: ^0.2.2
   audiotagger: ^1.1.0
-  id3: ^0.1.8
+  device_preview: ^0.4.7
 
 dev_dependencies:
   flutter_test:

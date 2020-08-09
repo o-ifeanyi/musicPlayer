@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/circleDisc.dart';
 import 'package:musicPlayer/components/customButton.dart';
-import 'package:musicPlayer/constants.dart';
+import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/screens/playingFrom.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:musicPlayer/components/rotateWidget.dart';
@@ -55,7 +55,9 @@ class _NowPlayingState extends State<NowPlaying> {
     var isPotrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return SafeArea(
       child: Scaffold(
-        body: Padding(
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
           padding: const EdgeInsets.fromLTRB(20, 30, 20, 30),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -64,19 +66,21 @@ class _NowPlayingState extends State<NowPlaying> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   CustomButton(
-                    diameter: 50,
-                    child: Icon(Icons.arrow_back),
+                    diameter: 12,
+                    child: Icons.arrow_back,
                     onPressed: () {
                       Navigator.pop(context);
                     },
                   ),
                   Text(
                     'Now Playing',
-                    style: kHeadingText,
+                    style: TextStyle(
+                        fontSize: Config.textSize(context, 6),
+                        fontWeight: FontWeight.w400),
                   ),
                   CustomButton(
-                    diameter: 50,
-                    child: Icon(Icons.list),
+                    diameter: 12,
+                    child: Icons.list,
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -88,36 +92,49 @@ class _NowPlayingState extends State<NowPlaying> {
               ),
               isPotrait
                   ? Expanded(child: RotateWidget(CircleDisc(), isPlaying))
-                  : SizedBox(height: 10),
+                  : SizedBox(
+                      height: Config.xMargin(context, 3),
+                    ),
+              SizedBox(
+                height: Config.xMargin(context, 3),
+              ),
               Consumer<SongController>(
                 builder: (context, controller, child) {
                   return Text(
                     controller.nowPlaying['title'] ?? '',
-                    style: kSubHeadingText,
+                    style: TextStyle(
+                        fontSize: Config.textSize(context, 4),
+                        fontWeight: FontWeight.w400),
                     textAlign: TextAlign.center,
                   );
                 },
               ),
+              SizedBox(
+                height: Config.xMargin(context, 3),
+              ),
               Consumer<SongController>(
                 builder: (context, controller, child) {
-                  return Text(controller.nowPlaying['artist'] ?? '');
+                  return Text(
+                    controller.nowPlaying['artist'] ?? '',
+                    style: TextStyle(fontSize: Config.textSize(context, 3)),
+                  );
                 },
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   CustomButton(
-                    diameter: 50,
-                    child: Icon(Icons.favorite_border),
+                    diameter: 12,
+                    child: Icons.favorite_border,
                   ),
                   CustomButton(
-                    diameter: 50,
-                    child: Icon(Icons.playlist_add),
+                    diameter: 12,
+                    child: Icons.playlist_add,
                   ),
                 ],
               ),
               SizedBox(
-                height: 20,
+                height: Config.xMargin(context, 6),
               ),
               Consumer<SongController>(
                 builder: (context, controller, child) {
@@ -125,8 +142,16 @@ class _NowPlayingState extends State<NowPlaying> {
                     return Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(controller.timePlayed),
-                        Text(controller.timeLeft),
+                        Text(
+                          controller.timePlayed,
+                          style: TextStyle(
+                              fontSize: Config.textSize(context, 3)),
+                        ),
+                        Text(
+                          controller.timeLeft,
+                          style: TextStyle(
+                              fontSize: Config.textSize(context, 3)),
+                        ),
                       ],
                     );
                   } else {
@@ -135,7 +160,7 @@ class _NowPlayingState extends State<NowPlaying> {
                 },
               ),
               SizedBox(
-                height: 20,
+                height: Config.xMargin(context, 6),
               ),
               Consumer<SongController>(
                 builder: (context, controller, child) {
@@ -146,8 +171,8 @@ class _NowPlayingState extends State<NowPlaying> {
                               100) /
                           100.0,
                       backgroundColor: Colors.grey[300],
-                      valueColor:
-                          AlwaysStoppedAnimation(Theme.of(context).accentColor),
+                      valueColor: AlwaysStoppedAnimation(
+                          Theme.of(context).accentColor),
                     );
                   } else {
                     return SizedBox.shrink();
@@ -155,25 +180,25 @@ class _NowPlayingState extends State<NowPlaying> {
                 },
               ),
               SizedBox(
-                height: 20,
+                height: Config.xMargin(context, 6),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: <Widget>[
                   CustomButton(
-                    diameter: 40,
-                    child: Icon(Icons.repeat_one),
+                    diameter: 12,
+                    child: Icons.repeat_one,
                   ),
                   CustomButton(
-                    diameter: 50,
-                    child: Icon(Icons.fast_rewind),
+                    diameter: 15,
+                    child: Icons.fast_rewind,
                     onPressed: () async {
                       await player.skip(prev: true, context: context);
                     },
                   ),
                   CustomButton(
-                    diameter: 80,
-                    child: Icon(isPlaying ? Icons.pause : Icons.play_arrow),
+                    diameter: 18,
+                    child: isPlaying ? Icons.pause : Icons.play_arrow,
                     onPressed: () {
                       isPlaying ? player.pause() : player.play();
                       setState(() {
@@ -182,15 +207,15 @@ class _NowPlayingState extends State<NowPlaying> {
                     },
                   ),
                   CustomButton(
-                    diameter: 50,
-                    child: Icon(Icons.fast_forward),
+                    diameter: 15,
+                    child: Icons.fast_forward,
                     onPressed: () async {
                       await player.skip(next: true, context: context);
                     },
                   ),
                   CustomButton(
-                    diameter: 40,
-                    child: Icon(Icons.shuffle),
+                    diameter: 12,
+                    child: Icons.shuffle
                   ),
                 ],
               ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/components/customCard.dart';
-import 'package:musicPlayer/constants.dart';
 import 'package:musicPlayer/models/Provider.dart';
+import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/screens/playList.dart';
 import 'package:provider/provider.dart';
@@ -26,8 +26,10 @@ class _LibraryState extends State<Library> {
       child: Scaffold(
         body: Stack(
           children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 80),
+            Container(
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
+              margin: const EdgeInsets.only(bottom: 80),
               child: ListView(
                 children: <Widget>[
                   Padding(
@@ -38,11 +40,14 @@ class _LibraryState extends State<Library> {
                       children: <Widget>[
                         Text(
                           'Library',
-                          style: kHeadingText,
+                          style: TextStyle(
+                            fontSize: Config.textSize(context, 6),
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                         CustomButton(
-                          diameter: 50,
-                          child: Icon(Icons.search),
+                          diameter: 12,
+                          child: Icons.search
                         ),
                       ],
                     ),
@@ -61,31 +66,35 @@ class _LibraryState extends State<Library> {
                             openPlaylist('All Songs');
                           },
                           child: CustomCard(
-                            height: 220,
+                            height: 30,
                             width: double.infinity,
                             label: 'All Songs',
                             numOfSongs: provider.allSongs.length ?? 0,
-                            child: Icon(Icons.all_inclusive),
+                            child: Icons.all_inclusive,
                           ),
                         ),
                       );
                     },
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(
+                    height: Config.yMargin(context, 3),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       'PlayList',
-                      style: kHeadingText,
+                      style: TextStyle(
+                        fontSize: Config.textSize(context, 6),
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 30),
                   Consumer<PlayListDB>(
                     builder: (_, playListDB, child) {
                       return Padding(
                         padding: const EdgeInsets.only(left: 20),
                         child: Container(
-                          height: 240,
+                          height: Config.yMargin(context, 30),
                           color: Colors.transparent,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
@@ -98,21 +107,22 @@ class _LibraryState extends State<Library> {
                       );
                     },
                   ),
-                  SizedBox(height: 30),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Text(
                       'Recent',
-                      style: kHeadingText,
+                      style: TextStyle(
+                        fontSize: Config.textSize(context, 6),
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ),
-                  SizedBox(height: 30),
                   Consumer<PlayListDB>(
                     builder: (_, playListDB, child) {
                       return Padding(
                         padding: const EdgeInsets.only(left: 20),
                         child: Container(
-                          height: 240,
+                          height: Config.yMargin(context, 30),
                           color: Colors.transparent,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
@@ -138,9 +148,9 @@ class _LibraryState extends State<Library> {
                   // );
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   color: Theme.of(context).scaffoldBackgroundColor,
-                  height: 80,
+                  height: Config.yMargin(context, 10),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
@@ -150,28 +160,36 @@ class _LibraryState extends State<Library> {
                         children: <Widget>[
                           Text(
                             'Middle child',
-                            style: kSubHeadingText,
+                            style: TextStyle(
+                              fontSize: Config.textSize(context, 4),
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                           SizedBox(
                             height: 5,
                           ),
-                          Text('J Cole'),
+                          Text(
+                            'J Cole',
+                            style: TextStyle(
+                              fontSize: Config.textSize(context, 3),
+                            ),
+                          ),
                         ],
                       ),
                       SizedBox(
-                        width: 20,
+                        width: Config.xMargin(context, 12),
                       ),
                       CustomButton(
-                        diameter: 40,
-                        child: Icon(Icons.fast_rewind),
+                        diameter: 12,
+                        child: Icons.fast_rewind
                       ),
                       CustomButton(
-                        diameter: 50,
-                        child: Icon(Icons.play_arrow),
+                        diameter: 15,
+                        child: Icons.play_arrow
                       ),
                       CustomButton(
-                        diameter: 40,
-                        child: Icon(Icons.fast_forward),
+                        diameter: 12,
+                        child: Icons.fast_forward
                       ),
                     ],
                   ),

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:musicPlayer/models/config.dart';
 
 class CustomButton extends StatelessWidget {
   CustomButton(
       {this.diameter, this.onPressed, this.child});
   final double diameter;
-  final Widget child;
+  final IconData child;
   final Function onPressed;
 
   @override
@@ -13,10 +14,10 @@ class CustomButton extends StatelessWidget {
       onTap: onPressed,
       child: Container(
         child: Center(
-          child: child,
+          child: Icon(child, size: Config.textSize(context, 5),),
         ),
-        height: diameter,
-        width: diameter,
+        height: Config.xMargin(context, diameter),
+        width: Config.xMargin(context, diameter),
         decoration: BoxDecoration(
           color: Theme.of(context).scaffoldBackgroundColor,
           shape: BoxShape.circle,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/circleDisc.dart';
 import 'package:musicPlayer/components/customButton.dart';
-import 'package:musicPlayer/constants.dart';
+import 'package:musicPlayer/models/config.dart';
 
 class PlayingFrom extends StatefulWidget {
   @override
@@ -22,21 +22,30 @@ class _PlayingFromState extends State<PlayingFrom> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   CustomButton(
-                    diameter: 50,
-                    child: Icon(Icons.arrow_back),
+                    diameter: 12,
+                    child: Icons.arrow_back,
                     onPressed: () => Navigator.pop(context),
                   ),
                   Column(
                     children: <Widget>[
                       Text('Playing From',
-                          style: kHeadingText, textAlign: TextAlign.center),
+                          style: TextStyle(
+                            fontSize: Config.textSize(context, 6),
+                            fontWeight: FontWeight.w400,
+                          ),
+                          textAlign: TextAlign.center),
                       SizedBox(height: 5),
-                      Text('Playlist Name', style: kSubHeadingText),
+                      Text(
+                        'Playlist Name',
+                        style: TextStyle(
+                          fontSize: Config.textSize(context, 4),
+                        ),
+                      ),
                     ],
                   ),
                   CustomButton(
-                    diameter: 50,
-                    child: Icon(Icons.more_vert),
+                    diameter: 12,
+                    child: Icons.more_vert,
                   ),
                 ],
               ),
@@ -48,15 +57,13 @@ class _PlayingFromState extends State<PlayingFrom> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   CustomButton(
-                    diameter: 50,
-                    child: Icon(Icons.fast_rewind),
+                    diameter: 12,
+                    child: Icons.fast_rewind,
                   ),
-                  isPotrait
-                      ? Expanded(child: CircleDisc())
-                      : SizedBox.shrink(),
+                  isPotrait ? Expanded(child: CircleDisc()) : SizedBox.shrink(),
                   CustomButton(
-                    diameter: 50,
-                    child: Icon(Icons.fast_forward),
+                    diameter: 12,
+                    child: Icons.fast_forward,
                   ),
                 ],
               ),
@@ -68,11 +75,22 @@ class _PlayingFromState extends State<PlayingFrom> {
                   return ListTile(
                     selected: index == 3 ? true : false,
                     contentPadding: EdgeInsets.symmetric(horizontal: 20),
-                    title: Text('Song name'),
-                    subtitle: Text('Artist name'),
+                    title: Text(
+                      'Song name',
+                      style: TextStyle(
+                        fontSize: Config.textSize(context, 4),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    subtitle: Text(
+                      'Artist name',
+                      style: TextStyle(
+                        fontSize: Config.textSize(context, 3),
+                      ),
+                    ),
                     trailing: CustomButton(
-                      diameter: 50,
-                      child: Icon(index == 3 ? Icons.pause : Icons.play_arrow),
+                      diameter: 12,
+                      child: index == 3 ? Icons.pause : Icons.play_arrow,
                     ),
                   );
                 },
