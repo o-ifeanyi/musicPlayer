@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:musicPlayer/components/createPlayList.dart';
 import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/components/customCard.dart';
 import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/playListDB.dart';
+import 'package:musicPlayer/models/songController.dart';
 import 'package:musicPlayer/screens/playList.dart';
 import 'package:provider/provider.dart';
 
@@ -13,11 +15,24 @@ class Library extends StatefulWidget {
 }
 
 class _LibraryState extends State<Library> {
-  void openPlaylist(String title) {
+  void openPlaylist(String title, List songList) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => PlayList(title)),
+      MaterialPageRoute(builder: (_) => PlayList(title, songList)),
     );
+  }
+
+  IconData getPlaylistIcon(index) {
+    switch (index) {
+      case 0:
+        return Icons.add;
+        break;
+      case 1:
+        return Icons.favorite_border;
+        break;
+      default:
+        return Icons.star_border;
+    }
   }
 
   @override
@@ -41,15 +56,11 @@ class _LibraryState extends State<Library> {
                         Text(
                           'Library',
                           style: TextStyle(
-                            fontSize: Config.textSize(context, 5),
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'Acme'
-                          ),
+                              fontSize: Config.textSize(context, 5),
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'Acme'),
                         ),
-                        CustomButton(
-                          diameter: 12,
-                          child: Icons.search
-                        ),
+                        CustomButton(diameter: 12, child: Icons.search),
                       ],
                     ),
                   ),
@@ -64,7 +75,10 @@ class _LibraryState extends State<Library> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: GestureDetector(
                           onTap: () {
-                            openPlaylist('All Songs');
+                            Provider.of<SongController>(context,
+                                          listen: false)
+                                      .allSongs = provider.allSongs;
+                            openPlaylist('All Songs', provider.allSongs);
                           },
                           child: CustomCard(
                             height: 30,
@@ -85,10 +99,9 @@ class _LibraryState extends State<Library> {
                     child: Text(
                       'PlayList',
                       style: TextStyle(
-                        fontSize: Config.textSize(context, 5),
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Acme'
-                      ),
+                          fontSize: Config.textSize(context, 5),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Acme'),
                     ),
                   ),
                   Consumer<PlayListDB>(
@@ -102,7 +115,45 @@ class _LibraryState extends State<Library> {
                             scrollDirection: Axis.horizontal,
                             itemCount: playListDB.playList.length,
                             itemBuilder: (_, index) {
-                              return playListDB.playList[index];
+                              List songList =
+                                  playListDB.playList[index]['songs'];
+                              return GestureDetector(
+                                onTap: () {
+                                  if (index == 0) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return CreatePlayList(
+                                          height: 35,
+                                          width: 35,
+                                          isCreateNew: true,
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    Provider.of<SongController>(context,
+                                          listen: false)
+                                      .allSongs = songList;
+                                    openPlaylist(
+                                        playListDB.playList[index]['name'],
+                                        songList);
+                                  }
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: 20.0,
+                                    bottom: 20.0,
+                                    top: 20.0,
+                                  ),
+                                  child: CustomCard(
+                                    height: 30,
+                                    width: 30,
+                                    label: playListDB.playList[index]['name'],
+                                    child: getPlaylistIcon(index),
+                                    numOfSongs: songList?.length,
+                                  ),
+                                ),
+                              );
                             },
                           ),
                         ),
@@ -114,10 +165,9 @@ class _LibraryState extends State<Library> {
                     child: Text(
                       'Recent',
                       style: TextStyle(
-                        fontSize: Config.textSize(context, 5),
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Acme'
-                      ),
+                          fontSize: Config.textSize(context, 5),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Acme'),
                     ),
                   ),
                   Consumer<PlayListDB>(
@@ -131,7 +181,25 @@ class _LibraryState extends State<Library> {
                             scrollDirection: Axis.horizontal,
                             itemCount: playListDB.recent.length,
                             itemBuilder: (_, index) {
-                              return playListDB.recent[index];
+                              return GestureDetector(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                    right: 20.0,
+                                    bottom: 20.0,
+                                    top: 20.0,
+                                  ),
+                                  child: CustomCard(
+                                    height: 30,
+                                    width: 30,
+                                    label: playListDB.recent[index]['name'],
+                                    child: index == 0
+                                        ? Icons.playlist_add
+                                        : Icons.playlist_play,
+                                    numOfSongs: playListDB.recent[index]
+                                        ['noOfSongs'],
+                                  ),
+                                ),
+                              );
                             },
                           ),
                         ),
@@ -164,10 +232,9 @@ class _LibraryState extends State<Library> {
                           Text(
                             'Middle child',
                             style: TextStyle(
-                              fontSize: Config.textSize(context, 3.5),
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Acme'
-                            ),
+                                fontSize: Config.textSize(context, 3.5),
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Acme'),
                           ),
                           SizedBox(
                             height: 5,
@@ -175,27 +242,24 @@ class _LibraryState extends State<Library> {
                           Text(
                             'J Cole',
                             style: TextStyle(
-                              fontSize: Config.textSize(context, 3),
-                              fontFamily: 'Acme'
-                            ),
+                                fontSize: Config.textSize(context, 3),
+                                fontFamily: 'Acme'),
                           ),
                         ],
                       ),
                       SizedBox(
                         width: Config.xMargin(context, 12),
                       ),
-                      CustomButton(
-                        diameter: 12,
-                        child: Icons.fast_rewind
-                      ),
+                      CustomButton(diameter: 12, child: Icons.skip_previous),
                       CustomButton(
                         diameter: 15,
-                        child: Icons.play_arrow
+                        child: Icons.play_arrow,
+                        onPressed: () {
+                          Provider.of<PlayListDB>(context, listen: false)
+                              .clear();
+                        },
                       ),
-                      CustomButton(
-                        diameter: 12,
-                        child: Icons.fast_forward
-                      ),
+                      CustomButton(diameter: 12, child: Icons.skip_next),
                     ],
                   ),
                 ),

@@ -60,12 +60,12 @@ class _PlayingFromState extends State<PlayingFrom> {
                 children: <Widget>[
                   CustomButton(
                     diameter: 12,
-                    child: Icons.fast_rewind,
+                    child: Icons.repeat,
                   ),
                   isPotrait ? Expanded(child: CircleDisc(10)) : SizedBox.shrink(),
                   CustomButton(
                     diameter: 12,
-                    child: Icons.fast_forward,
+                    child: Icons.shuffle,
                   ),
                 ],
               ),

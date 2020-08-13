@@ -8,7 +8,8 @@ import 'package:provider/provider.dart';
 
 class PlayList extends StatefulWidget {
   final String playListName;
-  PlayList(this.playListName);
+  final List songList;
+  PlayList(this.playListName, this.songList);
   @override
   _PlayListState createState() => _PlayListState();
 }
@@ -18,11 +19,14 @@ class _PlayListState extends State<PlayList> {
   SongController player;
   var nowPlaying;
   List allSongs;
+  double padding = 0.0;
 
   @override
   void initState() {
+    //player was created so i can call deactivate, its not really needed
     player = Provider.of<SongController>(context, listen: false);
-    allSongs = Provider.of<ProviderClass>(context, listen: false).allSongs;
+    isPlaying = player.isPlaying;
+    allSongs = widget.songList;
     super.initState();
   }
 
@@ -81,65 +85,88 @@ class _PlayListState extends State<PlayList> {
                     itemBuilder: (context, index) {
                       return Consumer<SongController>(
                         builder: (context, controller, child) {
-                          return ListTile(
-                            selected: player.nowPlaying == allSongs[index],
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => NowPlaying(
-                                          currentSong: allSongs[index],
-                                          isPlaying: isPlaying,
-                                        )),
-                              );
-                            },
-                            contentPadding: EdgeInsets.only(right: 20),
-                            leading: IconButton(
-                              icon: Icon(
-                                Icons.more_vert,
-                                size: Config.xMargin(context, 6),
-                              ),
-                              onPressed: null,
-                            ),
-                            title: Text(
-                              allSongs[index]['title'],
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontSize: Config.textSize(context, 3.5),
-                                  fontWeight: FontWeight.w400,
-                                  fontFamily: 'Acme'),
-                            ),
-                            subtitle: Text(
-                              allSongs[index]['artist'],
-                              style: TextStyle(
-                                  fontSize: Config.textSize(context, 3),
-                                  fontFamily: 'Acme'),
-                            ),
-                            trailing: CustomButton(
-                              child: player.nowPlaying == allSongs[index] &&
-                                      isPlaying
-                                  ? Icons.pause
-                                  : Icons.play_arrow,
-                              diameter: 12,
-                              onPressed: () async {
-                                nowPlaying = allSongs[index];
-                                if (player.nowPlaying == null) {
-                                  nowPlaying = allSongs[index];
-                                  await player.setUp(allSongs[index], context);
-                                  isPlaying = true;
-                                } else if (player.nowPlaying == nowPlaying) {
-                                  isPlaying ? player.pause() : player.play();
-                                  setState(() {
-                                    isPlaying = !isPlaying;
-                                  });
-                                } else if (player.nowPlaying != nowPlaying) {
-                                  player.disposePlayer();
-                                  nowPlaying = allSongs[index];
-                                  player.setUp(allSongs[index], context);
-                                  isPlaying = true;
-                                }
-                                setState(() {});
+                          return AnimatedPadding(
+                            duration: Duration(milliseconds: 400),
+                            padding: controller.nowPlaying == allSongs[index] &&
+                                    controller.isPlaying
+                                ? EdgeInsets.symmetric(vertical: padding)
+                                : EdgeInsets.all(0),
+                            child: ListTile(
+                              selected:
+                                  controller.nowPlaying == allSongs[index],
+                              onTap: () async {
+                                isPlaying = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => NowPlaying(
+                                            currentSong: allSongs[index],
+                                            isPlaying: isPlaying,
+                                          )),
+                                );
+                                setState(() {
+                                  isPlaying ? padding = 10.0 : padding = 0.0;
+                                });
                               },
+                              contentPadding: EdgeInsets.only(right: 20),
+                              leading: IconButton(
+                                icon: Icon(
+                                  Icons.more_vert,
+                                  size: Config.xMargin(context, 6),
+                                ),
+                                onPressed: null,
+                              ),
+                              title: Text(
+                                allSongs[index]['title'],
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: Config.textSize(context, 3.5),
+                                    fontWeight: FontWeight.w400,
+                                    fontFamily: 'Acme'),
+                              ),
+                              subtitle: Text(
+                                allSongs[index]['artist'],
+                                style: TextStyle(
+                                    fontSize: Config.textSize(context, 3),
+                                    fontFamily: 'Acme'),
+                              ),
+                              trailing: CustomButton(
+                                child:
+                                    controller.nowPlaying == allSongs[index] &&
+                                            isPlaying
+                                        ? Icons.pause
+                                        : Icons.play_arrow,
+                                diameter: 12,
+                                onPressed: () async {
+                                  nowPlaying = allSongs[index];
+                                  // if nothing is currently playing
+                                  if (controller.nowPlaying == null) {
+                                    await controller.setUp(nowPlaying, context);
+                                    setState(() {
+                                      isPlaying = controller.isPlaying;
+                                    });
+                                    // if the song currently playing is taped on
+                                  } else if (controller.nowPlaying ==
+                                      nowPlaying) {
+                                    controller.isPlaying
+                                        ? controller.pause()
+                                        : controller.play();
+                                    setState(() {
+                                      isPlaying = controller.isPlaying;
+                                    });
+                                    // if a different song is selected
+                                  } else if (controller.nowPlaying !=
+                                      nowPlaying) {
+                                    controller.disposePlayer();
+                                    await controller.setUp(nowPlaying, context);
+                                    setState(() {
+                                      isPlaying = controller.isPlaying;
+                                    });
+                                  }
+                                  setState(() {
+                                    isPlaying ? padding = 10.0 : padding = 0.0;
+                                  });
+                                },
+                              ),
                             ),
                           );
                         },
