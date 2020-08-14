@@ -12,7 +12,19 @@ class ProviderClass extends ChangeNotifier {
     getAllSongs();
   }
   List allSongs = [];
+  List recentlyAdded = [];
+  
+  void recentActivity() {
+    List newList1 = allSongs;
+    newList1.sort((a, b) => a['recentlyAdded'].compareTo(b['recentlyAdded']));
+    // sort arranged it from old to new hence the reverse
+    recentlyAdded.addAll(newList1.reversed);
+    // sort all songs in alphabetical order
+    allSongs.sort((a, b) => a['title'].compareTo(b['title']));
+    notifyListeners();
+  }
 
+  //TODO function doesnt find all mp3 yet
   Future<void> getAllSongs() async {
     PermissionStatus permissionStatus = await Permission.storage.request();
     if (permissionStatus.isGranted && Platform.isAndroid) {
@@ -31,9 +43,10 @@ class ProviderClass extends ChangeNotifier {
           allSongs.add(await songInfo(folder.path));
           notifyListeners();
         } else if (FileSystemEntity.isDirectorySync(folder.path)) {
-          getAllFiles(folder.path);
+          await getAllFiles(folder.path);
         }
       }
+      recentActivity();
     } else {
       permissionStatus = await Permission.storage.request();
     }
@@ -50,7 +63,7 @@ class ProviderClass extends ChangeNotifier {
   }
 
   // recursively goes into all folders to return mp3 except the android folder
-  void getAllFiles(String path) async {
+  Future<void> getAllFiles(String path) async {
     for (FileSystemEntity file in Directory(path).listSync()) {
       if (FileSystemEntity.isFileSync(file.path) &&
           basename(file.path).endsWith('mp3')) {
@@ -67,15 +80,16 @@ class ProviderClass extends ChangeNotifier {
   }
 
   Future<Map<String, dynamic>> songInfo(String file) async {
-    var filePath = file.toString().replaceAll('\'', '').split('File: ').last;
     var audioTagger = Audiotagger();
     var info = await audioTagger.readTagsAsMap(
-      path: filePath,
+      path: file,
     );
+    var fileInfo = File(file);
     return {
-      'path': filePath,
-      'title': info['title'],
-      'artist': info['artist'],
+      'path': file,
+      'title': info['title'] == '' ? 'Unknown artist' : info['title'],
+      'artist': info['artist'] == '' ? 'Unknown artist' : info['artist'],
+      'recentlyAdded': fileInfo.lastAccessedSync(),
     };
   }
 }

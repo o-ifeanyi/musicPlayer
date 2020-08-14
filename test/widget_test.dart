@@ -7,8 +7,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:musicPlayer/components/customCard.dart';
 
 import 'package:musicPlayer/main.dart';
+import 'package:musicPlayer/screens/library.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
@@ -26,5 +28,10 @@ void main() {
     // Verify that our counter has incremented.
     expect(find.text('0'), findsNothing);
     expect(find.text('1'), findsOneWidget);
+  });
+
+  testWidgets('check if songlist is assigned', (WidgetTester tester) async {
+    await tester.pumpWidget(Library());
+    expect(find.widgetWithText(CustomCard, 'All songs'), findsOneWidget);
   });
 }

@@ -6,6 +6,7 @@ import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/models/songController.dart';
+import 'package:musicPlayer/screens/nowPlaying.dart';
 import 'package:musicPlayer/screens/playList.dart';
 import 'package:provider/provider.dart';
 
@@ -35,6 +36,9 @@ class _LibraryState extends State<Library> {
     }
   }
 
+  bool isPlaying;
+  dynamic currentSong;
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -60,7 +64,19 @@ class _LibraryState extends State<Library> {
                               fontWeight: FontWeight.w400,
                               fontFamily: 'Acme'),
                         ),
-                        CustomButton(diameter: 12, child: Icons.search),
+                        CustomButton(
+                          diameter: 12,
+                          child: Icons.search,
+                          onPressed: () {
+                            var player = Provider.of<SongController>(context,
+                                listen: false);
+                            if (player.nowPlaying != null) {
+                              player.disposePlayer();
+                            }
+                            Provider.of<PlayListDB>(context, listen: false)
+                                .clear();
+                          },
+                        ),
                       ],
                     ),
                   ),
@@ -75,9 +91,8 @@ class _LibraryState extends State<Library> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: GestureDetector(
                           onTap: () {
-                            Provider.of<SongController>(context,
-                                          listen: false)
-                                      .allSongs = provider.allSongs;
+                            Provider.of<SongController>(context, listen: false)
+                                .allSongs = provider.allSongs;
                             openPlaylist('All Songs', provider.allSongs);
                           },
                           child: CustomCard(
@@ -132,8 +147,8 @@ class _LibraryState extends State<Library> {
                                     );
                                   } else {
                                     Provider.of<SongController>(context,
-                                          listen: false)
-                                      .allSongs = songList;
+                                            listen: false)
+                                        .allSongs = songList;
                                     openPlaylist(
                                         playListDB.playList[index]['name'],
                                         songList);
@@ -170,8 +185,8 @@ class _LibraryState extends State<Library> {
                           fontFamily: 'Acme'),
                     ),
                   ),
-                  Consumer<PlayListDB>(
-                    builder: (_, playListDB, child) {
+                  Consumer<ProviderClass>(
+                    builder: (_, provider, child) {
                       return Padding(
                         padding: const EdgeInsets.only(left: 20),
                         child: Container(
@@ -179,9 +194,23 @@ class _LibraryState extends State<Library> {
                           color: Colors.transparent,
                           child: ListView.builder(
                             scrollDirection: Axis.horizontal,
-                            itemCount: playListDB.recent.length,
+                            itemCount: 2,
                             itemBuilder: (_, index) {
+                              List recentSongList = [];
                               return GestureDetector(
+                                onTap: () {
+                                  index == 0
+                                      ? recentSongList = provider.recentlyAdded
+                                      : recentSongList = provider.recentlyAdded;
+                                  Provider.of<SongController>(context,
+                                          listen: false)
+                                      .allSongs = recentSongList;
+                                  openPlaylist(
+                                      index == 0
+                                          ? 'Recently added'
+                                          : 'Recently played',
+                                      recentSongList);
+                                },
                                 child: Padding(
                                   padding: const EdgeInsets.only(
                                     right: 20.0,
@@ -191,12 +220,12 @@ class _LibraryState extends State<Library> {
                                   child: CustomCard(
                                     height: 30,
                                     width: 30,
-                                    label: playListDB.recent[index]['name'],
+                                    label: index == 0
+                                        ? 'Recently added'
+                                        : 'Recently played',
                                     child: index == 0
                                         ? Icons.playlist_add
                                         : Icons.playlist_play,
-                                    numOfSongs: playListDB.recent[index]
-                                        ['noOfSongs'],
                                   ),
                                 ),
                               );
@@ -213,54 +242,83 @@ class _LibraryState extends State<Library> {
               alignment: Alignment.bottomCenter,
               child: GestureDetector(
                 onTap: () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (_) => NowPlaying()),
-                  // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => NowPlaying(
+                              currentSong: currentSong,
+                              isPlaying: isPlaying,
+                            )),
+                  );
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   color: Theme.of(context).scaffoldBackgroundColor,
                   height: Config.yMargin(context, 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
+                  child: Consumer<SongController>(
+                    builder: (context, controller, child) {
+                      isPlaying = controller.isPlaying;
+                      //TODO now playing should be gotten from shared preference later
+                      // so it wouldnt be null when the app starts for the first time
+                      currentSong = controller.nowPlaying;
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Text(
-                            'Middle child',
-                            style: TextStyle(
-                                fontSize: Config.textSize(context, 3.5),
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Acme'),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              SizedBox(
+                                width: Config.xMargin(context, 40),
+                                child: Text(
+                                  controller.nowPlaying['title'],
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontSize: Config.textSize(context, 3.5),
+                                      fontWeight: FontWeight.w400,
+                                      fontFamily: 'Acme'),
+                                ),
+                              ),
+                              SizedBox(
+                                height: Config.yMargin(context, 1),
+                              ),
+                              Text(
+                                controller.nowPlaying['artist'],
+                                style: TextStyle(
+                                    fontSize: Config.textSize(context, 3),
+                                    fontFamily: 'Acme'),
+                              ),
+                            ],
                           ),
-                          SizedBox(
-                            height: 5,
+                          CustomButton(
+                            diameter: 12,
+                            child: Icons.skip_previous,
+                            onPressed: () async {
+                              await controller.skip(prev: true);
+                            },
                           ),
-                          Text(
-                            'J Cole',
-                            style: TextStyle(
-                                fontSize: Config.textSize(context, 3),
-                                fontFamily: 'Acme'),
+                          CustomButton(
+                            diameter: 15,
+                            child: isPlaying ? Icons.pause : Icons.play_arrow,
+                            onPressed: () {
+                              isPlaying
+                                  ? controller.pause()
+                                  : controller.play();
+                              setState(() {
+                                isPlaying = controller.isPlaying;
+                              });
+                            },
+                          ),
+                          CustomButton(
+                            diameter: 12,
+                            child: Icons.skip_next,
+                            onPressed: () async {
+                              await controller.skip(next: true);
+                            },
                           ),
                         ],
-                      ),
-                      SizedBox(
-                        width: Config.xMargin(context, 12),
-                      ),
-                      CustomButton(diameter: 12, child: Icons.skip_previous),
-                      CustomButton(
-                        diameter: 15,
-                        child: Icons.play_arrow,
-                        onPressed: () {
-                          Provider.of<PlayListDB>(context, listen: false)
-                              .clear();
-                        },
-                      ),
-                      CustomButton(diameter: 12, child: Icons.skip_next),
-                    ],
+                      );
+                    },
                   ),
                 ),
               ),

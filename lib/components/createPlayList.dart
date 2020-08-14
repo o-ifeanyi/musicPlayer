@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/models/songController.dart';
@@ -22,12 +21,17 @@ class CreatePlayList extends StatefulWidget {
 class _CreatePlayListState extends State<CreatePlayList> {
   bool createNew;
   String playlistName;
-  IconData playlistIcon;
+  TextEditingController inputFeild = TextEditingController();
   @override
   void initState() {
     createNew = widget.isCreateNew;
-    playlistIcon = Icons.star_border;
     super.initState();
+  }
+
+  @override
+  void deactivate() {
+    playlistName = null;
+    super.deactivate();
   }
 
   @override
@@ -82,16 +86,12 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     TextField(
+                                      controller: inputFeild,
                                       keyboardType: TextInputType.name,
                                       decoration: InputDecoration(
                                         labelText: 'Name',
                                         labelStyle: textStyle,
                                       ),
-                                      onChanged: (String newValue) {
-                                        setState(() {
-                                          playlistName = newValue;
-                                        });
-                                      },
                                     ),
                                   ]),
                             )
@@ -106,7 +106,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                           Provider.of<SongController>(context,
                                                   listen: false)
                                               .nowPlaying);
-                                          Navigator.pop(context);
+                                      Navigator.pop(context);
                                     },
                                     child: index > 0 &&
                                             index < playlistDB.playList.length
@@ -134,10 +134,15 @@ class _CreatePlayListState extends State<CreatePlayList> {
                           createNew
                               ? FlatButton(
                                   onPressed: () {
-                                    Provider.of<PlayListDB>(context,
-                                            listen: false)
-                                        .createPlaylist(playlistName);
-                                    Navigator.pop(context);
+                                    if (inputFeild.text != '') {
+                                      playlistName = inputFeild.text;
+                                      Provider.of<PlayListDB>(context,
+                                              listen: false)
+                                          .createPlaylist(playlistName);
+                                      Navigator.pop(context);
+                                    } else {
+                                      print('empty feild');
+                                    }
                                   },
                                   child: Text(
                                     'Create playlist',

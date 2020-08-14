@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/playListDB.dart';
-import 'package:provider/provider.dart';
 
 class SongController extends ChangeNotifier {
   AudioPlayer player;
@@ -11,23 +9,24 @@ class SongController extends ChangeNotifier {
   String timeLeft = '';
   String timePlayed = '';
   List allSongs;
-  bool isFavourite = false;
+  static bool isFavourite = false;
   int currentSong;
   dynamic nowPlaying;
   bool isPlaying = false;
+  int songLenght = 0;
 
   void setIsPlaying(bool val) {
     isPlaying = val;
     notifyListeners();
   }
 
-  Future<void> setUp(dynamic song, BuildContext context) async {
-    // allSongs = Provider.of<ProviderClass>(context, listen: false).allSongs;
+  Future<void> setUp(dynamic song) async {
     nowPlaying = song;
-    isFavourite = await Provider.of<PlayListDB>(context, listen: false).isFavourite(nowPlaying);
+    isFavourite = await PlayListDB.isFavourite(nowPlaying);
     currentSong = allSongs.indexOf(nowPlaying);
     player = AudioPlayer();
     duration = await player.setFilePath(nowPlaying['path']);
+    songLenght = duration.inSeconds;
     timeLeft = '${duration.inMinutes}:${duration.inSeconds % 60}';
     getPosition();
     play();
@@ -38,6 +37,9 @@ class SongController extends ChangeNotifier {
       (event) {
         currentTime = event.inSeconds;
         timePlayed = '${event.inMinutes}:${event.inSeconds % 60}';
+        if (currentTime == songLenght) {
+          skip(next: true);
+        }
         notifyListeners();
       },
     ).onError((error) => print('hmmmmm: $error'));
@@ -72,7 +74,7 @@ class SongController extends ChangeNotifier {
       nowPlaying = allSongs.first;
       debugPrint(e.toString());
     } finally {
-      await setUp(nowPlaying, context);
+      await setUp(nowPlaying);
       notifyListeners();
     }
   }

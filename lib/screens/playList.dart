@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/customButton.dart';
-import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:musicPlayer/screens/nowPlaying.dart';
@@ -16,26 +15,15 @@ class PlayList extends StatefulWidget {
 
 class _PlayListState extends State<PlayList> {
   bool isPlaying = false;
-  SongController player;
   var nowPlaying;
   List allSongs;
   double padding = 0.0;
 
   @override
   void initState() {
-    //player was created so i can call deactivate, its not really needed
-    player = Provider.of<SongController>(context, listen: false);
-    isPlaying = player.isPlaying;
+    isPlaying = Provider.of<SongController>(context, listen: false).isPlaying;
     allSongs = widget.songList;
     super.initState();
-  }
-
-  @override
-  void deactivate() {
-    if (player.nowPlaying != null) {
-      player.disposePlayer();
-    }
-    super.deactivate();
   }
 
   @override
@@ -140,7 +128,7 @@ class _PlayListState extends State<PlayList> {
                                   nowPlaying = allSongs[index];
                                   // if nothing is currently playing
                                   if (controller.nowPlaying == null) {
-                                    await controller.setUp(nowPlaying, context);
+                                    await controller.setUp(nowPlaying);
                                     setState(() {
                                       isPlaying = controller.isPlaying;
                                     });
@@ -157,7 +145,7 @@ class _PlayListState extends State<PlayList> {
                                   } else if (controller.nowPlaying !=
                                       nowPlaying) {
                                     controller.disposePlayer();
-                                    await controller.setUp(nowPlaying, context);
+                                    await controller.setUp(nowPlaying);
                                     setState(() {
                                       isPlaying = controller.isPlaying;
                                     });
