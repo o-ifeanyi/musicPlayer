@@ -7,13 +7,13 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ProviderClass extends ChangeNotifier {
-  ProviderClass () {
+  ProviderClass() {
     print('searching');
     getAllSongs();
   }
   List allSongs = [];
   List recentlyAdded = [];
-  
+
   void recentActivity() {
     List newList1 = allSongs;
     newList1.sort((a, b) => a['recentlyAdded'].compareTo(b['recentlyAdded']));
@@ -81,14 +81,19 @@ class ProviderClass extends ChangeNotifier {
 
   Future<Map<String, dynamic>> songInfo(String file) async {
     var audioTagger = Audiotagger();
-    var info = await audioTagger.readTagsAsMap(
-      path: file,
-    );
+    var info;
+    try {
+      info = await audioTagger.readTagsAsMap(
+        path: file,
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
     var fileInfo = File(file);
     return {
       'path': file,
-      'title': info['title'] == '' ? 'Unknown artist' : info['title'],
-      'artist': info['artist'] == '' ? 'Unknown artist' : info['artist'],
+      'title': info != null && info['title'] != '' ? info['title'] : 'Unknown artist',
+      'artist': info != null && info['artist'] != '' ? info['artist'] : 'Unknown artist',
       'recentlyAdded': fileInfo.lastAccessedSync(),
     };
   }

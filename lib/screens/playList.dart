@@ -17,12 +17,35 @@ class _PlayListState extends State<PlayList> {
   bool isPlaying = false;
   var nowPlaying;
   List allSongs;
+  List searchList = [];
   double padding = 0.0;
+  bool isSearching = false;
+  TextEditingController input = TextEditingController();
+  FocusNode focusNode = FocusNode();
+
+  void search(String input) {
+    // searchList = allSongs;
+    searchList.clear();
+    searchList.addAll(widget.songList);
+    setState(() {
+      searchList.retainWhere((element) =>
+          element['title'].toLowerCase().contains(input.toLowerCase()));
+    });
+  }
+
+  void resetSearch() {
+    setState(() {
+      input.clear();
+      searchList.clear();
+      searchList.addAll(widget.songList);
+    });
+  }
 
   @override
   void initState() {
     isPlaying = Provider.of<SongController>(context, listen: false).isPlaying;
     allSongs = widget.songList;
+    searchList.addAll(widget.songList);
     super.initState();
   }
 
@@ -49,16 +72,40 @@ class _PlayListState extends State<PlayList> {
                         diameter: 12,
                         onPressed: () => Navigator.pop(context),
                       ),
-                      Text(
-                        widget.playListName,
-                        style: TextStyle(
-                            fontSize: Config.textSize(context, 5),
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'Acme'),
-                      ),
+                      isSearching
+                          ? SizedBox(
+                              width: Config.defaultSize(context, 55),
+                              child: TextField(
+                                focusNode: focusNode,
+                                controller: input,
+                                decoration: InputDecoration(
+                                  hintText: 'search ${widget.playListName}',
+                                ),
+                                onChanged: (String text) {
+                                  search(text);
+                                },
+                              ),
+                            )
+                          : Text(
+                              widget.playListName,
+                              style: TextStyle(
+                                  fontSize: Config.textSize(context, 5),
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: 'Acme'),
+                            ),
                       CustomButton(
-                        child: Icons.search,
+                        child: isSearching ? Icons.clear : Icons.search,
                         diameter: 12,
+                        onPressed: () {
+                          if (isSearching) {
+                            resetSearch();
+                          } else {
+                            FocusScope.of(context).requestFocus(focusNode);
+                          }
+                          setState(() {
+                            isSearching = !isSearching;
+                          });
+                        },
                       ),
                     ],
                   ),
@@ -69,28 +116,33 @@ class _PlayListState extends State<PlayList> {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: allSongs.length,
+                    itemCount:
+                        isSearching ? searchList.length : allSongs.length,
                     itemBuilder: (context, index) {
                       return Consumer<SongController>(
                         builder: (context, controller, child) {
+                          List songList = isSearching ? searchList : allSongs;
+                          controller.allSongs = songList;
                           return AnimatedPadding(
                             duration: Duration(milliseconds: 400),
-                            padding: controller.nowPlaying == allSongs[index] &&
+                            padding: controller.nowPlaying == songList[index] &&
                                     controller.isPlaying
                                 ? EdgeInsets.symmetric(vertical: padding)
                                 : EdgeInsets.all(0),
                             child: ListTile(
                               selected:
-                                  controller.nowPlaying == allSongs[index],
+                                  controller.nowPlaying == songList[index],
                               onTap: () async {
                                 isPlaying = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => NowPlaying(
-                                            currentSong: allSongs[index],
+                                            currentSong: songList[index],
                                             isPlaying: isPlaying,
                                           )),
                                 );
+                                isSearching = false;
+                                resetSearch();
                                 setState(() {
                                   isPlaying ? padding = 10.0 : padding = 0.0;
                                 });
@@ -104,7 +156,7 @@ class _PlayListState extends State<PlayList> {
                                 onPressed: null,
                               ),
                               title: Text(
-                                allSongs[index]['title'],
+                                songList[index]['title'],
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontSize: Config.textSize(context, 3.5),
@@ -112,20 +164,20 @@ class _PlayListState extends State<PlayList> {
                                     fontFamily: 'Acme'),
                               ),
                               subtitle: Text(
-                                allSongs[index]['artist'],
+                                songList[index]['artist'],
                                 style: TextStyle(
                                     fontSize: Config.textSize(context, 3),
                                     fontFamily: 'Acme'),
                               ),
                               trailing: CustomButton(
                                 child:
-                                    controller.nowPlaying == allSongs[index] &&
+                                    controller.nowPlaying == songList[index] &&
                                             isPlaying
                                         ? Icons.pause
                                         : Icons.play_arrow,
                                 diameter: 12,
                                 onPressed: () async {
-                                  nowPlaying = allSongs[index];
+                                  nowPlaying = songList[index];
                                   // if nothing is currently playing
                                   if (controller.nowPlaying == null) {
                                     await controller.setUp(nowPlaying);

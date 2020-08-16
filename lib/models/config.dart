@@ -19,6 +19,14 @@ class Config {
     return width * (viewPortwidth / 100);
   }
 
+  static double defaultSize(BuildContext context, double size) {
+    var isPotrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    double viewPortwidth = isPotrait
+        ? MediaQuery.of(context).size.width
+        : MediaQuery.of(context).size.width;
+    return size * (viewPortwidth / 100);
+  }
+
   static double textSize(BuildContext context, double size) {
     var isPotrait = MediaQuery.of(context).orientation == Orientation.portrait;
     double viewPortwidth = isPotrait

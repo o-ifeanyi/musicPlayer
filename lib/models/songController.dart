@@ -8,12 +8,14 @@ class SongController extends ChangeNotifier {
   int currentTime = 0;
   String timeLeft = '';
   String timePlayed = '';
-  List allSongs;
+  List
+      allSongs; // this is assigned from library depending on the plalist that is opened
   static bool isFavourite = false;
   int currentSong;
   dynamic nowPlaying;
   bool isPlaying = false;
   int songLenght = 0;
+  PlayListDB playListDB = PlayListDB();
 
   void setIsPlaying(bool val) {
     isPlaying = val;
@@ -22,7 +24,8 @@ class SongController extends ChangeNotifier {
 
   Future<void> setUp(dynamic song) async {
     nowPlaying = song;
-    isFavourite = await PlayListDB.isFavourite(nowPlaying);
+    isFavourite = await playListDB.isFavourite(nowPlaying);
+    playListDB.saveNowPlaying(nowPlaying);
     currentSong = allSongs.indexOf(nowPlaying);
     player = AudioPlayer();
     duration = await player.setFilePath(nowPlaying['path']);
@@ -84,7 +87,10 @@ class SongController extends ChangeNotifier {
   }
 
   Future<void> disposePlayer() async {
-    await player.dispose();
+    if (player.playbackState == AudioPlaybackState.playing ||
+        player.playbackState == AudioPlaybackState.paused) {
+      await player.dispose();
+    }
     setIsPlaying(false);
     currentTime = 0;
     timeLeft = '';
