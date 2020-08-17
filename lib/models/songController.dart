@@ -8,6 +8,7 @@ class SongController extends ChangeNotifier {
   int currentTime = 0;
   String timeLeft = '';
   String timePlayed = '';
+  String playlistName; // this is assigned from library depending on the plalist that is opened
   List
       allSongs; // this is assigned from library depending on the plalist that is opened
   static bool isFavourite = false;
@@ -40,7 +41,7 @@ class SongController extends ChangeNotifier {
       (event) {
         currentTime = event.inSeconds;
         timePlayed = '${event.inMinutes}:${event.inSeconds % 60}';
-        if (currentTime == songLenght) {
+        if (currentTime >= songLenght) {
           skip(next: true);
         }
         notifyListeners();
@@ -79,6 +80,22 @@ class SongController extends ChangeNotifier {
     } finally {
       await setUp(nowPlaying);
       notifyListeners();
+    }
+  }
+
+  Future<void> playlistControlOptions(dynamic playlistNowPlaying) async{
+    // if nothing is currently playing
+    if (nowPlaying == null) {
+      await setUp(playlistNowPlaying);
+      setIsPlaying(true);
+      // if the song currently playing is taped on
+    } else if (nowPlaying == playlistNowPlaying) {
+      isPlaying ? pause() : play();
+      // if a different song is selected
+    } else if (nowPlaying != playlistNowPlaying) {
+      disposePlayer();
+      await setUp(playlistNowPlaying);
+      setIsPlaying(true);
     }
   }
 

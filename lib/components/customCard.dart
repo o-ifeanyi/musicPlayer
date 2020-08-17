@@ -57,13 +57,13 @@ class CustomCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         boxShadow: <BoxShadow>[
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Theme.of(context).splashColor,
             offset: Offset(6, 6),
             blurRadius: 10,
             spreadRadius: 1.0,
           ),
           BoxShadow(
-            color: Colors.white,
+            color: Theme.of(context).backgroundColor,
             offset: Offset(-6, -6),
             blurRadius: 10,
             spreadRadius: 1.0,

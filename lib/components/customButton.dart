@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:musicPlayer/models/config.dart';
 
 class CustomButton extends StatefulWidget {
-  CustomButton({this.diameter, this.onPressed, this.child});
+  CustomButton(
+      {this.diameter, this.onPressed, this.child, this.isToggled = false});
   final double diameter;
   final IconData child;
   final Function onPressed;
+  final bool isToggled;
 
   @override
   _CustomButtonState createState() => _CustomButtonState();
@@ -66,13 +68,13 @@ class _CustomButtonState extends State<CustomButton>
             shape: BoxShape.circle,
             boxShadow: <BoxShadow>[
               BoxShadow(
-                color: Colors.black.withOpacity(0.2),
+                color: Theme.of(context).splashColor,
                 offset: Offset(6, 6),
                 blurRadius: 10,
                 spreadRadius: 1.0,
               ),
               BoxShadow(
-                color: Colors.white,
+                color: Theme.of(context).backgroundColor,
                 offset: Offset(-6, -6),
                 blurRadius: 10,
                 spreadRadius: 1.0,

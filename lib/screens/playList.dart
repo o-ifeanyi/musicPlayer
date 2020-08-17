@@ -24,7 +24,6 @@ class _PlayListState extends State<PlayList> {
   FocusNode focusNode = FocusNode();
 
   void search(String input) {
-    // searchList = allSongs;
     searchList.clear();
     searchList.addAll(widget.songList);
     setState(() {
@@ -165,6 +164,7 @@ class _PlayListState extends State<PlayList> {
                               ),
                               subtitle: Text(
                                 songList[index]['artist'],
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontSize: Config.textSize(context, 3),
                                     fontFamily: 'Acme'),
@@ -178,31 +178,9 @@ class _PlayListState extends State<PlayList> {
                                 diameter: 12,
                                 onPressed: () async {
                                   nowPlaying = songList[index];
-                                  // if nothing is currently playing
-                                  if (controller.nowPlaying == null) {
-                                    await controller.setUp(nowPlaying);
-                                    setState(() {
-                                      isPlaying = controller.isPlaying;
-                                    });
-                                    // if the song currently playing is taped on
-                                  } else if (controller.nowPlaying ==
-                                      nowPlaying) {
-                                    controller.isPlaying
-                                        ? controller.pause()
-                                        : controller.play();
-                                    setState(() {
-                                      isPlaying = controller.isPlaying;
-                                    });
-                                    // if a different song is selected
-                                  } else if (controller.nowPlaying !=
-                                      nowPlaying) {
-                                    controller.disposePlayer();
-                                    await controller.setUp(nowPlaying);
-                                    setState(() {
-                                      isPlaying = controller.isPlaying;
-                                    });
-                                  }
+                                  await controller.playlistControlOptions(nowPlaying);
                                   setState(() {
+                                    isPlaying = controller.isPlaying;
                                     isPlaying ? padding = 10.0 : padding = 0.0;
                                   });
                                 },
@@ -227,12 +205,12 @@ class _PlayListState extends State<PlayList> {
                   color: Theme.of(context).scaffoldBackgroundColor,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Theme.of(context).splashColor,
                       offset: Offset(6, 6),
                       blurRadius: 10,
                     ),
                     BoxShadow(
-                      color: Colors.white,
+                      color: Theme.of(context).backgroundColor,
                       offset: Offset(-6, -6),
                       blurRadius: 10,
                     ),

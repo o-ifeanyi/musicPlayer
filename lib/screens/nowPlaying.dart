@@ -99,11 +99,12 @@ class _NowPlayingState extends State<NowPlaying> {
                         CustomButton(
                           diameter: 12,
                           child: Icons.list,
-                          onPressed: () {
-                            Navigator.push(
+                          onPressed: () async{
+                            isPlaying = await Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => PlayingFrom()),
                             );
+                            setState(() { });
                           },
                         ),
                       ],
@@ -135,6 +136,7 @@ class _NowPlayingState extends State<NowPlaying> {
                         fontSize: Config.textSize(context, 3),
                         fontFamily: 'Acme',
                       ),
+                      textAlign: TextAlign.center,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -202,7 +204,7 @@ class _NowPlayingState extends State<NowPlaying> {
                                         controller.duration.inSeconds) *
                                     100) /
                                 100.0,
-                            backgroundColor: Colors.grey[300],
+                            backgroundColor: Theme.of(context).splashColor,
                             valueColor: AlwaysStoppedAnimation(
                                 Theme.of(context).accentColor),
                           )
@@ -233,6 +235,7 @@ class _NowPlayingState extends State<NowPlaying> {
                         CustomButton(
                           diameter: 18,
                           child: isPlaying ? Icons.pause : Icons.play_arrow,
+                          isToggled: isPlaying,
                           onPressed: () {
                             isPlaying ? player.pause() : player.play();
                             setState(() {

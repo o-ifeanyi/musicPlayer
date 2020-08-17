@@ -11,7 +11,7 @@ class CircleDisc extends StatelessWidget {
       child: Center(
         child: Icon(
           Icons.music_note,
-          color: Colors.grey[200],
+          color: Theme.of(context).splashColor,
           size: Config.yMargin(context, iconSize),
         ),
       ),
@@ -20,12 +20,12 @@ class CircleDisc extends StatelessWidget {
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Theme.of(context).splashColor,
             offset: Offset(6, 6),
             blurRadius: 10,
           ),
           BoxShadow(
-            color: Colors.white,
+            color: Theme.of(context).backgroundColor,
             offset: Offset(-6, -6),
             blurRadius: 15,
           ),

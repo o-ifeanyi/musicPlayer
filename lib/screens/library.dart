@@ -8,6 +8,7 @@ import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:musicPlayer/screens/nowPlaying.dart';
 import 'package:musicPlayer/screens/playList.dart';
+import 'package:musicPlayer/screens/settings.dart';
 import 'package:provider/provider.dart';
 
 class Library extends StatefulWidget {
@@ -17,6 +18,8 @@ class Library extends StatefulWidget {
 
 class _LibraryState extends State<Library> {
   void openPlaylist(String title, List songList) {
+    Provider.of<SongController>(context, listen: false).allSongs = songList;
+    Provider.of<SongController>(context, listen: false).playlistName = title;
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => PlayList(title, songList)),
@@ -80,8 +83,10 @@ class _LibraryState extends State<Library> {
                           diameter: 12,
                           child: Icons.settings,
                           onPressed: () async {
-                            Provider.of<PlayListDB>(context, listen: false)
-                                .clear();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Settings()));
                           },
                         ),
                       ],
@@ -90,16 +95,15 @@ class _LibraryState extends State<Library> {
                   Divider(
                     height: 0.0,
                     thickness: 1.0,
+                    color: Theme.of(context).dividerColor,
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: Config.yMargin(context, 3)),
                   Consumer<ProviderClass>(
                     builder: (context, provider, child) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: GestureDetector(
                           onTap: () {
-                            Provider.of<SongController>(context, listen: false)
-                                .allSongs = provider.allSongs;
                             openPlaylist('All songs', provider.allSongs);
                           },
                           child: CustomCard(
@@ -153,9 +157,6 @@ class _LibraryState extends State<Library> {
                                       },
                                     );
                                   } else {
-                                    Provider.of<SongController>(context,
-                                            listen: false)
-                                        .allSongs = songList;
                                     openPlaylist(
                                         playListDB.playList[index]['name'],
                                         songList);
@@ -211,9 +212,6 @@ class _LibraryState extends State<Library> {
                                               listen: false)
                                           .recentlyAdded
                                       : playlistDB.recentList;
-                                  Provider.of<SongController>(context,
-                                          listen: false)
-                                      .allSongs = recentSongList;
                                   openPlaylist(
                                       index == 0
                                           ? 'Recently added'
@@ -260,6 +258,7 @@ class _LibraryState extends State<Library> {
                       controller.allSongs =
                           Provider.of<ProviderClass>(context, listen: false)
                               .allSongs;
+                      controller.playlistName = 'All songs';
                       if (currentSong != null) {
                         Navigator.push(
                           context,
@@ -319,6 +318,7 @@ class _LibraryState extends State<Library> {
                           CustomButton(
                             diameter: 15,
                             child: isPlaying ? Icons.pause : Icons.play_arrow,
+                            isToggled: isPlaying,
                             onPressed: () {
                               // if nothing is playing
                               if (controller.nowPlaying == null) {
