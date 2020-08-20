@@ -64,7 +64,7 @@ class _CustomButtonState extends State<CustomButton>
           height: Config.xMargin(context, widget.diameter),
           width: Config.xMargin(context, widget.diameter),
           decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
+            color: widget.isToggled ? Theme.of(context).accentColor : Theme.of(context).scaffoldBackgroundColor,
             shape: BoxShape.circle,
             boxShadow: <BoxShadow>[
               BoxShadow(

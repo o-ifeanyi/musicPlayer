@@ -132,53 +132,45 @@ class _LibraryState extends State<Library> {
                   ),
                   Consumer<PlayListDB>(
                     builder: (_, playListDB, child) {
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Container(
-                          height: Config.yMargin(context, 30),
-                          color: Colors.transparent,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: playListDB.playList.length,
-                            itemBuilder: (_, index) {
-                              List songList =
-                                  playListDB.playList[index]['songs'];
-                              return GestureDetector(
-                                onTap: () {
-                                  if (index == 0) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return CreatePlayList(
-                                          height: 35,
-                                          width: 35,
-                                          isCreateNew: true,
-                                        );
-                                      },
-                                    );
-                                  } else {
-                                    openPlaylist(
-                                        playListDB.playList[index]['name'],
-                                        songList);
-                                  }
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    right: 20.0,
-                                    bottom: 20.0,
-                                    top: 20.0,
-                                  ),
-                                  child: CustomCard(
-                                    height: 30,
-                                    width: 30,
-                                    label: playListDB.playList[index]['name'],
-                                    child: getPlaylistIcon(index),
-                                    numOfSongs: songList?.length,
-                                  ),
+                      return Container(
+                        height: Config.yMargin(context, 30),
+                        color: Colors.transparent,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: playListDB.playList.length,
+                          itemBuilder: (_, index) {
+                            List songList = playListDB.playList[index]['songs'];
+                            return GestureDetector(
+                              onTap: () {
+                                if (index == 0) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return CreatePlayList(
+                                        height: 35,
+                                        width: 35,
+                                        isCreateNew: true,
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  openPlaylist(
+                                      playListDB.playList[index]['name'],
+                                      songList);
+                                }
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: CustomCard(
+                                  height: 30,
+                                  width: 30,
+                                  label: playListDB.playList[index]['name'],
+                                  child: getPlaylistIcon(index),
+                                  numOfSongs: songList?.length,
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
@@ -195,49 +187,42 @@ class _LibraryState extends State<Library> {
                   ),
                   Consumer<PlayListDB>(
                     builder: (context, playlistDB, child) {
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 20),
-                        child: Container(
-                          height: Config.yMargin(context, 30),
-                          color: Colors.transparent,
-                          child: ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            itemCount: 2,
-                            itemBuilder: (context, index) {
-                              List recentSongList = [];
-                              return GestureDetector(
-                                onTap: () {
-                                  recentSongList = index == 0
-                                      ? Provider.of<ProviderClass>(context,
-                                              listen: false)
-                                          .recentlyAdded
-                                      : playlistDB.recentList;
-                                  openPlaylist(
-                                      index == 0
-                                          ? 'Recently added'
-                                          : 'Recently played',
-                                      recentSongList);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.only(
-                                    right: 20.0,
-                                    bottom: 20.0,
-                                    top: 20.0,
-                                  ),
-                                  child: CustomCard(
-                                    height: 30,
-                                    width: 30,
-                                    label: index == 0
+                      return Container(
+                        height: Config.yMargin(context, 30),
+                        color: Colors.transparent,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: 2,
+                          itemBuilder: (context, index) {
+                            List recentSongList = [];
+                            return GestureDetector(
+                              onTap: () {
+                                recentSongList = index == 0
+                                    ? Provider.of<ProviderClass>(context,
+                                            listen: false)
+                                        .recentlyAdded
+                                    : playlistDB.recentList;
+                                openPlaylist(
+                                    index == 0
                                         ? 'Recently added'
                                         : 'Recently played',
-                                    child: index == 0
-                                        ? Icons.playlist_add
-                                        : Icons.playlist_play,
-                                  ),
+                                    recentSongList);
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: CustomCard(
+                                  height: 30,
+                                  width: 30,
+                                  label: index == 0
+                                      ? 'Recently added'
+                                      : 'Recently played',
+                                  child: index == 0
+                                      ? Icons.playlist_add
+                                      : Icons.playlist_play,
                                 ),
-                              );
-                            },
-                          ),
+                              ),
+                            );
+                          },
                         ),
                       );
                     },
@@ -255,10 +240,14 @@ class _LibraryState extends State<Library> {
                   alignment: Alignment.bottomCenter,
                   child: GestureDetector(
                     onTap: () {
-                      controller.allSongs =
-                          Provider.of<ProviderClass>(context, listen: false)
-                              .allSongs;
-                      controller.playlistName = 'All songs';
+                      // if the list or playlist name empty (when the app is opened) use all songs
+                      controller.allSongs = controller.allSongs == null
+                          ? Provider.of<ProviderClass>(context, listen: false)
+                              .allSongs
+                          : controller.allSongs;
+                      controller.playlistName = controller.playlistName == null
+                          ? 'All songs'
+                          : controller.playlistName;
                       if (currentSong != null) {
                         Navigator.push(
                           context,

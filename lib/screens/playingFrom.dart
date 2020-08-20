@@ -3,8 +3,10 @@ import 'package:musicPlayer/components/circleDisc.dart';
 import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/components/rotateWidget.dart';
 import 'package:musicPlayer/models/config.dart';
+import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayingFrom extends StatefulWidget {
   @override
@@ -37,41 +39,18 @@ class _PlayingFromState extends State<PlayingFrom> {
             builder: (context, controller, child) {
               return Column(
                 children: <Widget>[
-                  Padding(
-                    padding:
-                        const EdgeInsets.only(left: 20, top: 30, right: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        CustomButton(
-                          diameter: 12,
-                          child: Icons.arrow_back,
-                          onPressed: () => Navigator.pop(context, isPlaying),
-                        ),
-                        Column(
-                          children: <Widget>[
-                            Text('Playing From',
-                                style: TextStyle(
-                                    fontSize: Config.textSize(context, 5),
-                                    fontWeight: FontWeight.w400,
-                                    fontFamily: 'Acme'),
-                                textAlign: TextAlign.center),
-                            SizedBox(height: 5),
-                            Text(
-                              controller.playlistName,
-                              style: TextStyle(
-                                  fontSize: Config.textSize(context, 3.5),
-                                  fontFamily: 'Acme'),
-                            ),
-                          ],
-                        ),
-                        CustomButton(
-                          diameter: 12,
-                          child: Icons.more_vert,
-                        ),
-                      ],
-                    ),
+                  IconButton(
+                    icon: Icon(Icons.keyboard_arrow_down),
+                    onPressed: () {
+                      Navigator.pop(context, isPlaying);
+                    },
                   ),
+                  Text('Playing From - ${controller.playlistName}',
+                      style: TextStyle(
+                          fontSize: Config.textSize(context, 5),
+                          fontWeight: FontWeight.w400,
+                          fontFamily: 'Acme'),
+                      textAlign: TextAlign.center),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                     height: isPotrait ? 250 : 100,
@@ -80,7 +59,20 @@ class _PlayingFromState extends State<PlayingFrom> {
                       children: <Widget>[
                         CustomButton(
                           diameter: 12,
-                          child: Icons.repeat,
+                          child: SongController.isFavourite
+                              ? Icons.favorite
+                              : Icons.favorite_border,
+                          onPressed: () async {
+                            SongController.isFavourite
+                                ? await Provider.of<PlayListDB>(context,
+                                        listen: false)
+                                    .removeFromPlaylist(
+                                        'Favourites', controller.nowPlaying)
+                                : await Provider.of<PlayListDB>(context,
+                                        listen: false)
+                                    .addToPlaylist(
+                                        'Favourites', controller.nowPlaying);
+                          },
                         ),
                         isPotrait
                             ? Expanded(
@@ -90,6 +82,15 @@ class _PlayingFromState extends State<PlayingFrom> {
                         CustomButton(
                           diameter: 12,
                           child: Icons.shuffle,
+                          isToggled: controller.isShuffled,
+                          onPressed: () {
+                            setState(() {
+                              controller.isShuffled = !controller.isShuffled;
+                            });
+                            SharedPreferences.getInstance().then((pref) {
+                              pref.setBool('shuffle', controller.isShuffled);
+                            });
+                          },
                         ),
                       ],
                     ),

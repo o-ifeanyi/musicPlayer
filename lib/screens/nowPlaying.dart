@@ -99,19 +99,19 @@ class _NowPlayingState extends State<NowPlaying> {
                         CustomButton(
                           diameter: 12,
                           child: Icons.list,
-                          onPressed: () async{
+                          onPressed: () async {
                             isPlaying = await Navigator.push(
                               context,
                               MaterialPageRoute(builder: (_) => PlayingFrom()),
                             );
-                            setState(() { });
+                            setState(() {});
                           },
                         ),
                       ],
                     ),
                     isPotrait
                         ? Expanded(
-                            child: RotateWidget(CircleDisc(20), isPlaying))
+                            child: RotateWidget(CircleDisc(16), isPlaying))
                         : SizedBox(
                             height: Config.xMargin(context, 1),
                           ),
@@ -147,10 +147,15 @@ class _NowPlayingState extends State<NowPlaying> {
                               ? Icons.favorite
                               : Icons.favorite_border,
                           onPressed: () async {
-                            await Provider.of<PlayListDB>(context,
-                                    listen: false)
-                                .addToPlaylist(
-                                    'Favourites', controller.nowPlaying);
+                            SongController.isFavourite
+                                ? await Provider.of<PlayListDB>(context,
+                                        listen: false)
+                                    .removeFromPlaylist(
+                                        'Favourites', controller.nowPlaying)
+                                : await Provider.of<PlayListDB>(context,
+                                        listen: false)
+                                    .addToPlaylist(
+                                        'Favourites', controller.nowPlaying);
                           },
                         ),
                         CustomButton(

@@ -33,6 +33,11 @@ class ProviderClass extends ChangeNotifier {
     notifyListeners();
   }
 
+  void removeSong(dynamic song) {
+    allSongs.remove(song);
+    notifyListeners();
+  }
+
   //TODO function doesnt find all mp3 yet
   Future<void> getAllSongs() async {
     PermissionStatus permissionStatus = await Permission.storage.request();

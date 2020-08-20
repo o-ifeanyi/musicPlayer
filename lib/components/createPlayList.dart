@@ -8,10 +8,11 @@ import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class CreatePlayList extends StatefulWidget {
-  CreatePlayList({this.height, this.width, this.isCreateNew = true});
+  CreatePlayList({this.height, this.width, this.isCreateNew = true, this.song});
 
   final double width;
   final double height;
+  final dynamic song; // for adding to playlist from pop up options
   final bool isCreateNew;
 
   @override
@@ -103,9 +104,11 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                     onPressed: () async {
                                       await playlistDB.addToPlaylist(
                                           playlistDB.playList[index]['name'],
-                                          Provider.of<SongController>(context,
-                                                  listen: false)
-                                              .nowPlaying);
+                                          widget.song ??
+                                              Provider.of<SongController>(
+                                                      context,
+                                                      listen: false)
+                                                  .nowPlaying);
                                       Navigator.pop(context);
                                     },
                                     child: index > 0 &&

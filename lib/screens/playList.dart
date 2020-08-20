@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:musicPlayer/components/createPlayList.dart';
 import 'package:musicPlayer/components/customButton.dart';
+import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/config.dart';
+import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:musicPlayer/screens/nowPlaying.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayList extends StatefulWidget {
   final String playListName;
@@ -147,12 +151,126 @@ class _PlayListState extends State<PlayList> {
                                 });
                               },
                               contentPadding: EdgeInsets.only(right: 20),
-                              leading: IconButton(
+                              leading: PopupMenuButton(
                                 icon: Icon(
                                   Icons.more_vert,
                                   size: Config.xMargin(context, 6),
                                 ),
-                                onPressed: null,
+                                itemBuilder: (context) {
+                                  return <PopupMenuEntry<String>>[
+                                    PopupMenuItem(
+                                      child: FlatButton(
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CreatePlayList(
+                                                height: 35,
+                                                width: 35,
+                                                song: songList[index],
+                                                isCreateNew: false,
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Text(
+                                          'Add to playlist',
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    PopupMenuItem(
+                                      child: FlatButton(
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return AlertDialog(
+                                                  title: Text(
+                                                    widget.playListName ==
+                                                            'All songs'
+                                                        ? 'Delete "${songList[index]['title']}"?'
+                                                        : 'Remove "${songList[index]['title']}"?',
+                                                    style: TextStyle(
+                                                        fontSize:
+                                                            Config.textSize(
+                                                                context, 3.5),
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                        fontFamily: 'Acme'),
+                                                  ),
+                                                  actions: [
+                                                    FlatButton(
+                                                        onPressed: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                        },
+                                                        child: Text('No')),
+                                                    FlatButton(
+                                                        onPressed: () async {
+                                                          if (widget
+                                                                  .playListName ==
+                                                              'All songs') {
+                                                            await Provider.of<
+                                                                        PlayListDB>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .removeFromDevice(
+                                                                    songList[
+                                                                        index]);
+                                                            // if current song beign played is deleted its still available from libray
+                                                            // causing craxy bugs
+                                                            if (controller
+                                                                    .nowPlaying ==
+                                                                songList[
+                                                                    index]) {
+                                                              controller.skip(
+                                                                  next: true);
+                                                            }
+                                                            Provider.of<ProviderClass>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .removeSong(
+                                                                    songList[
+                                                                        index]);
+                                                            setState(() {});
+                                                            Navigator.pop(
+                                                                context);
+                                                          } else {
+                                                            await Provider.of<
+                                                                        PlayListDB>(
+                                                                    context,
+                                                                    listen:
+                                                                        false)
+                                                                .removeFromPlaylist(
+                                                                    controller
+                                                                        .playlistName,
+                                                                    songList[
+                                                                        index]);
+                                                            setState(() {});
+                                                            Navigator.pop(
+                                                                context);
+                                                          }
+                                                        },
+                                                        child: Text('Yes')),
+                                                  ],
+                                                );
+                                              });
+                                        },
+                                        child: Text(
+                                          widget.playListName == 'All songs'
+                                              ? 'Delete song'
+                                              : 'Remove song',
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                  ];
+                                },
                               ),
                               title: Text(
                                 songList[index]['title'],
@@ -178,7 +296,8 @@ class _PlayListState extends State<PlayList> {
                                 diameter: 12,
                                 onPressed: () async {
                                   nowPlaying = songList[index];
-                                  await controller.playlistControlOptions(nowPlaying);
+                                  await controller
+                                      .playlistControlOptions(nowPlaying);
                                   setState(() {
                                     isPlaying = controller.isPlaying;
                                     isPlaying ? padding = 10.0 : padding = 0.0;
@@ -197,33 +316,49 @@ class _PlayListState extends State<PlayList> {
           ),
           Align(
             alignment: Alignment.bottomCenter,
-            child: Container(
-              height: 70,
-              margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50),
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).splashColor,
-                      offset: Offset(6, 6),
-                      blurRadius: 10,
+            child: Consumer<SongController>(
+              builder: (context, controller, child) {
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      controller.isShuffled = !controller.isShuffled;
+                    });
+                    SharedPreferences.getInstance().then((pref) {
+                      pref.setBool('shuffle', controller.isShuffled);
+                    });
+                  },
+                  child: Container(
+                    height: 70,
+                    margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50),
+                        color: controller.isShuffled
+                            ? Theme.of(context).accentColor
+                            : Theme.of(context).scaffoldBackgroundColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context).splashColor,
+                            offset: Offset(6, 6),
+                            blurRadius: 10,
+                          ),
+                          BoxShadow(
+                            color: Theme.of(context).backgroundColor,
+                            offset: Offset(-6, -6),
+                            blurRadius: 10,
+                          ),
+                        ]),
+                    child: Center(
+                      child: Text(
+                        'SHUFFLE',
+                        style: TextStyle(
+                            fontSize: Config.textSize(context, 4),
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Acme'),
+                      ),
                     ),
-                    BoxShadow(
-                      color: Theme.of(context).backgroundColor,
-                      offset: Offset(-6, -6),
-                      blurRadius: 10,
-                    ),
-                  ]),
-              child: Center(
-                child: Text(
-                  'SHUFFLE',
-                  style: TextStyle(
-                      fontSize: Config.textSize(context, 4),
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Acme'),
-                ),
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ],

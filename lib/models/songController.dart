@@ -1,22 +1,36 @@
 import 'package:flutter/cupertino.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:musicPlayer/models/playListDB.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SongController extends ChangeNotifier {
+  SongController() {
+    init();
+  }
   AudioPlayer player;
   Duration duration;
   int currentTime = 0;
   String timeLeft = '';
   String timePlayed = '';
-  String playlistName; // this is assigned from library depending on the plalist that is opened
+  String
+      playlistName; // this is assigned from library depending on the plalist that is opened
   List
       allSongs; // this is assigned from library depending on the plalist that is opened
   static bool isFavourite = false;
+  bool isShuffled = false;
   int currentSong;
   dynamic nowPlaying;
   bool isPlaying = false;
   int songLenght = 0;
   PlayListDB playListDB = PlayListDB();
+
+  void init() {
+    print('song controller init');
+    SharedPreferences.getInstance().then((pref) {
+      isShuffled = pref.getBool('shuffle') ?? false;
+    });
+    notifyListeners();
+  }
 
   void setIsPlaying(bool val) {
     isPlaying = val;
@@ -70,10 +84,19 @@ class SongController extends ChangeNotifier {
   Future<void> skip(
       {bool next = false, bool prev = false, BuildContext context}) async {
     currentSong = allSongs.indexOf(nowPlaying);
+    List shuffled = [];
     await disposePlayer();
     try {
-      nowPlaying =
-          next ? allSongs[currentSong += 1] : allSongs[currentSong -= 1];
+      if (isShuffled) {
+        shuffled.addAll(allSongs);
+        shuffled.shuffle();
+        currentSong = shuffled.indexOf(nowPlaying);
+        nowPlaying =
+            next ? shuffled[currentSong += 1] : shuffled[currentSong -= 1];
+      } else {
+        nowPlaying =
+            next ? allSongs[currentSong += 1] : allSongs[currentSong -= 1];
+      }
     } on RangeError catch (e) {
       nowPlaying = allSongs.first;
       debugPrint(e.toString());
@@ -83,7 +106,7 @@ class SongController extends ChangeNotifier {
     }
   }
 
-  Future<void> playlistControlOptions(dynamic playlistNowPlaying) async{
+  Future<void> playlistControlOptions(dynamic playlistNowPlaying) async {
     // if nothing is currently playing
     if (nowPlaying == null) {
       await setUp(playlistNowPlaying);
