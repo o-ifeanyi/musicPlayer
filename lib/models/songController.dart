@@ -18,6 +18,7 @@ class SongController extends ChangeNotifier {
       allSongs; // this is assigned from library depending on the plalist that is opened
   static bool isFavourite = false;
   bool isShuffled = false;
+  bool isRepeat = false;
   int currentSong;
   dynamic nowPlaying;
   bool isPlaying = false;
@@ -28,7 +29,14 @@ class SongController extends ChangeNotifier {
     print('song controller init');
     SharedPreferences.getInstance().then((pref) {
       isShuffled = pref.getBool('shuffle') ?? false;
+      isRepeat = pref.getBool('repeat') ?? false;
     });
+    notifyListeners();
+  }
+
+  void settings({bool repeat = false, bool shuffle = false}) {
+    isShuffled = shuffle;
+    isRepeat = repeat;
     notifyListeners();
   }
 
@@ -84,11 +92,12 @@ class SongController extends ChangeNotifier {
   Future<void> skip(
       {bool next = false, bool prev = false, BuildContext context}) async {
     currentSong = allSongs.indexOf(nowPlaying);
-    List shuffled = [];
+    List shuffled = [...allSongs];
     await disposePlayer();
     try {
-      if (isShuffled) {
-        shuffled.addAll(allSongs);
+      if (isRepeat) {
+        nowPlaying = nowPlaying;
+      } else if (isShuffled) {
         shuffled.shuffle();
         currentSong = shuffled.indexOf(nowPlaying);
         nowPlaying =

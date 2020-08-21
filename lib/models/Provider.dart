@@ -34,11 +34,11 @@ class ProviderClass extends ChangeNotifier {
   }
 
   void removeSong(dynamic song) {
-    allSongs.remove(song);
+    allSongs.removeWhere((element) => element['path'] == song['path']);
+    recentlyAdded.removeWhere((element) => element['path'] == song['path']);
     notifyListeners();
   }
 
-  //TODO function doesnt find all mp3 yet
   Future<void> getAllSongs() async {
     PermissionStatus permissionStatus = await Permission.storage.request();
     if (permissionStatus.isGranted && Platform.isAndroid) {

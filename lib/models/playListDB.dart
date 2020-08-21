@@ -98,7 +98,6 @@ class PlayListDB extends ChangeNotifier {
     // delete from all created playlist
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
     for (var each in playList) {
-      print('deleting from ${each['name']}');
       var dbPlaylist = db.get(each['name']);
       List songs = dbPlaylist['songs'];
       // ? because first thing in the list is createplaylist with no songs list
@@ -116,9 +115,7 @@ class PlayListDB extends ChangeNotifier {
     // delete from device
     var deviceFile = File(song['path']);
     if (deviceFile.existsSync()) {
-      print('deleting');
       deviceFile.deleteSync();
-      print('deleted');
     }
     refresh();
   }

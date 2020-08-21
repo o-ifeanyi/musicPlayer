@@ -3,7 +3,6 @@ import 'package:musicPlayer/components/circleDisc.dart';
 import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/components/rotateWidget.dart';
 import 'package:musicPlayer/models/config.dart';
-import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -59,19 +58,14 @@ class _PlayingFromState extends State<PlayingFrom> {
                       children: <Widget>[
                         CustomButton(
                           diameter: 12,
-                          child: SongController.isFavourite
-                              ? Icons.favorite
-                              : Icons.favorite_border,
+                          child: Icons.repeat_one,
+                          isToggled: controller.isRepeat,
                           onPressed: () async {
-                            SongController.isFavourite
-                                ? await Provider.of<PlayListDB>(context,
-                                        listen: false)
-                                    .removeFromPlaylist(
-                                        'Favourites', controller.nowPlaying)
-                                : await Provider.of<PlayListDB>(context,
-                                        listen: false)
-                                    .addToPlaylist(
-                                        'Favourites', controller.nowPlaying);
+                            controller.settings(repeat: !controller.isRepeat);
+                            SharedPreferences.getInstance().then((pref) {
+                              pref.setBool('repeat', controller.isRepeat);
+                              pref.setBool('shuffle', controller.isShuffled);
+                            });
                           },
                         ),
                         isPotrait
@@ -84,11 +78,10 @@ class _PlayingFromState extends State<PlayingFrom> {
                           child: Icons.shuffle,
                           isToggled: controller.isShuffled,
                           onPressed: () {
-                            setState(() {
-                              controller.isShuffled = !controller.isShuffled;
-                            });
+                            controller.settings(shuffle: !controller.isShuffled);
                             SharedPreferences.getInstance().then((pref) {
                               pref.setBool('shuffle', controller.isShuffled);
+                              pref.setBool('repeat', controller.isRepeat);
                             });
                           },
                         ),

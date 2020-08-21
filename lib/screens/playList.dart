@@ -184,85 +184,15 @@ class _PlayListState extends State<PlayList> {
                                       child: FlatButton(
                                         onPressed: () async {
                                           Navigator.pop(context);
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) {
-                                                return AlertDialog(
-                                                  title: Text(
-                                                    widget.playListName ==
-                                                            'All songs'
-                                                        ? 'Delete "${songList[index]['title']}"?'
-                                                        : 'Remove "${songList[index]['title']}"?',
-                                                    style: TextStyle(
-                                                        fontSize:
-                                                            Config.textSize(
-                                                                context, 3.5),
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontFamily: 'Acme'),
-                                                  ),
-                                                  actions: [
-                                                    FlatButton(
-                                                        onPressed: () {
-                                                          Navigator.pop(
-                                                              context);
-                                                        },
-                                                        child: Text('No')),
-                                                    FlatButton(
-                                                        onPressed: () async {
-                                                          if (widget
-                                                                  .playListName ==
-                                                              'All songs') {
-                                                            await Provider.of<
-                                                                        PlayListDB>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .removeFromDevice(
-                                                                    songList[
-                                                                        index]);
-                                                            // if current song beign played is deleted its still available from libray
-                                                            // causing craxy bugs
-                                                            if (controller
-                                                                    .nowPlaying ==
-                                                                songList[
-                                                                    index]) {
-                                                              controller.skip(
-                                                                  next: true);
-                                                            }
-                                                            Provider.of<ProviderClass>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .removeSong(
-                                                                    songList[
-                                                                        index]);
-                                                            setState(() {});
-                                                            Navigator.pop(
-                                                                context);
-                                                          } else {
-                                                            await Provider.of<
-                                                                        PlayListDB>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .removeFromPlaylist(
-                                                                    controller
-                                                                        .playlistName,
-                                                                    songList[
-                                                                        index]);
-                                                            setState(() {});
-                                                            Navigator.pop(
-                                                                context);
-                                                          }
-                                                        },
-                                                        child: Text('Yes')),
-                                                  ],
-                                                );
-                                              });
+                                          await buildShowDialog(context,
+                                              songList, index, controller);
                                         },
                                         child: Text(
-                                          widget.playListName == 'All songs'
+                                          widget.playListName == 'All songs' ||
+                                                  widget.playListName ==
+                                                      'Recently added' ||
+                                                  widget.playListName ==
+                                                      'Recently played'
                                               ? 'Delete song'
                                               : 'Remove song',
                                           textAlign: TextAlign.left,
@@ -320,11 +250,10 @@ class _PlayListState extends State<PlayList> {
               builder: (context, controller, child) {
                 return GestureDetector(
                   onTap: () {
-                    setState(() {
-                      controller.isShuffled = !controller.isShuffled;
-                    });
+                    controller.settings(shuffle: !controller.isShuffled);
                     SharedPreferences.getInstance().then((pref) {
                       pref.setBool('shuffle', controller.isShuffled);
+                      pref.setBool('repeat', controller.isRepeat);
                     });
                   },
                   child: Container(
@@ -364,5 +293,62 @@ class _PlayListState extends State<PlayList> {
         ],
       ),
     ));
+  }
+
+  buildShowDialog(BuildContext context, List songList, int index,
+      SongController controller) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text(
+              widget.playListName == 'All songs' ||
+                      widget.playListName == 'Recently added' ||
+                      widget.playListName == 'Recently played'
+                  ? 'Delete "${songList[index]['title']}" from device?'
+                  : 'Remove "${songList[index]['title']}" from ${widget.playListName}?',
+              style: TextStyle(
+                  fontSize: Config.textSize(context, 3.5),
+                  fontWeight: FontWeight.w400,
+                  fontFamily: 'Acme'),
+            ),
+            actions: [
+              FlatButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('No')),
+              FlatButton(
+                  onPressed: () async {
+                    if (widget.playListName == 'All songs' ||
+                        widget.playListName == 'Recently added' ||
+                        widget.playListName == 'Recently played') {
+                      await Provider.of<PlayListDB>(context, listen: false)
+                          .removeFromDevice(songList[index]);
+                      // if current song beign played is deleted its still available from libray
+                      // causing craxy bugs
+                      if (controller.nowPlaying == songList[index]) {
+                        await controller.skip(next: true);
+                        setState(() {
+                          isPlaying = controller.isPlaying;
+                          isPlaying ? padding = 10.0 : padding = 0.0;
+                        });
+                      }
+                      Provider.of<ProviderClass>(context, listen: false)
+                          .removeSong(songList[index]);
+                      setState(() {});
+                      Navigator.pop(context);
+                    } else {
+                      await Provider.of<PlayListDB>(context, listen: false)
+                          .removeFromPlaylist(
+                              controller.playlistName, songList[index]);
+                      setState(() {});
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text('Yes')),
+            ],
+          );
+        });
   }
 }
