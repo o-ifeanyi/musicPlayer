@@ -1,11 +1,11 @@
-![Image](ss/ls.jpg)
+![Image](ss/ls.png)
 
-# 📖📖 Flutter Music [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+# 🎧🎧 Flutter Music [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 A Flutter music player to play songs (mp3).
 
-# Coming soon
-<a href="https://play.google.com/store/apps/details?id=com.onuifeanyi.bookie"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"></img></a>
+## 🤞 Coming soon
+<a href="#"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"></img></a>
 <br>
 Please star⭐ the repo if you like what you see😉.
 <br>
