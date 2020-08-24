@@ -42,10 +42,10 @@ Please star⭐ the repo if you like what you see😉.
 |------|-------|
 |[**Provider**](https://pub.dev/packages/provider)| State Management|
 |[**Hive**](https://pub.dev/packages/objectdb)| NoSQL database|
-|[**Just audio**](https://pub.dev/packages/xml2json)| Plays mp3|
-|[**Audiotagger**](https://pub.dev/packages/dio)| Get metadata of mp3|
+|[**Just audio**](https://pub.dev/packages/xml2json)| Play audio|
+|[**Audiotagger**](https://pub.dev/packages/dio)| Get mp3 metadata|
 |[**Path & Path provider**](https://pub.dev/packages/http)| Access storage folders|
-|[**Shared preferences**](https://pub.dev/packages/epub_view)| Store certain preference|
+|[**Shared preferences**](https://pub.dev/packages/epub_view)| Store certain preference e.g dark mode|
 
 
 ## 🤓 Author(s)
