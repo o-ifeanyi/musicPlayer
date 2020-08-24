@@ -74,14 +74,11 @@ class PlayListDB extends ChangeNotifier {
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
     var dbPlaylist = db.get(playlistName);
     List songs = dbPlaylist['songs'];
-    bool found = songs.any((element) => element['path'] == song['path']);
-    if (found) {
-      songs.remove(song);
-      db.put(playlistName, {
-        'name': playlistName,
-        'songs': songs,
-      });
-    }
+    songs.removeWhere((element) => element['path'] == song['path']);
+    db.put(playlistName, {
+      'name': playlistName,
+      'songs': songs,
+    });
     // songcontroller needs to handle the bool because for every song thats played the bool is re evaluated
     SongController.isFavourite = await isFavourite(song);
     refresh();
@@ -137,7 +134,7 @@ class PlayListDB extends ChangeNotifier {
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
     recentList.clear();
-    recentList.addAll(songs.reversed);
+    songs != null ? recentList = [...songs.reversed] : recentList = [];
     notifyListeners();
   }
 
@@ -175,8 +172,6 @@ class PlayListDB extends ChangeNotifier {
     Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
     await db.deleteFromDisk();
     await recentdb.deleteFromDisk();
-    recentList.clear();
-    notifyListeners();
     print('deleted');
   }
 }

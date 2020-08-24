@@ -146,6 +146,7 @@ class _NowPlayingState extends State<NowPlaying> {
                           child: SongController.isFavourite
                               ? Icons.favorite
                               : Icons.favorite_border,
+                          isToggled: SongController.isFavourite,
                           onPressed: () async {
                             SongController.isFavourite
                                 ? await Provider.of<PlayListDB>(context,

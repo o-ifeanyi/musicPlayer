@@ -6,6 +6,7 @@ import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:musicPlayer/screens/library.dart';
+import 'package:musicPlayer/screens/splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -20,7 +21,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => PlayListDB()),
         ChangeNotifierProvider(create: (_) => SongController()),
       ],
-      child: MyApp(),
+      child: MyApp(isDark),
     ));
   });
 
@@ -40,6 +41,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  MyApp(this.isDark);
+  final bool isDark;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -47,7 +50,7 @@ class MyApp extends StatelessWidget {
       // builder: DevicePreview.appBuilder,
       title: 'Flutter Demo',
       theme: Provider.of<ProviderClass>(context).getTheme(),
-      home: Library(),
+      home: SplashScreen(isDark),
     );
   }
 }

@@ -224,6 +224,8 @@ class _PlayListState extends State<PlayList> {
                                         ? Icons.pause
                                         : Icons.play_arrow,
                                 diameter: 12,
+                                isToggled:
+                                    controller.nowPlaying == songList[index],
                                 onPressed: () async {
                                   nowPlaying = songList[index];
                                   await controller
@@ -260,10 +262,10 @@ class _PlayListState extends State<PlayList> {
                     height: 70,
                     margin: EdgeInsets.fromLTRB(20, 0, 20, 10),
                     decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50),
                         color: controller.isShuffled
                             ? Theme.of(context).accentColor
                             : Theme.of(context).scaffoldBackgroundColor,
+                        borderRadius: BorderRadius.circular(50),
                         boxShadow: [
                           BoxShadow(
                             color: Theme.of(context).splashColor,
@@ -280,9 +282,13 @@ class _PlayListState extends State<PlayList> {
                       child: Text(
                         'SHUFFLE',
                         style: TextStyle(
-                            fontSize: Config.textSize(context, 4),
-                            fontWeight: FontWeight.w500,
-                            fontFamily: 'Acme'),
+                          fontSize: Config.textSize(context, 4),
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'Acme',
+                          color: controller.isShuffled
+                              ? Colors.white
+                              : Theme.of(context).textTheme.headline6.color,
+                        ),
                       ),
                     ),
                   ),

@@ -25,7 +25,7 @@ class _SettingsState extends State<Settings> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(
-                    left: 10, top: 30, right: 10, bottom: 10),
+                    left: 10, top: 30, bottom: 10),
                 child: Row(
                   children: [
                     CustomButton(
@@ -34,7 +34,7 @@ class _SettingsState extends State<Settings> {
                       onPressed: () => Navigator.pop(context),
                     ),
                     SizedBox(
-                      width: Config.xMargin(context, 10),
+                      width: Config.defaultSize(context, 27),
                     ),
                     Text(
                       'Settings',

@@ -133,6 +133,7 @@ class _PlayingFromState extends State<PlayingFrom> {
                             ),
                             trailing: CustomButton(
                               diameter: 12,
+                              isToggled: controller.nowPlaying == songList[index],
                               child: controller.nowPlaying == songList[index] &&
                                       isPlaying
                                   ? Icons.pause
