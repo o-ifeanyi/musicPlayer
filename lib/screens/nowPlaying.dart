@@ -33,16 +33,16 @@ class _NowPlayingState extends State<NowPlaying> {
 
   Future<void> setUp() async {
     player = Provider.of<SongController>(context, listen: false);
-    if (player.nowPlaying == null) {
+    if (player.nowPlaying['path'] == null) {
       await player.setUp(widget.currentSong);
       setState(() {
         isPlaying = player.isPlaying;
       });
-    } else if (player.nowPlaying == widget.currentSong) {
+    } else if (player.nowPlaying['path'] == widget.currentSong['path']) {
       setState(() {
         isPlaying = widget.isPlaying;
       });
-    } else if (player.nowPlaying != widget.currentSong) {
+    } else if (player.nowPlaying['path'] != widget.currentSong['path']) {
       player.disposePlayer();
       nowPlaying = widget.currentSong;
       await player.setUp(nowPlaying);

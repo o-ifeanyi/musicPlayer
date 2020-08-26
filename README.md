@@ -19,12 +19,17 @@ Please star⭐ the repo if you like what you see😉.
 * A little knowledge of Dart and Flutter
 
 ## ✨ Features
-- [x] Play songs.
+- [x] Play.
+- [x] Pause.
 - [x] Skip.
 - [x] Seek.
 - [x] Shuffle.
 - [x] Repeate.
+- [x] Delete.
+- [x] Search.
 - [x] Create playlist.
+- [x] Add to playlist.
+- [x] Remove from playlist.
 - [x] Dark Mode.
 
 ## 📸 ScreenShots

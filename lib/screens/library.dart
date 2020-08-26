@@ -17,9 +17,7 @@ class Library extends StatefulWidget {
 }
 
 class _LibraryState extends State<Library> {
-  void openPlaylist(String title, List songList) {
-    Provider.of<SongController>(context, listen: false).allSongs = songList;
-    Provider.of<SongController>(context, listen: false).playlistName = title;
+  void openPlaylist({String title, List songList}) {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => PlayList(title, songList)),
@@ -43,7 +41,6 @@ class _LibraryState extends State<Library> {
   dynamic currentSong;
 
   void lastSong() async {
-    print('getting last song');
     currentSong = await PlayListDB.lastPlayed(context);
     setState(() {});
   }
@@ -84,9 +81,10 @@ class _LibraryState extends State<Library> {
                           child: Icons.settings,
                           onPressed: () async {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Settings()));
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => Settings()),
+                            );
                           },
                         ),
                       ],
@@ -104,7 +102,9 @@ class _LibraryState extends State<Library> {
                         padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: GestureDetector(
                           onTap: () {
-                            openPlaylist('All songs', provider.allSongs);
+                            openPlaylist(
+                                title: 'All songs',
+                                songList: provider.allSongs);
                           },
                           child: CustomCard(
                             height: 30,
@@ -155,8 +155,8 @@ class _LibraryState extends State<Library> {
                                   );
                                 } else {
                                   openPlaylist(
-                                      playListDB.playList[index]['name'],
-                                      songList);
+                                      title: playListDB.playList[index]['name'],
+                                      songList: songList);
                                 }
                               },
                               child: Padding(
@@ -203,10 +203,10 @@ class _LibraryState extends State<Library> {
                                         .recentlyAdded
                                     : playlistDB.recentList;
                                 openPlaylist(
-                                    index == 0
+                                    title: index == 0
                                         ? 'Recently added'
                                         : 'Recently played',
-                                    recentSongList);
+                                    songList: recentSongList);
                               },
                               child: Padding(
                                 padding: const EdgeInsets.all(20),
@@ -233,7 +233,7 @@ class _LibraryState extends State<Library> {
             Consumer<SongController>(
               builder: (context, controller, child) {
                 isPlaying = controller.isPlaying;
-                currentSong = controller.nowPlaying == null
+                currentSong = controller.nowPlaying['path'] == null
                     ? currentSong
                     : controller.nowPlaying;
                 return Align(
@@ -310,7 +310,7 @@ class _LibraryState extends State<Library> {
                             isToggled: isPlaying,
                             onPressed: () {
                               // if nothing is playing
-                              if (controller.nowPlaying == null) {
+                              if (controller.nowPlaying['path'] == null) {
                                 controller.allSongs =
                                     Provider.of<ProviderClass>(context,
                                             listen: false)

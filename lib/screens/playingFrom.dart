@@ -95,14 +95,14 @@ class _PlayingFromState extends State<PlayingFrom> {
                         List songList = controller.allSongs;
                         return AnimatedPadding(
                           duration: Duration(milliseconds: 400),
-                          padding: controller.nowPlaying == songList[index] &&
+                          padding: controller.nowPlaying['path'] == songList[index]['path'] &&
                                   controller.isPlaying
                               ? EdgeInsets.symmetric(vertical: padding)
                               : EdgeInsets.all(0),
                           child: ListTile(
                             onTap: () async {
                               nowPlaying = songList[index];
-                              if (controller.nowPlaying == nowPlaying) {
+                              if (controller.nowPlaying['path'] == nowPlaying['path']) {
                                 Navigator.pop(context, isPlaying);
                               } else {
                                 await controller
@@ -113,7 +113,7 @@ class _PlayingFromState extends State<PlayingFrom> {
                                 isPlaying ? padding = 10.0 : padding = 0.0;
                               });
                             },
-                            selected: controller.nowPlaying == songList[index],
+                            selected: controller.nowPlaying['path'] == songList[index]['path'],
                             contentPadding:
                                 EdgeInsets.symmetric(horizontal: 20),
                             title: Text(
@@ -133,8 +133,8 @@ class _PlayingFromState extends State<PlayingFrom> {
                             ),
                             trailing: CustomButton(
                               diameter: 12,
-                              isToggled: controller.nowPlaying == songList[index],
-                              child: controller.nowPlaying == songList[index] &&
+                              isToggled: controller.nowPlaying['path'] == songList[index]['path'],
+                              child: controller.nowPlaying['path'] == songList[index]['path'] &&
                                       isPlaying
                                   ? Icons.pause
                                   : Icons.play_arrow,

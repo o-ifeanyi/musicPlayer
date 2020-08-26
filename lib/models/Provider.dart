@@ -7,10 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ProviderClass extends ChangeNotifier {
-  ProviderClass(this._themeData) {
-    print('searching');
-    getAllSongs();
-  }
+  ProviderClass(this._themeData);
 
   ThemeData _themeData;
   List allSongs = [];
@@ -18,7 +15,7 @@ class ProviderClass extends ChangeNotifier {
 
   getTheme() => _themeData;
 
-  setTheme(ThemeData themeData) async {
+  setTheme(ThemeData themeData) {
     _themeData = themeData;
     notifyListeners();
   }

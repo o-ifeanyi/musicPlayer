@@ -5,7 +5,6 @@ import 'package:musicPlayer/constants.dart';
 import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/models/songController.dart';
-import 'package:musicPlayer/screens/library.dart';
 import 'package:musicPlayer/screens/splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';

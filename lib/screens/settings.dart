@@ -15,6 +15,11 @@ class Settings extends StatefulWidget {
 class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
+    TextStyle listStyle = TextStyle(
+      fontSize: Config.textSize(context, 3.5),
+      fontWeight: FontWeight.w400,
+      fontFamily: 'Acme',
+    );
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -24,8 +29,7 @@ class _SettingsState extends State<Settings> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(
-                    left: 10, top: 30, bottom: 10),
+                padding: const EdgeInsets.only(left: 10, top: 30, bottom: 10),
                 child: Row(
                   children: [
                     CustomButton(
@@ -56,9 +60,7 @@ class _SettingsState extends State<Settings> {
                     activeColor: Theme.of(context).accentColor,
                     title: Row(
                       children: <Widget>[
-                        provider.getTheme() == kDarkTheme
-                            ? Icon(Icons.remove_circle)
-                            : Icon(Icons.lightbulb_outline),
+                        Icon(Icons.invert_colors),
                         SizedBox(
                           width: 30,
                         ),
@@ -66,6 +68,7 @@ class _SettingsState extends State<Settings> {
                           provider.getTheme() == kDarkTheme
                               ? 'Dark Theme'
                               : 'Light Theme',
+                          style: listStyle,
                         ),
                       ],
                     ),
@@ -83,12 +86,65 @@ class _SettingsState extends State<Settings> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.restore),
-                title: Text('Reset playlist'),
+                leading: Icon(Icons.refresh),
+                title: Text(
+                  'Reset playlist',
+                  style: listStyle,
+                ),
                 onTap: () {
-                  Provider.of<PlayListDB>(context, listen: false).clear();
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text(
+                              'This would delete the playlist you created?',
+                              style: listStyle),
+                          actions: [
+                            FlatButton(
+                              textColor: Theme.of(context).accentColor,
+                              onPressed: () => Navigator.pop(context),
+                              child: Text('Cancel'),
+                            ),
+                            FlatButton(
+                              textColor: Theme.of(context).accentColor,
+                              onPressed: () async {
+                                await Provider.of<PlayListDB>(context,
+                                        listen: false)
+                                    .clear();
+                                Navigator.pop(context);
+                              },
+                              child: Text('Continue'),
+                            )
+                          ],
+                        );
+                      });
                 },
               ),
+              ListTile(
+                leading: Icon(Icons.info_outline),
+                title: Text(
+                  'About',
+                  style: listStyle,
+                ),
+                onTap: () {
+                  showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AboutDialog(
+                          applicationName: 'Vibes player',
+                          applicationVersion: '1.0',
+                          applicationIcon: Container(
+                            width: Config.xMargin(context, 20),
+                            height: Config.yMargin(context, 15),
+                            child: Image(
+                              image: AssetImage('images/logo.png'),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      });
+                },
+              )
             ],
           ),
         ),

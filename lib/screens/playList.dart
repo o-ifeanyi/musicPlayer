@@ -19,10 +19,9 @@ class PlayList extends StatefulWidget {
 
 class _PlayListState extends State<PlayList> {
   bool isPlaying = false;
-  var nowPlaying;
   List allSongs;
   List searchList = [];
-  double padding = 0.0;
+  double padding = 10.0;
   bool isSearching = false;
   TextEditingController input = TextEditingController();
   FocusNode focusNode = FocusNode();
@@ -125,17 +124,20 @@ class _PlayListState extends State<PlayList> {
                       return Consumer<SongController>(
                         builder: (context, controller, child) {
                           List songList = isSearching ? searchList : allSongs;
-                          controller.allSongs = songList;
+                          // controller.allSongs = songList;
                           return AnimatedPadding(
                             duration: Duration(milliseconds: 400),
-                            padding: controller.nowPlaying == songList[index] &&
+                            padding: controller.nowPlaying['path'] ==
+                                        songList[index]['path'] &&
                                     controller.isPlaying
                                 ? EdgeInsets.symmetric(vertical: padding)
                                 : EdgeInsets.all(0),
                             child: ListTile(
-                              selected:
-                                  controller.nowPlaying == songList[index],
+                              selected: controller.nowPlaying['path'] ==
+                                  songList[index]['path'],
                               onTap: () async {
+                                controller.allSongs = widget.songList;
+                                controller.playlistName = widget.playListName;
                                 isPlaying = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -218,18 +220,19 @@ class _PlayListState extends State<PlayList> {
                                     fontFamily: 'Acme'),
                               ),
                               trailing: CustomButton(
-                                child:
-                                    controller.nowPlaying == songList[index] &&
-                                            isPlaying
-                                        ? Icons.pause
-                                        : Icons.play_arrow,
+                                child: controller.nowPlaying['path'] ==
+                                            songList[index]['path'] &&
+                                        isPlaying
+                                    ? Icons.pause
+                                    : Icons.play_arrow,
                                 diameter: 12,
-                                isToggled:
-                                    controller.nowPlaying == songList[index],
+                                isToggled: controller.nowPlaying['path'] ==
+                                    songList[index]['path'],
                                 onPressed: () async {
-                                  nowPlaying = songList[index];
+                                  controller.allSongs = widget.songList;
+                                  controller.playlistName = widget.playListName;
                                   await controller
-                                      .playlistControlOptions(nowPlaying);
+                                      .playlistControlOptions(songList[index]);
                                   setState(() {
                                     isPlaying = controller.isPlaying;
                                     isPlaying ? padding = 10.0 : padding = 0.0;
@@ -320,11 +323,13 @@ class _PlayListState extends State<PlayList> {
             ),
             actions: [
               FlatButton(
+                  textColor: Theme.of(context).accentColor,
                   onPressed: () {
                     Navigator.pop(context);
                   },
                   child: Text('No')),
               FlatButton(
+                  textColor: Theme.of(context).accentColor,
                   onPressed: () async {
                     if (widget.playListName == 'All songs' ||
                         widget.playListName == 'Recently added' ||
@@ -347,7 +352,7 @@ class _PlayListState extends State<PlayList> {
                     } else {
                       await Provider.of<PlayListDB>(context, listen: false)
                           .removeFromPlaylist(
-                              controller.playlistName, songList[index]);
+                              widget.playListName, songList[index]);
                       setState(() {});
                       Navigator.pop(context);
                     }

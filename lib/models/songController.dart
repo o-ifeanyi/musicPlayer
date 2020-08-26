@@ -20,13 +20,12 @@ class SongController extends ChangeNotifier {
   bool isShuffled = false;
   bool isRepeat = false;
   int currentSong;
-  dynamic nowPlaying;
+  Map nowPlaying = {};
   bool isPlaying = false;
   int songLenght = 0;
   PlayListDB playListDB = PlayListDB();
 
   void init() {
-    print('song controller init');
     SharedPreferences.getInstance().then((pref) {
       isShuffled = pref.getBool('shuffle') ?? false;
       isRepeat = pref.getBool('repeat') ?? false;
@@ -49,7 +48,7 @@ class SongController extends ChangeNotifier {
     nowPlaying = song;
     isFavourite = await playListDB.isFavourite(nowPlaying);
     playListDB.saveNowPlaying(nowPlaying);
-    currentSong = allSongs.indexOf(nowPlaying);
+    currentSong = allSongs.indexWhere((element) => element['path'] == nowPlaying['path']);
     player = AudioPlayer();
     duration = await player.setFilePath(nowPlaying['path']);
     songLenght = duration.inSeconds;
@@ -91,7 +90,7 @@ class SongController extends ChangeNotifier {
 
   Future<void> skip(
       {bool next = false, bool prev = false, BuildContext context}) async {
-    currentSong = allSongs.indexOf(nowPlaying);
+    currentSong = allSongs.indexWhere((element) => element['path'] == nowPlaying['path']);
     List shuffled = [...allSongs];
     await disposePlayer();
     try {
@@ -99,13 +98,14 @@ class SongController extends ChangeNotifier {
         nowPlaying = nowPlaying;
       } else if (isShuffled) {
         shuffled.shuffle();
-        currentSong = shuffled.indexOf(nowPlaying);
+        currentSong = shuffled.indexWhere((element) => element['path'] == nowPlaying['path']);
         nowPlaying =
             next ? shuffled[currentSong += 1] : shuffled[currentSong -= 1];
       } else {
         nowPlaying =
             next ? allSongs[currentSong += 1] : allSongs[currentSong -= 1];
       }
+      print(currentSong);
     } on RangeError catch (e) {
       nowPlaying = allSongs.first;
       debugPrint(e.toString());
@@ -117,14 +117,14 @@ class SongController extends ChangeNotifier {
 
   Future<void> playlistControlOptions(dynamic playlistNowPlaying) async {
     // if nothing is currently playing
-    if (nowPlaying == null) {
+    if (nowPlaying['path'] == null) {
       await setUp(playlistNowPlaying);
       setIsPlaying(true);
       // if the song currently playing is taped on
-    } else if (nowPlaying == playlistNowPlaying) {
+    } else if (nowPlaying['path'] == playlistNowPlaying['path']) {
       isPlaying ? pause() : play();
       // if a different song is selected
-    } else if (nowPlaying != playlistNowPlaying) {
+    } else if (nowPlaying['path'] != playlistNowPlaying['path']) {
       disposePlayer();
       await setUp(playlistNowPlaying);
       setIsPlaying(true);

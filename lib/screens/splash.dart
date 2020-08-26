@@ -1,56 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/screens/library.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
-  SplashScreen(this.isDark);
-  final bool isDark;
+  SplashScreen(this._isDark);
+  final bool _isDark;
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
 
-  AnimationController controller;
-  CurvedAnimation curvedAnimation;
-  Animation colorAnimation;
-  bool isDark;
+  AnimationController _controller;
+  CurvedAnimation _curvedAnimation;
+  Animation _colorAnimation;
 
   @override
   void initState() {
-    controller = AnimationController(
+    _controller = AnimationController(
       vsync: this,
       duration: Duration(seconds: 2),
       upperBound: 1.0,
     )..addListener(() {
-        setState(() {
-          if (controller.isCompleted) {
+        if (_controller.isCompleted) {
+          // getAllSong called here to avoid laggy animation
+          Provider.of<ProviderClass>(context, listen: false).getAllSongs();
+          Future.delayed(Duration(seconds: 1)).then((value) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => Library()),
             );
-          }
-        });
+          });
+        }
       });
-    curvedAnimation =
-        CurvedAnimation(parent: controller, curve: Curves.decelerate);
-    colorAnimation = ColorTween(
+    _curvedAnimation =
+        CurvedAnimation(parent: _controller, curve: Curves.decelerate);
+    _colorAnimation = ColorTween(
             begin: Colors.white,
-            end: widget.isDark ? Color(0xFF282C31) : Colors.grey[100])
-        .animate(controller);
+            end: widget._isDark ? Color(0xFF282C31) : Colors.grey[100])
+        .animate(_controller);
+    _controller.forward();
     super.initState();
   }
 
   @override
   void deactivate() {
-    controller.dispose();
+    _controller.dispose();
     super.deactivate();
   }
 
@@ -61,46 +59,51 @@ class _SplashScreenState extends State<SplashScreen>
         ? MediaQuery.of(context).size.height
         : MediaQuery.of(context).size.width;
     double width = MediaQuery.of(context).size.width;
-    double padding = isPotrait
-        ? curvedAnimation.value * (height / 3.1)
-        : curvedAnimation.value * (height / 10.5);
-    controller.forward();
 
-    return Scaffold(
-      backgroundColor: colorAnimation.value,
-      body: Container(
-        height: height,
-        width: width,
-        padding: EdgeInsets.symmetric(vertical: padding),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            SizedBox(
-              width: Config.xMargin(context, curvedAnimation.value * 60),
-              height: Config.yMargin(context, curvedAnimation.value * 30),
-              child: Opacity(
-                opacity: curvedAnimation.value,
-                child: Image(
-                  image: AssetImage('images/logo.png'),
-                  fit: BoxFit.cover,
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Scaffold(
+          backgroundColor: _colorAnimation.value,
+          body: Container(
+            height: height,
+            width: width,
+            padding: EdgeInsets.symmetric(
+                vertical: isPotrait
+                    ? _curvedAnimation.value * (height / 3.1)
+                    : _curvedAnimation.value * (height / 10.5)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Opacity(
+                  opacity: _curvedAnimation.value,
+                  child: SizedBox(
+                    width: Config.xMargin(context, _curvedAnimation.value * 55),
+                    height: Config.yMargin(context, _curvedAnimation.value * 25),
+                    child: Image(
+                      image: AssetImage('images/logo.png'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
-              ),
+                Opacity(
+                  opacity: _curvedAnimation.value,
+                  child: Text(
+                    'Vibes player',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize:
+                          Config.textSize(context, _curvedAnimation.value * 8),
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Acme',
+                    ),
+                  ),
+                )
+              ],
             ),
-            Opacity(
-              opacity: curvedAnimation.value,
-              child: Text(
-                'Flutter Music',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: Config.textSize(context, curvedAnimation.value * 8),
-                  fontWeight: FontWeight.w400,
-                  fontFamily: 'Acme',
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
