@@ -1,11 +1,11 @@
-![Image](ss/ls.jpg)
+![Image](ss/ls.png)
 
-# 📖📖 Flutter Music [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+# 🎧🎧 Flutter Music [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 A Flutter music player to play songs (mp3).
 
-# Coming soon
-<a href="https://play.google.com/store/apps/details?id=com.onuifeanyi.bookie"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"></img></a>
+## 🤞 Coming soon
+<a href="#"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"></img></a>
 <br>
 Please star⭐ the repo if you like what you see😉.
 <br>
@@ -47,10 +47,10 @@ Please star⭐ the repo if you like what you see😉.
 |------|-------|
 |[**Provider**](https://pub.dev/packages/provider)| State Management|
 |[**Hive**](https://pub.dev/packages/objectdb)| NoSQL database|
-|[**Just audio**](https://pub.dev/packages/xml2json)| Plays mp3|
-|[**Audiotagger**](https://pub.dev/packages/dio)| Get metadata of mp3|
+|[**Just audio**](https://pub.dev/packages/xml2json)| Play audio|
+|[**Audiotagger**](https://pub.dev/packages/dio)| Get mp3 metadata|
 |[**Path & Path provider**](https://pub.dev/packages/http)| Access storage folders|
-|[**Shared preferences**](https://pub.dev/packages/epub_view)| Store certain preference|
+|[**Shared preferences**](https://pub.dev/packages/epub_view)| Store certain preference e.g dark mode|
 
 
 ## 🤓 Author(s)
