@@ -89,7 +89,7 @@ class _SplashScreenState extends State<SplashScreen>
                 Opacity(
                   opacity: _curvedAnimation.value,
                   child: Text(
-                    'Vibes player',
+                    'Vybe player',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize:

@@ -97,7 +97,7 @@ class _SettingsState extends State<Settings> {
                       builder: (context) {
                         return AlertDialog(
                           title: Text(
-                              'This would delete the playlist you created?',
+                              'This would delete the playlist you created.',
                               style: listStyle),
                           actions: [
                             FlatButton(
@@ -131,7 +131,7 @@ class _SettingsState extends State<Settings> {
                       context: context,
                       builder: (context) {
                         return AboutDialog(
-                          applicationName: 'Vibes player',
+                          applicationName: 'Vybe player',
                           applicationVersion: '1.0',
                           applicationIcon: Container(
                             width: Config.xMargin(context, 20),

@@ -106,8 +106,12 @@ class ProviderClass extends ChangeNotifier {
     }
     return {
       'path': file,
-      'title': info != null && info['title'] != '' ? info['title'] : 'Unknown artist',
-      'artist': info != null && info['artist'] != '' ? info['artist'] : 'Unknown artist',
+      'title': info != null && info['title'] != ''
+          ? info['title']
+          : file.split('/').last.split('.mp3').first,
+      'artist': info != null && info['artist'] != ''
+          ? info['artist']
+          : 'Unknown artist',
       'recentlyAdded': date ?? 999999,
     };
   }
