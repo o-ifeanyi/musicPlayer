@@ -97,6 +97,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_media_notification:
+    dependency: "direct main"
+    description:
+      name: flutter_media_notification
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.6"
   flutter_test:
     dependency: "direct dev"
     description: flutter

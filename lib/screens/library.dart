@@ -10,13 +10,15 @@ import 'package:musicPlayer/screens/nowPlaying.dart';
 import 'package:musicPlayer/screens/playList.dart';
 import 'package:musicPlayer/screens/settings.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_media_notification/flutter_media_notification.dart';
 
 class Library extends StatefulWidget {
   @override
   _LibraryState createState() => _LibraryState();
 }
 
-class _LibraryState extends State<Library> {
+class _LibraryState extends State<Library> with WidgetsBindingObserver {
+  SongController _controller;
   void openPlaylist({String title, List songList}) {
     Navigator.push(
       context,
@@ -47,14 +49,46 @@ class _LibraryState extends State<Library> {
 
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    _controller = Provider.of<SongController>(context, listen: false);
     lastSong();
     super.initState();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // if app comes to the foregroung hide notification
+    if (state == AppLifecycleState.resumed) {
+      print('in foreground');
+      MediaNotification.hideNotification();
+    }
+    //if app goes to background show notification
+    if (state == AppLifecycleState.paused && _controller.nowPlaying['path'] != null) {
+      print('in background');
+      MediaNotification.showNotification(
+        title: _controller.nowPlaying['title'],
+        author: _controller.nowPlaying['authror'],
+        isPlaying: _controller.isPlaying,
+      );
+      MediaNotification.setListener('play', () => _controller.play());
+      MediaNotification.setListener('pause', () => _controller.pause());
+      MediaNotification.setListener('next', () => _controller.skip(next: true));
+      MediaNotification.setListener('prev', () => _controller.skip(prev: true));
+    }
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: <Widget>[
             Container(

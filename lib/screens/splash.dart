@@ -5,15 +5,14 @@ import 'package:musicPlayer/screens/library.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
-  SplashScreen(this._isDark);
-  final bool _isDark;
+  SplashScreen(this.theme);
+  final ThemeData theme;
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-
   AnimationController _controller;
   CurvedAnimation _curvedAnimation;
   Animation _colorAnimation;
@@ -39,9 +38,9 @@ class _SplashScreenState extends State<SplashScreen>
     _curvedAnimation =
         CurvedAnimation(parent: _controller, curve: Curves.decelerate);
     _colorAnimation = ColorTween(
-            begin: Colors.white,
-            end: widget._isDark ? Color(0xFF282C31) : Colors.grey[100])
-        .animate(_controller);
+      begin: Colors.white,
+      end: widget.theme.scaffoldBackgroundColor,
+    ).animate(_controller);
     _controller.forward();
     super.initState();
   }
@@ -79,7 +78,8 @@ class _SplashScreenState extends State<SplashScreen>
                   opacity: _curvedAnimation.value,
                   child: SizedBox(
                     width: Config.xMargin(context, _curvedAnimation.value * 55),
-                    height: Config.yMargin(context, _curvedAnimation.value * 25),
+                    height:
+                        Config.yMargin(context, _curvedAnimation.value * 25),
                     child: Image(
                       image: AssetImage('images/logo.png'),
                       fit: BoxFit.cover,

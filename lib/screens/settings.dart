@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/constants.dart';
@@ -13,8 +15,35 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  Container buildColoredCircle(Color color1, Color color2) {
+    return Container(
+      height: 50,
+      width: 50,
+      margin: EdgeInsets.only(right: 10),
+      decoration: BoxDecoration(
+        border: Border.all(),
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          stops: [0.4, 1.0],
+          colors: [
+            color1,
+            color2,
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<Widget> coloredCircles = [
+      buildColoredCircle(Colors.white, Color(0xFFD71D1D)),
+      buildColoredCircle(Colors.white, Colors.blueAccent),
+      buildColoredCircle(Color(0xFF282C31), Colors.pinkAccent),
+      buildColoredCircle(Color(0xFF282C31), Colors.deepOrange),
+    ];
     TextStyle listStyle = TextStyle(
       fontSize: Config.textSize(context, 3.5),
       fontWeight: FontWeight.w400,
@@ -56,31 +85,43 @@ class _SettingsState extends State<Settings> {
               ),
               Consumer<ProviderClass>(
                 builder: (context, provider, child) {
-                  return SwitchListTile(
-                    activeColor: Theme.of(context).accentColor,
-                    title: Row(
-                      children: <Widget>[
-                        Icon(Icons.invert_colors),
-                        SizedBox(
-                          width: 30,
-                        ),
-                        Text(
-                          provider.getTheme() == kDarkTheme
-                              ? 'Dark Theme'
-                              : 'Light Theme',
-                          style: listStyle,
-                        ),
-                      ],
+                  return ListTile(
+                    leading: Icon(Icons.color_lens),
+                    title: Text(
+                      'Theme',
+                      style: listStyle,
                     ),
-                    value: provider.getTheme() == kDarkTheme,
-                    onChanged: (bool newValue) async {
-                      if (provider.getTheme() == kDarkTheme) {
-                        provider.setTheme(kLightTheme);
-                      } else {
-                        provider.setTheme(kDarkTheme);
-                      }
-                      var pref = await SharedPreferences.getInstance();
-                      pref.setBool('theme', provider.getTheme() == kDarkTheme);
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text('Select theme.', style: listStyle),
+                            content: Container(
+                              height: 60,
+                              width: MediaQuery.of(context).size.width,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemCount: coloredCircles.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      provider.setTheme(kThemes[index]);
+                                      SharedPreferences.getInstance()
+                                          .then((pref) {
+                                        pref.setInt('theme', index);
+                                        Navigator.pop(context);
+                                      });
+                                    },
+                                    child: coloredCircles[index],
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      );
                     },
                   );
                 },
@@ -128,21 +169,22 @@ class _SettingsState extends State<Settings> {
                 ),
                 onTap: () {
                   showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AboutDialog(
-                          applicationName: 'Vybe player',
-                          applicationVersion: '1.0',
-                          applicationIcon: Container(
-                            width: Config.xMargin(context, 20),
-                            height: Config.yMargin(context, 15),
-                            child: Image(
-                              image: AssetImage('images/logo.png'),
-                              fit: BoxFit.cover,
-                            ),
+                    context: context,
+                    builder: (context) {
+                      return AboutDialog(
+                        applicationName: 'Vybe player',
+                        applicationVersion: '1.0',
+                        applicationIcon: Container(
+                          width: Config.xMargin(context, 20),
+                          height: Config.yMargin(context, 15),
+                          child: Image(
+                            image: AssetImage('images/logo.png'),
+                            fit: BoxFit.cover,
                           ),
-                        );
-                      });
+                        ),
+                      );
+                    },
+                  );
                 },
               )
             ],

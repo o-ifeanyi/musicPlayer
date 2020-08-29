@@ -105,7 +105,6 @@ class SongController extends ChangeNotifier {
         nowPlaying =
             next ? allSongs[currentSong += 1] : allSongs[currentSong -= 1];
       }
-      print(currentSong);
     } on RangeError catch (e) {
       nowPlaying = allSongs.first;
       debugPrint(e.toString());

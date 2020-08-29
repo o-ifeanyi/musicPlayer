@@ -12,15 +12,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.getInstance().then((pref) {
-    bool isDark = pref.getBool('theme') ?? false;
+    int theme = pref.getInt('theme') ?? 0;
     runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (_) => ProviderClass(isDark ? kDarkTheme : kLightTheme)),
+            create: (_) => ProviderClass(kThemes[theme])),
         ChangeNotifierProvider(create: (_) => PlayListDB()),
         ChangeNotifierProvider(create: (_) => SongController()),
       ],
-      child: MyApp(isDark),
+      child: MyApp(theme: kThemes[theme]),
     ));
   });
 
@@ -40,8 +40,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  MyApp(this.isDark);
-  final bool isDark;
+  MyApp({this.theme});
+  final ThemeData theme;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
       // builder: DevicePreview.appBuilder,
       title: 'Flutter Demo',
       theme: Provider.of<ProviderClass>(context).getTheme(),
-      home: SplashScreen(isDark),
+      home: SplashScreen(theme),
     );
   }
 }

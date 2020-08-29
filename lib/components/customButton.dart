@@ -15,7 +15,6 @@ class CustomButton extends StatefulWidget {
 
 class _CustomButtonState extends State<CustomButton>
     with SingleTickerProviderStateMixin {
-  double _scale;
   AnimationController _controller;
 
   @override
@@ -26,9 +25,7 @@ class _CustomButtonState extends State<CustomButton>
       duration: Duration(milliseconds: 200),
       lowerBound: 0.0,
       upperBound: 0.3,
-    )..addListener(() {
-        setState(() {});
-      });
+    );
   }
 
   @override
@@ -47,45 +44,49 @@ class _CustomButtonState extends State<CustomButton>
 
   @override
   Widget build(BuildContext context) {
-    _scale = 1 - _controller.value;
-    return GestureDetector(
-      onTap: widget.onPressed,
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      child: Transform.scale(
-        scale: _scale,
-        child: Container(
-          child: Center(
-            child: Icon(
-              widget.child,
-              size: Config.textSize(context, 5),
-              color: widget.isToggled
-                  ? Theme.of(context).accentColor
-                  : Theme.of(context).iconTheme.color.withOpacity(0.8),
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return GestureDetector(
+          onTap: widget.onPressed,
+          onTapDown: _onTapDown,
+          onTapUp: _onTapUp,
+          child: Transform.scale(
+            scale: 1 - _controller.value,
+            child: Container(
+              child: Center(
+                child: Icon(
+                  widget.child,
+                  size: Config.textSize(context, 5),
+                  color: widget.isToggled
+                      ? Theme.of(context).accentColor
+                      : Theme.of(context).iconTheme.color.withOpacity(0.8),
+                ),
+              ),
+              height: Config.xMargin(context, widget.diameter),
+              width: Config.xMargin(context, widget.diameter),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                shape: BoxShape.circle,
+                boxShadow: <BoxShadow>[
+                  BoxShadow(
+                    color: Theme.of(context).splashColor,
+                    offset: Offset(6, 6),
+                    blurRadius: 10,
+                    spreadRadius: 1.0,
+                  ),
+                  BoxShadow(
+                    color: Theme.of(context).backgroundColor,
+                    offset: Offset(-6, -6),
+                    blurRadius: 10,
+                    spreadRadius: 1.0,
+                  ),
+                ],
+              ),
             ),
           ),
-          height: Config.xMargin(context, widget.diameter),
-          width: Config.xMargin(context, widget.diameter),
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            shape: BoxShape.circle,
-            boxShadow: <BoxShadow>[
-              BoxShadow(
-                color: Theme.of(context).splashColor,
-                offset: Offset(6, 6),
-                blurRadius: 10,
-                spreadRadius: 1.0,
-              ),
-              BoxShadow(
-                color: Theme.of(context).backgroundColor,
-                offset: Offset(-6, -6),
-                blurRadius: 10,
-                spreadRadius: 1.0,
-              ),
-            ],
-          ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

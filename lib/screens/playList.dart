@@ -55,6 +55,7 @@ class _PlayListState extends State<PlayList> {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: <Widget>[
           Container(

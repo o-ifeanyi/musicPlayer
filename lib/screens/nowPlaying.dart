@@ -69,6 +69,7 @@ class _NowPlayingState extends State<NowPlaying> {
       },
       child: SafeArea(
         child: Scaffold(
+          resizeToAvoidBottomInset: false,
           body: Consumer<SongController>(
             builder: (context, controller, child) {
               return Container(
