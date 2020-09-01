@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:move_to_background/move_to_background.dart';
 import 'package:musicPlayer/components/createPlayList.dart';
 import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/components/customCard.dart';
@@ -19,6 +20,7 @@ class Library extends StatefulWidget {
 
 class _LibraryState extends State<Library> with WidgetsBindingObserver {
   SongController _controller;
+  dynamic currentSong;
   void openPlaylist({String title, List songList}) {
     Navigator.push(
       context,
@@ -39,9 +41,6 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
     }
   }
 
-  bool isPlaying;
-  dynamic currentSong;
-
   void lastSong() async {
     currentSong = await PlayListDB.lastPlayed(context);
     setState(() {});
@@ -50,30 +49,43 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    _controller = Provider.of<SongController>(context, listen: false);
     lastSong();
     super.initState();
   }
 
+  void showNotification() {
+    _controller = Provider.of<SongController>(context, listen: false);
+    if (_controller.nowPlaying['path'] != null) {
+      MediaNotification.showNotification(
+        title: _controller.nowPlaying['title'],
+        author: _controller.nowPlaying['artist'],
+        isPlaying: _controller.isPlaying,
+      );
+    }
+  }
+
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    _controller = Provider.of<SongController>(context, listen: false);
+    _controller.state = state;
     // if app comes to the foregroung hide notification
     if (state == AppLifecycleState.resumed) {
-      print('in foreground');
       MediaNotification.hideNotification();
     }
     //if app goes to background show notification
-    if (state == AppLifecycleState.paused && _controller.nowPlaying['path'] != null) {
-      print('in background');
-      MediaNotification.showNotification(
-        title: _controller.nowPlaying['title'],
-        author: _controller.nowPlaying['authror'],
-        isPlaying: _controller.isPlaying,
-      );
+    if (state == AppLifecycleState.paused &&
+        _controller.nowPlaying['path'] != null) {
+      showNotification();
       MediaNotification.setListener('play', () => _controller.play());
       MediaNotification.setListener('pause', () => _controller.pause());
-      MediaNotification.setListener('next', () => _controller.skip(next: true));
-      MediaNotification.setListener('prev', () => _controller.skip(prev: true));
+      MediaNotification.setListener('next', () async {
+        await _controller.skip(next: true);
+        showNotification();
+      });
+      MediaNotification.setListener('prev', () async {
+        await _controller.skip(prev: true);
+        showNotification();
+      });
     }
     super.didChangeAppLifecycleState(state);
   }
@@ -86,295 +98,299 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Stack(
-          children: <Widget>[
-            Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              margin: const EdgeInsets.only(bottom: 80),
-              child: ListView(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 20, top: 30, right: 20, bottom: 20),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Library',
-                          style: TextStyle(
-                              fontSize: Config.textSize(context, 5),
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'Acme'),
-                        ),
-                        CustomButton(
-                          diameter: 12,
-                          child: Icons.settings,
-                          onPressed: () async {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => Settings()),
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(
-                    height: 0.0,
-                    thickness: 1.0,
-                    color: Theme.of(context).dividerColor,
-                  ),
-                  SizedBox(height: Config.yMargin(context, 3)),
-                  Consumer<ProviderClass>(
-                    builder: (context, provider, child) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: GestureDetector(
-                          onTap: () {
-                            openPlaylist(
-                                title: 'All songs',
-                                songList: provider.allSongs);
-                          },
-                          child: CustomCard(
-                            height: 30,
-                            width: double.infinity,
-                            label: 'All songs',
-                            numOfSongs: provider.allSongs.length ?? 0,
-                            child: Icons.all_inclusive,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(
-                    height: Config.yMargin(context, 3),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      'PlayList',
-                      style: TextStyle(
-                          fontSize: Config.textSize(context, 5),
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Acme'),
-                    ),
-                  ),
-                  Consumer<PlayListDB>(
-                    builder: (_, playListDB, child) {
-                      return Container(
-                        height: Config.yMargin(context, 30),
-                        color: Colors.transparent,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: playListDB.playList.length,
-                          itemBuilder: (_, index) {
-                            List songList = playListDB.playList[index]['songs'];
-                            return GestureDetector(
-                              onTap: () {
-                                if (index == 0) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      return CreatePlayList(
-                                        height: 35,
-                                        width: 35,
-                                        isCreateNew: true,
-                                      );
-                                    },
-                                  );
-                                } else {
-                                  openPlaylist(
-                                      title: playListDB.playList[index]['name'],
-                                      songList: songList);
-                                }
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: CustomCard(
-                                  height: 30,
-                                  width: 30,
-                                  label: playListDB.playList[index]['name'],
-                                  child: getPlaylistIcon(index),
-                                  numOfSongs: songList?.length,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      'Recent',
-                      style: TextStyle(
-                          fontSize: Config.textSize(context, 5),
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Acme'),
-                    ),
-                  ),
-                  Consumer<PlayListDB>(
-                    builder: (context, playlistDB, child) {
-                      return Container(
-                        height: Config.yMargin(context, 30),
-                        color: Colors.transparent,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: 2,
-                          itemBuilder: (context, index) {
-                            List recentSongList = [];
-                            return GestureDetector(
-                              onTap: () {
-                                recentSongList = index == 0
-                                    ? Provider.of<ProviderClass>(context,
-                                            listen: false)
-                                        .recentlyAdded
-                                    : playlistDB.recentList;
-                                openPlaylist(
-                                    title: index == 0
-                                        ? 'Recently added'
-                                        : 'Recently played',
-                                    songList: recentSongList);
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.all(20),
-                                child: CustomCard(
-                                  height: 30,
-                                  width: 30,
-                                  label: index == 0
-                                      ? 'Recently added'
-                                      : 'Recently played',
-                                  child: index == 0
-                                      ? Icons.playlist_add
-                                      : Icons.playlist_play,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Consumer<SongController>(
-              builder: (context, controller, child) {
-                isPlaying = controller.isPlaying;
-                currentSong = controller.nowPlaying['path'] == null
-                    ? currentSong
-                    : controller.nowPlaying;
-                return Align(
-                  alignment: Alignment.bottomCenter,
-                  child: GestureDetector(
-                    onTap: () {
-                      // if the list or playlist name empty (when the app is opened) use all songs
-                      controller.allSongs = controller.allSongs == null
-                          ? Provider.of<ProviderClass>(context, listen: false)
-                              .allSongs
-                          : controller.allSongs;
-                      controller.playlistName = controller.playlistName == null
-                          ? 'All songs'
-                          : controller.playlistName;
-                      if (currentSong != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => NowPlaying(
-                                    currentSong: currentSong,
-                                    isPlaying: isPlaying,
-                                  )),
-                        );
-                      }
-                    },
-                    child: Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      height: Config.yMargin(context, 10),
+    return WillPopScope(
+      onWillPop: () async{
+        await MoveToBackground.moveTaskToBack();
+        return false;
+      },
+          child: SafeArea(
+        child: Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: Stack(
+            children: <Widget>[
+              Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                margin: const EdgeInsets.only(bottom: 80),
+                child: ListView(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 20, top: 30, right: 20, bottom: 20),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              SizedBox(
-                                width: Config.xMargin(context, 40),
-                                child: Text(
-                                  currentSong == null
-                                      ? 'title'
-                                      : currentSong['title'],
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: Config.textSize(context, 3.5),
-                                      fontWeight: FontWeight.w400,
-                                      fontFamily: 'Acme'),
-                                ),
-                              ),
-                              SizedBox(
-                                height: Config.yMargin(context, 1),
-                              ),
-                              Text(
-                                currentSong == null
-                                    ? 'artist'
-                                    : currentSong['artist'],
-                                style: TextStyle(
-                                    fontSize: Config.textSize(context, 3),
-                                    fontFamily: 'Acme'),
-                              ),
-                            ],
+                          Text(
+                            'Library',
+                            style: TextStyle(
+                                fontSize: Config.textSize(context, 5),
+                                fontWeight: FontWeight.w400,
+                                fontFamily: 'Acme'),
                           ),
                           CustomButton(
                             diameter: 12,
-                            child: Icons.skip_previous,
+                            child: Icons.settings,
                             onPressed: () async {
-                              await controller.skip(prev: true);
-                            },
-                          ),
-                          CustomButton(
-                            diameter: 15,
-                            child: isPlaying ? Icons.pause : Icons.play_arrow,
-                            isToggled: isPlaying,
-                            onPressed: () {
-                              // if nothing is playing
-                              if (controller.nowPlaying['path'] == null) {
-                                controller.allSongs =
-                                    Provider.of<ProviderClass>(context,
-                                            listen: false)
-                                        .allSongs;
-                                controller.setUp(currentSong);
-                              } else {
-                                isPlaying
-                                    ? controller.pause()
-                                    : controller.play();
-                                setState(() {
-                                  isPlaying = controller.isPlaying;
-                                });
-                              }
-                            },
-                          ),
-                          CustomButton(
-                            diameter: 12,
-                            child: Icons.skip_next,
-                            onPressed: () async {
-                              await controller.skip(next: true);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Settings()),
+                              );
                             },
                           ),
                         ],
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ],
+                    Divider(
+                      height: 0.0,
+                      thickness: 1.0,
+                      color: Theme.of(context).dividerColor,
+                    ),
+                    SizedBox(height: Config.yMargin(context, 3)),
+                    Consumer<ProviderClass>(
+                      builder: (context, provider, child) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: GestureDetector(
+                            onTap: () {
+                              openPlaylist(
+                                  title: 'All songs',
+                                  songList: provider.allSongs);
+                            },
+                            child: CustomCard(
+                              height: 30,
+                              width: double.infinity,
+                              label: 'All songs',
+                              numOfSongs: provider.allSongs.length ?? 0,
+                              child: Icons.all_inclusive,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                    SizedBox(
+                      height: Config.yMargin(context, 3),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'PlayList',
+                        style: TextStyle(
+                            fontSize: Config.textSize(context, 5),
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Acme'),
+                      ),
+                    ),
+                    Consumer<PlayListDB>(
+                      builder: (_, playListDB, child) {
+                        return Container(
+                          height: Config.yMargin(context, 30),
+                          color: Colors.transparent,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: playListDB.playList.length,
+                            itemBuilder: (_, index) {
+                              List songList = playListDB.playList[index]['songs'];
+                              return GestureDetector(
+                                onTap: () {
+                                  if (index == 0) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return CreatePlayList(
+                                          height: 35,
+                                          width: 35,
+                                          isCreateNew: true,
+                                        );
+                                      },
+                                    );
+                                  } else {
+                                    openPlaylist(
+                                        title: playListDB.playList[index]['name'],
+                                        songList: songList);
+                                  }
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: CustomCard(
+                                    height: 30,
+                                    width: 30,
+                                    label: playListDB.playList[index]['name'],
+                                    child: getPlaylistIcon(index),
+                                    numOfSongs: songList?.length,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        'Recent',
+                        style: TextStyle(
+                            fontSize: Config.textSize(context, 5),
+                            fontWeight: FontWeight.w400,
+                            fontFamily: 'Acme'),
+                      ),
+                    ),
+                    Consumer<PlayListDB>(
+                      builder: (context, playlistDB, child) {
+                        return Container(
+                          height: Config.yMargin(context, 30),
+                          color: Colors.transparent,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: 2,
+                            itemBuilder: (context, index) {
+                              List recentSongList = [];
+                              return GestureDetector(
+                                onTap: () {
+                                  recentSongList = index == 0
+                                      ? Provider.of<ProviderClass>(context,
+                                              listen: false)
+                                          .recentlyAdded
+                                      : playlistDB.recentList;
+                                  openPlaylist(
+                                    title: index == 0
+                                        ? 'Recently added'
+                                        : 'Recently played',
+                                    songList: recentSongList,
+                                  );
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(20),
+                                  child: CustomCard(
+                                    height: 30,
+                                    width: 30,
+                                    label: index == 0
+                                        ? 'Recently added'
+                                        : 'Recently played',
+                                    child: index == 0
+                                        ? Icons.playlist_add
+                                        : Icons.playlist_play,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Consumer<SongController>(
+                builder: (context, controller, child) {
+                  currentSong = controller.nowPlaying['path'] == null
+                      ? currentSong
+                      : controller.nowPlaying;
+                  return Align(
+                    alignment: Alignment.bottomCenter,
+                    child: GestureDetector(
+                      onTap: () {
+                        // if the list or playlist name empty (when the app is opened) use all songs
+                        controller.allSongs = controller.allSongs == null
+                            ? Provider.of<ProviderClass>(context, listen: false)
+                                .allSongs
+                            : controller.allSongs;
+                        controller.playlistName = controller.playlistName == null
+                            ? 'All songs'
+                            : controller.playlistName;
+                        if (currentSong != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  NowPlaying(currentSong: currentSong),
+                            ),
+                          );
+                        }
+                      },
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                        height: Config.yMargin(context, 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                SizedBox(
+                                  width: Config.xMargin(context, 40),
+                                  child: Text(
+                                    currentSong == null
+                                        ? 'title'
+                                        : currentSong['title'],
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: Config.textSize(context, 3.5),
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: 'Acme'),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: Config.yMargin(context, 1),
+                                ),
+                                Text(
+                                  currentSong == null
+                                      ? 'artist'
+                                      : currentSong['artist'],
+                                  style: TextStyle(
+                                      fontSize: Config.textSize(context, 3),
+                                      fontFamily: 'Acme'),
+                                ),
+                              ],
+                            ),
+                            CustomButton(
+                              diameter: 12,
+                              child: Icons.skip_previous,
+                              onPressed: () async {
+                                await controller.skip(prev: true);
+                              },
+                            ),
+                            CustomButton(
+                              diameter: 15,
+                              child: controller.isPlaying
+                                  ? Icons.pause
+                                  : Icons.play_arrow,
+                              isToggled: controller.isPlaying,
+                              onPressed: () {
+                                // if nothing is playing
+                                if (controller.nowPlaying['path'] == null) {
+                                  controller.allSongs =
+                                      Provider.of<ProviderClass>(context,
+                                              listen: false)
+                                          .allSongs;
+                                  controller.setUp(currentSong);
+                                } else {
+                                  controller.isPlaying
+                                      ? controller.pause()
+                                      : controller.play();
+                                }
+                              },
+                            ),
+                            CustomButton(
+                              diameter: 12,
+                              child: Icons.skip_next,
+                              onPressed: () async {
+                                await controller.skip(next: true);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

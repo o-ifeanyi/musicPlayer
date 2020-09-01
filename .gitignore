@@ -28,7 +28,11 @@
 .packages
 .pub-cache/
 .pub/
+.gitignore/
 /build/
+/android/app/key.properties
+/android/app/vybekey.jks
+/android/.gitignore/
 
 # Web related
 lib/generated_plugin_registrant.dart

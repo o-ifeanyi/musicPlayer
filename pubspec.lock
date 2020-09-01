@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.4.2"
+  audio_session:
+    dependency: "direct main"
+    description:
+      name: audio_session
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.4"
   audiotagger:
     dependency: "direct main"
     description:
@@ -71,13 +78,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.3"
-  device_preview:
-    dependency: "direct main"
-    description:
-      name: device_preview
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.7"
   fake_async:
     dependency: transitive
     description:
@@ -114,20 +114,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  font_awesome_flutter:
-    dependency: transitive
-    description:
-      name: font_awesome_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "8.8.1"
-  freezed_annotation:
-    dependency: transitive
-    description:
-      name: freezed_annotation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.11.0+1"
   hive:
     dependency: "direct main"
     description:
@@ -135,20 +121,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.3"
-  http:
-    dependency: transitive
-    description:
-      name: http
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.12.2"
-  http_parser:
-    dependency: transitive
-    description:
-      name: http_parser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.4"
   intl:
     dependency: transitive
     description:
@@ -156,13 +128,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
-  json_annotation:
-    dependency: transitive
-    description:
-      name: json_annotation
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.0.1"
   just_audio:
     dependency: "direct main"
     description:
@@ -184,6 +149,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.8"
+  move_to_background:
+    dependency: "direct main"
+    description:
+      name: move_to_background
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   nested:
     dependency: transitive
     description:
@@ -226,13 +198,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
-  pedantic:
-    dependency: transitive
-    description:
-      name: pedantic
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.9.0"
   permission_handler:
     dependency: "direct main"
     description:

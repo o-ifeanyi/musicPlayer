@@ -21,13 +21,13 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(seconds: 2),
+      duration: Duration(milliseconds: 1200),
       upperBound: 1.0,
     )..addListener(() {
         if (_controller.isCompleted) {
           // getAllSong called here to avoid laggy animation
-          Provider.of<ProviderClass>(context, listen: false).getAllSongs();
-          Future.delayed(Duration(seconds: 1)).then((value) {
+          Provider.of<ProviderClass>(context, listen: false).init();
+          Future.delayed(Duration(milliseconds: 1800)).then((value) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => Library()),

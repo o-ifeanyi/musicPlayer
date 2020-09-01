@@ -169,9 +169,7 @@ class PlayListDB extends ChangeNotifier {
 
   Future<void> clear() async {
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
-    Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
     await db.deleteFromDisk();
-    await recentdb.deleteFromDisk();
     print('deleted');
   }
 }

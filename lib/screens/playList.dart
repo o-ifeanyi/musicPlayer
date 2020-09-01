@@ -18,7 +18,6 @@ class PlayList extends StatefulWidget {
 }
 
 class _PlayListState extends State<PlayList> {
-  bool isPlaying = false;
   List allSongs;
   List searchList = [];
   double padding = 10.0;
@@ -31,7 +30,8 @@ class _PlayListState extends State<PlayList> {
     searchList.addAll(widget.songList);
     setState(() {
       searchList.retainWhere((element) =>
-          element['title'].toLowerCase().contains(input.toLowerCase()));
+          element['title'].toLowerCase().contains(input.toLowerCase()) ||
+          element['artist'].toLowerCase().contains(input.toLowerCase()));
     });
   }
 
@@ -45,7 +45,6 @@ class _PlayListState extends State<PlayList> {
 
   @override
   void initState() {
-    isPlaying = Provider.of<SongController>(context, listen: false).isPlaying;
     allSongs = widget.songList;
     searchList.addAll(widget.songList);
     super.initState();
@@ -125,7 +124,6 @@ class _PlayListState extends State<PlayList> {
                       return Consumer<SongController>(
                         builder: (context, controller, child) {
                           List songList = isSearching ? searchList : allSongs;
-                          // controller.allSongs = songList;
                           return AnimatedPadding(
                             duration: Duration(milliseconds: 400),
                             padding: controller.nowPlaying['path'] ==
@@ -139,19 +137,18 @@ class _PlayListState extends State<PlayList> {
                               onTap: () async {
                                 controller.allSongs = widget.songList;
                                 controller.playlistName = widget.playListName;
-                                isPlaying = await Navigator.push(
+                                await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => NowPlaying(
-                                            currentSong: songList[index],
-                                            isPlaying: isPlaying,
-                                          )),
+                                    builder: (context) => NowPlaying(
+                                        currentSong: songList[index]),
+                                  ),
                                 );
                                 isSearching = false;
                                 resetSearch();
-                                setState(() {
-                                  isPlaying ? padding = 10.0 : padding = 0.0;
-                                });
+                                controller.isPlaying
+                                    ? padding = 10.0
+                                    : padding = 0.0;
                               },
                               contentPadding: EdgeInsets.only(right: 20),
                               leading: PopupMenuButton(
@@ -223,7 +220,7 @@ class _PlayListState extends State<PlayList> {
                               trailing: CustomButton(
                                 child: controller.nowPlaying['path'] ==
                                             songList[index]['path'] &&
-                                        isPlaying
+                                        controller.isPlaying
                                     ? Icons.pause
                                     : Icons.play_arrow,
                                 diameter: 12,
@@ -234,10 +231,9 @@ class _PlayListState extends State<PlayList> {
                                   controller.playlistName = widget.playListName;
                                   await controller
                                       .playlistControlOptions(songList[index]);
-                                  setState(() {
-                                    isPlaying = controller.isPlaying;
-                                    isPlaying ? padding = 10.0 : padding = 0.0;
-                                  });
+                                  controller.isPlaying
+                                      ? padding = 10.0
+                                      : padding = 0.0;
                                 },
                               ),
                             ),
@@ -341,10 +337,7 @@ class _PlayListState extends State<PlayList> {
                       // causing craxy bugs
                       if (controller.nowPlaying == songList[index]) {
                         await controller.skip(next: true);
-                        setState(() {
-                          isPlaying = controller.isPlaying;
-                          isPlaying ? padding = 10.0 : padding = 0.0;
-                        });
+                        controller.isPlaying ? padding = 10.0 : padding = 0.0;
                       }
                       Provider.of<ProviderClass>(context, listen: false)
                           .removeSong(songList[index]);

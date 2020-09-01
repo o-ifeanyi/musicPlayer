@@ -1,5 +1,4 @@
-// import 'package:device_preview/device_preview.dart';
-// import 'package:flutter/foundation.dart';
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/constants.dart';
 import 'package:musicPlayer/models/Provider.dart';
@@ -11,6 +10,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  AudioSession.instance.then((session) {
+    session.configure(AudioSessionConfiguration.music());
+  });
   SharedPreferences.getInstance().then((pref) {
     int theme = pref.getInt('theme') ?? 0;
     runApp(MultiProvider(
@@ -23,20 +25,6 @@ void main() {
       child: MyApp(theme: kThemes[theme]),
     ));
   });
-
-  // DevicePreview(
-  //   enabled: !kReleaseMode,
-  //   builder: (context) {
-  //     return MultiProvider(
-  //       providers: [
-  //         ChangeNotifierProvider(create: (_) => ProviderClass()),
-  //         ChangeNotifierProvider(create: (_) => PlayListDB()),
-  //         ChangeNotifierProvider(create: (_) => SongController()),
-  //       ],
-  //       child: MyApp(),
-  //     );
-  //   },
-  // ),
 }
 
 class MyApp extends StatelessWidget {
@@ -45,9 +33,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // locale: DevicePreview.of(context).locale,
-      // builder: DevicePreview.appBuilder,
-      title: 'Flutter Demo',
+      title: 'Vibe player',
       theme: Provider.of<ProviderClass>(context).getTheme(),
       home: SplashScreen(theme),
     );

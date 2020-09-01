@@ -1,4 +1,4 @@
-package com.example.musicPlayer
+package com.onuifeanyi.vybeplayer
 
 import io.flutter.embedding.android.FlutterActivity
 

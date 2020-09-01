@@ -4,4 +4,8 @@ gradle-wrapper.jar
 /gradlew
 /gradlew.bat
 /local.properties
+/key.properties
+/android/app/vybekey.jks
+.gitignore/
+/android/.gitignore/
 GeneratedPluginRegistrant.java

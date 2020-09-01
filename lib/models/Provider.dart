@@ -20,13 +20,19 @@ class ProviderClass extends ChangeNotifier {
     notifyListeners();
   }
 
+  void init() async {
+    await getAllSongs();
+    recentActivity();
+  }
+
   void recentActivity() {
     List newList1 = allSongs;
-    newList1.sort((a, b) => a['recentlyAdded'].compareTo(b['recentlyAdded']));
+    newList1.sort((b, a) => a['recentlyAdded'].compareTo(b['recentlyAdded']));
     // sort arranged it from old to new hence the reverse
-    recentlyAdded.addAll(newList1.reversed);
+    recentlyAdded.addAll(newList1);
     // sort all songs in alphabetical order
-    allSongs.sort((a, b) => a['title'].compareTo(b['title']));
+    allSongs.sort(
+        (a, b) => a['title'].toLowerCase().compareTo(b['title'].toLowerCase()));
     notifyListeners();
   }
 
@@ -45,19 +51,10 @@ class ProviderClass extends ChangeNotifier {
         // adds path of differnt storage to list
         pathToStorage.add(Directory(dir.path.split("Android")[0]));
       }
-      // gets all the folders in each storage. or adds to allsongs list if an mp3 is found
+      // gets all the folders in eachFile storage. or adds to allsongs list if an mp3 is found
       List<FileSystemEntity> allFolders = await getAllFolders(pathToStorage);
       // goes through all folders to find mp3, if a folder is found it recurses into it to find mp3
-      for (FileSystemEntity folder in allFolders) {
-        if (FileSystemEntity.isFileSync(folder.path) &&
-            basename(folder.path).endsWith('mp3')) {
-          allSongs.add(await songInfo(folder.path));
-          notifyListeners();
-        } else if (FileSystemEntity.isDirectorySync(folder.path)) {
-          await getAllFiles(folder.path);
-        }
-      }
-      recentActivity();
+      await searchFolders(allFolders);
     } else {
       permissionStatus = await Permission.storage.request();
     }
@@ -71,6 +68,18 @@ class ProviderClass extends ChangeNotifier {
       allFolders.addAll([...dir.listSync()]);
     }
     return allFolders;
+  }
+
+  Future<void> searchFolders(List folders) async {
+    for (FileSystemEntity eachFile in folders) {
+      if (FileSystemEntity.isFileSync(eachFile.path) &&
+          basename(eachFile.path).endsWith('mp3')) {
+        allSongs.add(await songInfo(eachFile.path));
+        notifyListeners();
+      } else if (FileSystemEntity.isDirectorySync(eachFile.path)) {
+        await getAllFiles(eachFile.path);
+      }
+    }
   }
 
   // recursively goes into all folders to return mp3 except the android folder
