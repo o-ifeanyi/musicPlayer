@@ -12,6 +12,8 @@ class SongController extends ChangeNotifier {
   AudioPlayer player;
   Duration duration;
   int currentTime = 0;
+  int songLenght = 0;
+  int currentSongIndex;
   String timeLeft = '';
   String timePlayed = '';
   String playlistName; // this is assigned from playlist screen
@@ -19,10 +21,8 @@ class SongController extends ChangeNotifier {
   static bool isFavourite = false;
   bool isShuffled = false;
   bool isRepeat = false;
-  int currentSong;
-  Map nowPlaying = {};
   bool isPlaying = false;
-  int songLenght = 0;
+  Map nowPlaying = {};
   AppLifecycleState state;
   PlayListDB playListDB = PlayListDB();
 
@@ -31,50 +31,6 @@ class SongController extends ChangeNotifier {
       isShuffled = pref.getBool('shuffle') ?? false;
       isRepeat = pref.getBool('repeat') ?? false;
     });
-    notifyListeners();
-  }
-
-  void handleInterruptions() {
-    AudioSession.instance.then((session) async {
-      player.playbackStateStream.listen((event) {
-        // Activate session only if a song is playing
-        if (event == AudioPlaybackState.playing) {
-          session.setActive(true);
-        }
-      }).onError((e) => print(e));
-      session.interruptionEventStream.listen((event) {
-        if (event.begin) {
-          print('event began');
-          switch (event.type) {
-            case AudioInterruptionType.duck:
-            case AudioInterruptionType.pause:
-            case AudioInterruptionType.unknown:
-              // Another app started playing audio and we should pause.
-              pause();
-              break;
-          }
-        } else {
-          print('event ended');
-          switch (event.type) {
-            case AudioInterruptionType.duck:
-            case AudioInterruptionType.pause:
-            case AudioInterruptionType.unknown:
-              // The interruption ended and we should resume.
-              play();
-              break;
-          }
-        }
-      });
-      session.becomingNoisyEventStream.listen((_) {
-        // earphones unpluged
-        pause();
-      });
-    });
-  }
-
-  void settings({bool repeat = false, bool shuffle = false}) {
-    isShuffled = shuffle;
-    isRepeat = repeat;
     notifyListeners();
   }
 
@@ -87,7 +43,7 @@ class SongController extends ChangeNotifier {
     nowPlaying = song;
     isFavourite = await playListDB.isFavourite(nowPlaying);
     playListDB.saveNowPlaying(nowPlaying);
-    currentSong =
+    currentSongIndex =
         allSongs.indexWhere((element) => element['path'] == nowPlaying['path']);
     player = AudioPlayer();
     duration = await player.setFilePath(nowPlaying['path']);
@@ -105,13 +61,8 @@ class SongController extends ChangeNotifier {
         timePlayed = '${event.inMinutes}:${event.inSeconds % 60}';
         if (currentTime >= songLenght) {
           await skip(next: true);
-          if (state == AppLifecycleState.paused) {
-            MediaNotification.showNotification(
-              title: nowPlaying['title'],
-              author: nowPlaying['artist'],
-              isPlaying: isPlaying,
-            );
-          }
+          // refresh notification
+          showNotification();
         }
         notifyListeners();
       },
@@ -137,7 +88,7 @@ class SongController extends ChangeNotifier {
 
   Future<void> skip(
       {bool next = false, bool prev = false, BuildContext context}) async {
-    currentSong =
+    currentSongIndex =
         allSongs.indexWhere((element) => element['path'] == nowPlaying['path']);
     List shuffled = [...allSongs];
     await disposePlayer();
@@ -146,13 +97,15 @@ class SongController extends ChangeNotifier {
         nowPlaying = nowPlaying;
       } else if (isShuffled) {
         shuffled.shuffle();
-        currentSong = shuffled
+        currentSongIndex = shuffled
             .indexWhere((element) => element['path'] == nowPlaying['path']);
-        nowPlaying =
-            next ? shuffled[currentSong += 1] : shuffled[currentSong -= 1];
+        nowPlaying = next
+            ? shuffled[currentSongIndex += 1]
+            : shuffled[currentSongIndex -= 1];
       } else {
-        nowPlaying =
-            next ? allSongs[currentSong += 1] : allSongs[currentSong -= 1];
+        nowPlaying = next
+            ? allSongs[currentSongIndex += 1]
+            : allSongs[currentSongIndex -= 1];
       }
     } on RangeError catch (e) {
       nowPlaying = allSongs.first;
@@ -193,5 +146,58 @@ class SongController extends ChangeNotifier {
     timeLeft = '';
     timePlayed = '';
     notifyListeners();
+  }
+
+  void settings({bool repeat = false, bool shuffle = false}) {
+    isShuffled = shuffle;
+    isRepeat = repeat;
+    notifyListeners();
+  }
+
+  void showNotification() {
+    if (state != AppLifecycleState.paused)
+      return;
+    else
+      MediaNotification.showNotification(
+        title: nowPlaying['title'],
+        author: nowPlaying['artist'],
+        isPlaying: isPlaying,
+      );
+  }
+
+  void handleInterruptions() {
+    AudioSession.instance.then((session) async {
+      player.playbackStateStream.listen((event) {
+        // Activate session only if a song is playing
+        if (event == AudioPlaybackState.playing) {
+          session.setActive(true);
+        }
+      }).onError((e) => print(e));
+      session.interruptionEventStream.listen((event) {
+        if (event.begin) {
+          // Another app started playing audio and we should pause.
+          switch (event.type) {
+            case AudioInterruptionType.duck:
+            case AudioInterruptionType.pause:
+            // online media like youtube false under unknown
+            case AudioInterruptionType.unknown:
+              pause();
+              // refresh notification
+              showNotification();
+              break;
+            default:
+          }
+        } else {
+          // else block runs at the end of an interruption
+          switch (event.type) {
+            default:
+          }
+        }
+      });
+      session.becomingNoisyEventStream.listen((_) {
+        // earphones unpluged
+        pause();
+      });
+    });
   }
 }

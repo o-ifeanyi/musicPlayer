@@ -4,8 +4,7 @@
 
 A Flutter music player to play songs (mp3).
 
-## 🤞 Coming soon
-<a href="#"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"></img></a>
+<a href="https://play.google.com/store/apps/details?id=com.onuifeanyi.vybeplayer"><img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png" width="200"></img></a>
 <br>
 Please star⭐ the repo if you like what you see😉.
 <br>
