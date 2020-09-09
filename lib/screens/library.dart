@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:move_to_background/move_to_background.dart';
+import 'package:musicPlayer/components/bottomSheetOptions.dart';
 import 'package:musicPlayer/components/createPlayList.dart';
 import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/components/customCard.dart';
@@ -99,11 +100,11 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async{
+      onWillPop: () async {
         await MoveToBackground.moveTaskToBack();
         return false;
       },
-          child: SafeArea(
+      child: SafeArea(
         child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: Stack(
@@ -190,7 +191,8 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                             scrollDirection: Axis.horizontal,
                             itemCount: playListDB.playList.length,
                             itemBuilder: (_, index) {
-                              List songList = playListDB.playList[index]['songs'];
+                              List songList =
+                                  playListDB.playList[index]['songs'];
                               return GestureDetector(
                                 onTap: () {
                                   if (index == 0) {
@@ -206,8 +208,19 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                     );
                                   } else {
                                     openPlaylist(
-                                        title: playListDB.playList[index]['name'],
+                                        title: playListDB.playList[index]
+                                            ['name'],
                                         songList: songList);
+                                  }
+                                },
+                                onLongPress: () {
+                                  if (index > 1) {
+                                    showModalBottomSheet(
+                                      enableDrag: false,
+                                      context: context,
+                                      builder: (context) => BottomSheetOptions(
+                                          playListDB.playList[index]['name']),
+                                    );
                                   }
                                 },
                                 child: Padding(
@@ -296,9 +309,10 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                             ? Provider.of<ProviderClass>(context, listen: false)
                                 .allSongs
                             : controller.allSongs;
-                        controller.playlistName = controller.playlistName == null
-                            ? 'All songs'
-                            : controller.playlistName;
+                        controller.playlistName =
+                            controller.playlistName == null
+                                ? 'All songs'
+                                : controller.playlistName;
                         if (currentSong != null) {
                           Navigator.push(
                             context,
@@ -341,6 +355,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                   currentSong == null
                                       ? 'artist'
                                       : currentSong['artist'],
+                                  overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                       fontSize: Config.textSize(context, 3),
                                       fontFamily: 'Acme'),

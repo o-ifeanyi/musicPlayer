@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/circleDisc.dart';
 import 'package:musicPlayer/components/customButton.dart';
-import 'package:musicPlayer/components/rotateWidget.dart';
 import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:provider/provider.dart';
@@ -58,8 +57,11 @@ class _PlayingFromState extends State<PlayingFrom> {
                       ),
                       isPotrait
                           ? Expanded(
-                              child: RotateWidget(
-                                  CircleDisc(10), controller.isPlaying))
+                              child: CircleDisc(
+                                iconSize: 10,
+                                isRotating: controller.isPlaying,
+                              ),
+                            )
                           : SizedBox.shrink(),
                       CustomButton(
                         diameter: 12,

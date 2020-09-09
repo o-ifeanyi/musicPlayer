@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:musicPlayer/models/Provider.dart';
-import 'package:musicPlayer/models/songController.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -65,8 +64,6 @@ class PlayListDB extends ChangeNotifier {
         'songs': songs,
       });
     }
-    // songcontroller needs to handle the bool because for every song thats played the bool is re evaluated
-    SongController.isFavourite = await isFavourite(song);
     refresh();
   }
 
@@ -79,8 +76,6 @@ class PlayListDB extends ChangeNotifier {
       'name': playlistName,
       'songs': songs,
     });
-    // songcontroller needs to handle the bool because for every song thats played the bool is re evaluated
-    SongController.isFavourite = await isFavourite(song);
     refresh();
   }
 
@@ -138,12 +133,32 @@ class PlayListDB extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> editPlaylistName(String playlistName, String newName) async {
+    Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
+    var playList = db.get(playlistName);
+    db.put(newName, {
+      'name': newName,
+      'songs': playList['songs'],
+    });
+    db.delete(playlistName);
+    refresh();
+  }
+
+  Future<void> deletePlaylist(String playlistName) async {
+    Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
+    db.delete(playlistName);
+    refresh();
+  }
+
   static Future<dynamic> lastPlayed(BuildContext context) async {
+    print('just got called');
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
     if (songs != null && songs.isNotEmpty) {
+      print('im outta here');
       return songs.last;
     } else {
+      print('im outta here');
       return Provider.of<ProviderClass>(context, listen: false).allSongs.first;
     }
   }

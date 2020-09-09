@@ -18,10 +18,11 @@ class SongController extends ChangeNotifier {
   String timePlayed = '';
   String playlistName; // this is assigned from playlist screen
   List allSongs; // this is assigned from playlist screen
-  static bool isFavourite = false;
+  bool isFavourite = false;
   bool isShuffled = false;
   bool isRepeat = false;
   bool isPlaying = false;
+  bool useArt = false;
   Map nowPlaying = {};
   AppLifecycleState state;
   PlayListDB playListDB = PlayListDB();
@@ -30,7 +31,21 @@ class SongController extends ChangeNotifier {
     await SharedPreferences.getInstance().then((pref) {
       isShuffled = pref.getBool('shuffle') ?? false;
       isRepeat = pref.getBool('repeat') ?? false;
+      useArt = pref.getBool('useArt') ?? false;
     });
+    notifyListeners();
+  }
+
+  Future<void> setFavourite(dynamic song) async{
+    isFavourite = await playListDB.isFavourite(song);
+    notifyListeners();
+  }
+
+  Future<void> setUseArt(bool value) async{
+    await SharedPreferences.getInstance().then((pref) {
+      pref.setBool('useArt', value);
+    });
+    useArt = value;
     notifyListeners();
   }
 
@@ -79,11 +94,8 @@ class SongController extends ChangeNotifier {
     player.pause();
   }
 
-  Future<void> seek({bool forward = false, bool rewind = false}) async {
-    if (forward)
-      await player.seek(Duration(seconds: currentTime + 10));
-    else
-      await player.seek(Duration(seconds: currentTime - 10));
+  Future<void> seek(position) async {
+    await player.seek(Duration(seconds: currentTime + position.toInt()));
   }
 
   Future<void> skip(

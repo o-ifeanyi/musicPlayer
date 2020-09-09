@@ -82,19 +82,20 @@ class _CreatePlayListState extends State<CreatePlayList> {
                       createNew
                           ? Expanded(
                               child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    TextField(
-                                      controller: inputFeild,
-                                      keyboardType: TextInputType.name,
-                                      decoration: InputDecoration(
-                                        labelText: 'Name',
-                                        labelStyle: textStyle,
-                                      ),
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  TextField(
+                                    controller: inputFeild,
+                                    keyboardType: TextInputType.name,
+                                    decoration: InputDecoration(
+                                      labelText: 'Name',
+                                      labelStyle: textStyle,
                                     ),
-                                  ]),
+                                  ),
+                                ],
+                              ),
                             )
                           : Expanded(
                               child: ListView.builder(

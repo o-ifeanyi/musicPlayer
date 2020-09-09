@@ -8,7 +8,6 @@ import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/screens/playingFrom.dart';
 import 'package:musicPlayer/models/songController.dart';
-import 'package:musicPlayer/components/rotateWidget.dart';
 import 'package:provider/provider.dart';
 
 class NowPlaying extends StatefulWidget {
@@ -27,7 +26,7 @@ class _NowPlayingState extends State<NowPlaying> {
     // if no song is beign played
     if (player.nowPlaying['path'] == null) {
       await player.setUp(widget.currentSong);
-    // if a different song was selected
+      // if a different song was selected
     } else if (player.nowPlaying['path'] != widget.currentSong['path']) {
       player.disposePlayer();
       nowPlaying = widget.currentSong;
@@ -52,7 +51,7 @@ class _NowPlayingState extends State<NowPlaying> {
             body: Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
-              padding: const EdgeInsets.fromLTRB(20, 30, 20, 30),
+              padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -88,8 +87,11 @@ class _NowPlayingState extends State<NowPlaying> {
                   ),
                   isPotrait
                       ? Expanded(
-                          child: RotateWidget(
-                              CircleDisc(16), controller.isPlaying))
+                          child: CircleDisc(
+                            iconSize: 16,
+                            isRotating: controller.isPlaying,
+                          ),
+                        )
                       : SizedBox(
                           height: Config.xMargin(context, 1),
                         ),
@@ -121,12 +123,12 @@ class _NowPlayingState extends State<NowPlaying> {
                     children: <Widget>[
                       CustomButton(
                         diameter: 12,
-                        child: SongController.isFavourite
+                        child: controller.isFavourite
                             ? Icons.favorite
                             : Icons.favorite_border,
-                        isToggled: SongController.isFavourite,
+                        isToggled: controller.isFavourite,
                         onPressed: () async {
-                          SongController.isFavourite
+                          controller.isFavourite
                               ? await Provider.of<PlayListDB>(context,
                                       listen: false)
                                   .removeFromPlaylist(
@@ -135,6 +137,7 @@ class _NowPlayingState extends State<NowPlaying> {
                                       listen: false)
                                   .addToPlaylist(
                                       'Favourites', controller.nowPlaying);
+                          controller.setFavourite(controller.nowPlaying);
                         },
                       ),
                       CustomButton(
@@ -159,42 +162,42 @@ class _NowPlayingState extends State<NowPlaying> {
                     height: Config.xMargin(context, 6),
                   ),
                   controller.duration != null
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              controller.timePlayed,
-                              style: TextStyle(
-                                fontSize: Config.textSize(context, 3),
-                                fontFamily: 'Acme',
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                controller.timePlayed,
+                                style: TextStyle(
+                                  fontSize: Config.textSize(context, 3),
+                                  fontFamily: 'Acme',
+                                ),
                               ),
-                            ),
-                            Text(
-                              controller.timeLeft,
-                              style: TextStyle(
-                                fontSize: Config.textSize(context, 3),
-                                fontFamily: 'Acme',
+                              Text(
+                                controller.timeLeft,
+                                style: TextStyle(
+                                  fontSize: Config.textSize(context, 3),
+                                  fontFamily: 'Acme',
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         )
                       : SizedBox.shrink(),
-                  SizedBox(
-                    height: Config.xMargin(context, 3),
-                  ),
                   controller.duration != null
-                      ? LinearProgressIndicator(
-                          value: ((controller.currentTime /
-                                      controller.duration.inSeconds) *
-                                  100) /
-                              100.0,
-                          backgroundColor: Theme.of(context).splashColor,
-                          valueColor: AlwaysStoppedAnimation(
-                              Theme.of(context).accentColor),
+                      ? Slider(
+                          min: 0.0,
+                          max: controller.duration.inSeconds.toDouble(),
+                          value: controller.currentTime.toDouble(),
+                          onChanged: (double newValue) async {
+                            double position = newValue - controller.currentTime;
+                            await controller.seek(position);
+                          },
                         )
                       : SizedBox.shrink(),
                   SizedBox(
-                    height: Config.xMargin(context, 6),
+                    height: Config.xMargin(context, 2),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -203,14 +206,19 @@ class _NowPlayingState extends State<NowPlaying> {
                         diameter: 12,
                         child: Icons.skip_previous,
                         onPressed: () async {
-                          await player.skip(prev: true, context: context);
+                          await controller.skip(prev: true, context: context);
                         },
                       ),
                       CustomButton(
                         diameter: 15,
                         child: Icons.replay_10,
                         onPressed: () async {
-                          await player.seek(rewind: true);
+                          // if it hasnt played upto 10 seconds
+                          if (controller.currentTime.toDouble() < 10) {
+                            await controller.seek(-controller.currentTime);
+                          } else {
+                            await controller.seek(-10);
+                          }
                         },
                       ),
                       CustomButton(
@@ -221,22 +229,22 @@ class _NowPlayingState extends State<NowPlaying> {
                         isToggled: controller.isPlaying,
                         onPressed: () {
                           controller.isPlaying
-                              ? player.pause()
-                              : player.play();
+                              ? controller.pause()
+                              : controller.play();
                         },
                       ),
                       CustomButton(
                         diameter: 15,
                         child: Icons.forward_10,
                         onPressed: () async {
-                          player.seek(forward: true);
+                          controller.seek(10);
                         },
                       ),
                       CustomButton(
                         diameter: 12,
                         child: Icons.skip_next,
                         onPressed: () async {
-                          await player.skip(next: true, context: context);
+                          await controller.skip(next: true, context: context);
                         },
                       ),
                     ],

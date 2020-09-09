@@ -17,6 +17,14 @@ final List kThemes = [
       color: Colors.black,
       opacity: 0.8,
     ),
+    sliderTheme: SliderThemeData(
+      trackHeight: 1.0,
+      thumbColor: Color(0xFFD71D1D),
+      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
+      overlayColor: Color(0xFFD71D1D).withOpacity(0.1),
+      activeTrackColor: Color(0xFFD71D1D),
+      inactiveTrackColor: Colors.black.withOpacity(0.2),
+    ),
   ),
   ThemeData(
     brightness: Brightness.light,
@@ -29,6 +37,14 @@ final List kThemes = [
       color: Colors.black,
       opacity: 0.8,
     ),
+    sliderTheme: SliderThemeData(
+      trackHeight: 1.0,
+      thumbColor: Colors.blueAccent,
+      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
+      overlayColor: Colors.blueAccent.withOpacity(0.1),
+      activeTrackColor: Colors.blueAccent,
+      inactiveTrackColor: Colors.black.withOpacity(0.2),
+    ),
   ),
   ThemeData(
     brightness: Brightness.dark,
@@ -39,6 +55,14 @@ final List kThemes = [
     accentColor: Colors.pinkAccent,
     cursorColor: Colors.pinkAccent,
     dividerColor: Colors.white54,
+    sliderTheme: SliderThemeData(
+      trackHeight: 1.0,
+      thumbColor: Colors.pinkAccent,
+      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
+      overlayColor: Colors.pinkAccent.withOpacity(0.1),
+      activeTrackColor: Colors.pinkAccent,
+      inactiveTrackColor: Color(0xFF1A1E21),
+    ),
   ),
   ThemeData(
     brightness: Brightness.dark,
@@ -49,5 +73,13 @@ final List kThemes = [
     accentColor: Colors.deepOrange,
     cursorColor: Colors.deepOrange,
     dividerColor: Colors.white54,
+    sliderTheme: SliderThemeData(
+      trackHeight: 1.0,
+      thumbColor: Colors.deepOrange,
+      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6),
+      overlayColor: Colors.deepOrange.withOpacity(0.1),
+      activeTrackColor: Colors.deepOrange,
+      inactiveTrackColor: Color(0xFF1A1E21),
+    ),
   ),
 ];

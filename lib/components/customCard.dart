@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/models/config.dart';
 
 class CustomCard extends StatelessWidget {
@@ -26,17 +25,39 @@ class CustomCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                CustomButton(
-                  child: child,
-                  diameter: 12,
+                Container(
+                  height: Config.xMargin(context, 12),
+                  width: Config.xMargin(context, 12),
+                  child: Icon(
+                    child,
+                    size: Config.textSize(context, 5),
+                    color: Theme.of(context).iconTheme.color.withOpacity(0.8),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    shape: BoxShape.circle,
+                    boxShadow: <BoxShadow>[
+                      BoxShadow(
+                        color: Theme.of(context).splashColor,
+                        offset: Offset(3, 3),
+                        blurRadius: 5,
+                        spreadRadius: 1.0,
+                      ),
+                      BoxShadow(
+                        color: Theme.of(context).backgroundColor,
+                        offset: Offset(-3, -3),
+                        blurRadius: 5,
+                        spreadRadius: 1.0,
+                      ),
+                    ],
+                  ),
                 ),
                 Text(
                   label,
                   style: TextStyle(
-                    fontSize: Config.textSize(context, 3.5),
-                    fontWeight: FontWeight.w400,
-                    fontFamily: 'Acme'
-                  ),
+                      fontSize: Config.textSize(context, 3.5),
+                      fontWeight: FontWeight.w400,
+                      fontFamily: 'Acme'),
                 ),
               ],
             ),
@@ -44,9 +65,8 @@ class CustomCard extends StatelessWidget {
                 ? Text(
                     '$numOfSongs Songs',
                     style: TextStyle(
-                      fontSize: Config.textSize(context, 3),
-                      fontFamily: 'Acme'
-                    ),
+                        fontSize: Config.textSize(context, 3),
+                        fontFamily: 'Acme'),
                   )
                 : SizedBox.shrink(),
           ],

@@ -6,6 +6,7 @@ import 'package:musicPlayer/constants.dart';
 import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/playListDB.dart';
+import 'package:musicPlayer/models/songController.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +16,7 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+
   Container buildColoredCircle(Color color1, Color color2) {
     return Container(
       height: 50,
@@ -54,8 +56,7 @@ class _SettingsState extends State<Settings> {
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: ListView(
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 10, top: 30, bottom: 10),
@@ -123,6 +124,25 @@ class _SettingsState extends State<Settings> {
                         },
                       );
                     },
+                  );
+                },
+              ),
+              Consumer<SongController>(
+                builder: (context, controller, child) {
+                  return ListTile(
+                    onTap: () {},
+                    leading: Icon(Icons.image),
+                    title: Text(
+                      'Use album cover',
+                      style: listStyle,
+                    ),
+                    trailing: Checkbox(
+                      activeColor: Theme.of(context).accentColor,
+                      value: controller.useArt,
+                      onChanged: (bool newValue) {
+                        controller.setUseArt(newValue);
+                      },
+                    ),
                   );
                 },
               ),
