@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/config.dart';
+import 'package:musicPlayer/models/playListDB.dart';
+import 'package:musicPlayer/models/songController.dart';
 import 'package:musicPlayer/screens/library.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +29,10 @@ class _SplashScreenState extends State<SplashScreen>
         if (_controller.isCompleted) {
           // getAllSong called here to avoid laggy animation
           Provider.of<ProviderClass>(context, listen: false).init();
+          // initialises things like shuffle, repeat, last played
+          Provider.of<SongController>(context, listen: false).init();
+          // populates playlist from database
+          Provider.of<PlayListDB>(context, listen: false).refresh();
           Future.delayed(Duration(milliseconds: 1800)).then((value) {
             Navigator.pushReplacement(
               context,

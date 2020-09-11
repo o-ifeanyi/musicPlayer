@@ -42,15 +42,17 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
     }
   }
 
-  void lastSong() async {
-    currentSong = await PlayListDB.lastPlayed(context);
-    setState(() {});
+  void setAllSongs(SongController controller) {
+    controller.allSongs = controller.allSongs == null
+        ? Provider.of<ProviderClass>(context, listen: false).allSongs
+        : controller.allSongs;
+    controller.playlistName =
+        controller.playlistName == null ? 'All songs' : controller.playlistName;
   }
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    lastSong();
     super.initState();
   }
 
@@ -297,22 +299,15 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
               ),
               Consumer<SongController>(
                 builder: (context, controller, child) {
+                  // if the list or playlist name empty (when the app is opened) use all songs
+                  setAllSongs(controller);
                   currentSong = controller.nowPlaying['path'] == null
-                      ? currentSong
+                      ? controller.lastPlayed
                       : controller.nowPlaying;
                   return Align(
                     alignment: Alignment.bottomCenter,
                     child: GestureDetector(
                       onTap: () {
-                        // if the list or playlist name empty (when the app is opened) use all songs
-                        controller.allSongs = controller.allSongs == null
-                            ? Provider.of<ProviderClass>(context, listen: false)
-                                .allSongs
-                            : controller.allSongs;
-                        controller.playlistName =
-                            controller.playlistName == null
-                                ? 'All songs'
-                                : controller.playlistName;
                         if (currentSong != null) {
                           Navigator.push(
                             context,
@@ -351,14 +346,17 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                 SizedBox(
                                   height: Config.yMargin(context, 1),
                                 ),
-                                Text(
-                                  currentSong == null
-                                      ? 'artist'
-                                      : currentSong['artist'],
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontSize: Config.textSize(context, 3),
-                                      fontFamily: 'Acme'),
+                                SizedBox(
+                                  width: Config.xMargin(context, 40),
+                                  child: Text(
+                                    currentSong == null
+                                        ? 'artist'
+                                        : currentSong['artist'],
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: Config.textSize(context, 3),
+                                        fontFamily: 'Acme'),
+                                  ),
                                 ),
                               ],
                             ),
@@ -366,7 +364,9 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                               diameter: 12,
                               child: Icons.skip_previous,
                               onPressed: () async {
-                                await controller.skip(prev: true);
+                                if (currentSong != null) {
+                                  await controller.skip(prev: true);
+                                }
                               },
                             ),
                             CustomButton(
@@ -378,10 +378,6 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                               onPressed: () {
                                 // if nothing is playing
                                 if (controller.nowPlaying['path'] == null) {
-                                  controller.allSongs =
-                                      Provider.of<ProviderClass>(context,
-                                              listen: false)
-                                          .allSongs;
                                   controller.setUp(currentSong);
                                 } else {
                                   controller.isPlaying
@@ -394,7 +390,9 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                               diameter: 12,
                               child: Icons.skip_next,
                               onPressed: () async {
-                                await controller.skip(next: true);
+                                if (currentSong != null) {
+                                  await controller.skip(next: true);
+                                }
                               },
                             ),
                           ],

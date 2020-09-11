@@ -151,6 +151,7 @@ class _NowPlayingState extends State<NowPlaying> {
                                 height: 35,
                                 width: 35,
                                 isCreateNew: false,
+                                song: controller.nowPlaying,
                               );
                             },
                           );
@@ -206,7 +207,7 @@ class _NowPlayingState extends State<NowPlaying> {
                         diameter: 12,
                         child: Icons.skip_previous,
                         onPressed: () async {
-                          await controller.skip(prev: true, context: context);
+                          await controller.skip(prev: true);
                         },
                       ),
                       CustomButton(
@@ -244,7 +245,7 @@ class _NowPlayingState extends State<NowPlaying> {
                         diameter: 12,
                         child: Icons.skip_next,
                         onPressed: () async {
-                          await controller.skip(next: true, context: context);
+                          await controller.skip(next: true);
                         },
                       ),
                     ],

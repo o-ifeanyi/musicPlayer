@@ -110,6 +110,9 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                                       context,
                                                       listen: false)
                                                   .nowPlaying);
+                                      if (playlistDB.playList[index]['name'] == 'Favourites') {
+                                        Provider.of<SongController>(context, listen: false).setFavourite(widget.song);
+                                      }
                                       Navigator.pop(context);
                                     },
                                     child: index > 0 &&

@@ -31,7 +31,7 @@ class BottomSheetOptions extends StatelessWidget {
                       builder: (context) {
                         return AlertDialog(
                           title: Text(
-                            'Edit playlist name',
+                            'Rename playlist',
                             style: customTextStyle,
                           ),
                           content: TextField(

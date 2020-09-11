@@ -6,9 +6,6 @@ import 'package:musicPlayer/models/playListDB.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SongController extends ChangeNotifier {
-  SongController() {
-    init();
-  }
   AudioPlayer player;
   Duration duration;
   int currentTime = 0;
@@ -23,7 +20,8 @@ class SongController extends ChangeNotifier {
   bool isRepeat = false;
   bool isPlaying = false;
   bool useArt = false;
-  Map nowPlaying = {};
+  dynamic nowPlaying = {};
+  dynamic lastPlayed;
   AppLifecycleState state;
   PlayListDB playListDB = PlayListDB();
 
@@ -33,15 +31,16 @@ class SongController extends ChangeNotifier {
       isRepeat = pref.getBool('repeat') ?? false;
       useArt = pref.getBool('useArt') ?? false;
     });
+    lastPlayed = await playListDB.lastPlayed();
     notifyListeners();
   }
 
-  Future<void> setFavourite(dynamic song) async{
+  Future<void> setFavourite(dynamic song) async {
     isFavourite = await playListDB.isFavourite(song);
     notifyListeners();
   }
 
-  Future<void> setUseArt(bool value) async{
+  Future<void> setUseArt(bool value) async {
     await SharedPreferences.getInstance().then((pref) {
       pref.setBool('useArt', value);
     });
@@ -55,18 +54,20 @@ class SongController extends ChangeNotifier {
   }
 
   Future<void> setUp(dynamic song) async {
-    nowPlaying = song;
-    isFavourite = await playListDB.isFavourite(nowPlaying);
-    playListDB.saveNowPlaying(nowPlaying);
-    currentSongIndex =
-        allSongs.indexWhere((element) => element['path'] == nowPlaying['path']);
-    player = AudioPlayer();
-    duration = await player.setFilePath(nowPlaying['path']);
-    songLenght = duration.inSeconds;
-    timeLeft = '${duration.inMinutes}:${duration.inSeconds % 60}';
-    getPosition();
-    play();
-    handleInterruptions();
+    if (song != null) {
+      nowPlaying = song;
+      isFavourite = await playListDB.isFavourite(nowPlaying);
+      playListDB.saveNowPlaying(nowPlaying);
+      currentSongIndex = allSongs
+          .indexWhere((element) => element['path'] == nowPlaying['path']);
+      player = AudioPlayer();
+      duration = await player.setFilePath(nowPlaying['path']);
+      songLenght = duration.inSeconds;
+      timeLeft = '${duration.inMinutes}:${duration.inSeconds % 60}';
+      getPosition();
+      play();
+      handleInterruptions();
+    }
   }
 
   void getPosition() {
@@ -99,7 +100,7 @@ class SongController extends ChangeNotifier {
   }
 
   Future<void> skip(
-      {bool next = false, bool prev = false, BuildContext context}) async {
+      {bool next = false, bool prev = false}) async {
     currentSongIndex =
         allSongs.indexWhere((element) => element['path'] == nowPlaying['path']);
     List shuffled = [...allSongs];
@@ -149,9 +150,13 @@ class SongController extends ChangeNotifier {
   }
 
   Future<void> disposePlayer() async {
+    try {
     if (player.playbackState == AudioPlaybackState.playing ||
         player.playbackState == AudioPlaybackState.paused) {
       await player.dispose();
+    }
+    } catch(e) {
+      debugPrint(e.toString());
     }
     setIsPlaying(false);
     currentTime = 0;

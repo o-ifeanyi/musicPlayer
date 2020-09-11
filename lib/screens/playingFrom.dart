@@ -57,9 +57,14 @@ class _PlayingFromState extends State<PlayingFrom> {
                       ),
                       isPotrait
                           ? Expanded(
-                              child: CircleDisc(
-                                iconSize: 10,
-                                isRotating: controller.isPlaying,
+                              child: Container(
+                                margin: controller.useArt
+                                    ? EdgeInsets.symmetric(horizontal: 25)
+                                    : EdgeInsets.symmetric(horizontal: 10),
+                                child: CircleDisc(
+                                  iconSize: 10,
+                                  isRotating: controller.isPlaying,
+                                ),
                               ),
                             )
                           : SizedBox.shrink(),

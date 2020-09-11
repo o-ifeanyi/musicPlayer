@@ -7,6 +7,7 @@ import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:musicPlayer/screens/nowPlaying.dart';
 import 'package:provider/provider.dart';
+import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayList extends StatefulWidget {
@@ -22,6 +23,7 @@ class _PlayListState extends State<PlayList> {
   List searchList = [];
   double padding = 10.0;
   bool isSearching = false;
+  bool canDelete = false;
   TextEditingController input = TextEditingController();
   FocusNode focusNode = FocusNode();
 
@@ -47,11 +49,18 @@ class _PlayListState extends State<PlayList> {
   void initState() {
     allSongs = widget.songList;
     searchList.addAll(widget.songList);
+    canDelete = widget.playListName == 'All songs' ||
+        widget.playListName == 'Recently added' ||
+        widget.playListName == 'Recently played';
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    TextStyle customTextStyle = TextStyle(
+        fontSize: Config.textSize(context, 3.5),
+        fontWeight: FontWeight.w400,
+        fontFamily: 'Acme');
     return SafeArea(
         child: Scaffold(
       resizeToAvoidBottomInset: false,
@@ -117,131 +126,165 @@ class _PlayListState extends State<PlayList> {
                   thickness: 1.0,
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount:
-                        isSearching ? searchList.length : allSongs.length,
-                    itemBuilder: (context, index) {
-                      return Consumer<SongController>(
-                        builder: (context, controller, child) {
-                          List songList = isSearching ? searchList : allSongs;
-                          return AnimatedPadding(
-                            duration: Duration(milliseconds: 400),
-                            padding: controller.nowPlaying['path'] ==
-                                        songList[index]['path'] &&
-                                    controller.isPlaying
-                                ? EdgeInsets.symmetric(vertical: padding)
-                                : EdgeInsets.all(0),
-                            child: ListTile(
-                              selected: controller.nowPlaying['path'] ==
-                                  songList[index]['path'],
-                              onTap: () async {
-                                controller.allSongs = widget.songList;
-                                controller.playlistName = widget.playListName;
-                                await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => NowPlaying(
-                                        currentSong: songList[index]),
+                  // if songlist is empty calling [index]['path] causes it to crash
+                  child: widget.songList.isNotEmpty
+                      ? ListView.builder(
+                          itemCount:
+                              isSearching ? searchList.length : allSongs.length,
+                          itemBuilder: (context, index) {
+                            return Consumer<SongController>(
+                              builder: (context, controller, child) {
+                                List songList =
+                                    isSearching ? searchList : allSongs;
+                                return AnimatedPadding(
+                                  duration: Duration(milliseconds: 400),
+                                  padding: controller.nowPlaying['path'] ==
+                                              songList[index]['path'] &&
+                                          controller.isPlaying
+                                      ? EdgeInsets.symmetric(vertical: padding)
+                                      : EdgeInsets.all(0),
+                                  child: ListTile(
+                                    selected: controller.nowPlaying['path'] ==
+                                        songList[index]['path'],
+                                    onTap: () async {
+                                      controller.allSongs = widget.songList;
+                                      controller.playlistName =
+                                          widget.playListName;
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => NowPlaying(
+                                              currentSong: songList[index]),
+                                        ),
+                                      );
+                                      isSearching = false;
+                                      resetSearch();
+                                      controller.isPlaying
+                                          ? padding = 10.0
+                                          : padding = 0.0;
+                                    },
+                                    contentPadding: EdgeInsets.only(right: 20),
+                                    leading: PopupMenuButton(
+                                      icon: Icon(
+                                        Icons.more_vert,
+                                        size: Config.xMargin(context, 6),
+                                      ),
+                                      itemBuilder: (context) {
+                                        return <PopupMenuEntry<ListTile>>[
+                                          PopupMenuItem(
+                                            child: ListTile(
+                                              dense: true,
+                                              trailing:
+                                                  Icon(Icons.playlist_add),
+                                              title: Text(
+                                                'Add to playlist',
+                                                style: customTextStyle,
+                                              ),
+                                              onTap: () async {
+                                                Navigator.pop(context);
+                                                showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return CreatePlayList(
+                                                      height: 35,
+                                                      width: 35,
+                                                      song: songList[index],
+                                                      isCreateNew: false,
+                                                    );
+                                                  },
+                                                );
+                                              },
+                                            ),
+                                          ),
+                                          PopupMenuItem(
+                                            child: ListTile(
+                                              dense: true,
+                                              trailing: Icon(canDelete
+                                                  ? Icons.delete
+                                                  : Icons.remove),
+                                              onTap: () async {
+                                                Navigator.pop(context);
+                                                await buildShowDialog(
+                                                    context,
+                                                    songList,
+                                                    index,
+                                                    controller);
+                                              },
+                                              title: Text(
+                                                canDelete
+                                                    ? 'Delete song'
+                                                    : 'Remove song',
+                                                // textAlign: TextAlign.left,
+                                                style: customTextStyle,
+                                              ),
+                                            ),
+                                          ),
+                                          PopupMenuItem(
+                                            child: ListTile(
+                                              dense: true,
+                                              trailing: Icon(Icons.share),
+                                              title: Text(
+                                                'Share',
+                                                style: customTextStyle,
+                                              ),
+                                              onTap: () async {
+                                                final RenderBox box =
+                                                    context.findRenderObject();
+                                                Navigator.pop(context);
+                                                await Share.shareFiles(
+                                                    [songList[index]['path']],
+                                                    subject: songList[index]
+                                                        ['title'],
+                                                    sharePositionOrigin:
+                                                        box.localToGlobal(
+                                                                Offset.zero) &
+                                                            box.size);
+                                              },
+                                            ),
+                                          )
+                                        ];
+                                      },
+                                    ),
+                                    title: Text(
+                                      songList[index]['title'],
+                                      overflow: TextOverflow.ellipsis,
+                                      style: customTextStyle,
+                                    ),
+                                    subtitle: Text(
+                                      songList[index]['artist'],
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontSize: Config.textSize(context, 3),
+                                          fontFamily: 'Acme'),
+                                    ),
+                                    trailing: CustomButton(
+                                      child: controller.nowPlaying['path'] ==
+                                                  songList[index]['path'] &&
+                                              controller.isPlaying
+                                          ? Icons.pause
+                                          : Icons.play_arrow,
+                                      diameter: 12,
+                                      isToggled:
+                                          controller.nowPlaying['path'] ==
+                                              songList[index]['path'],
+                                      onPressed: () async {
+                                        controller.allSongs = widget.songList;
+                                        controller.playlistName =
+                                            widget.playListName;
+                                        await controller.playlistControlOptions(
+                                            songList[index]);
+                                        controller.isPlaying
+                                            ? padding = 10.0
+                                            : padding = 0.0;
+                                      },
+                                    ),
                                   ),
                                 );
-                                isSearching = false;
-                                resetSearch();
-                                controller.isPlaying
-                                    ? padding = 10.0
-                                    : padding = 0.0;
                               },
-                              contentPadding: EdgeInsets.only(right: 20),
-                              leading: PopupMenuButton(
-                                icon: Icon(
-                                  Icons.more_vert,
-                                  size: Config.xMargin(context, 6),
-                                ),
-                                itemBuilder: (context) {
-                                  return <PopupMenuEntry<String>>[
-                                    PopupMenuItem(
-                                      child: FlatButton(
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return CreatePlayList(
-                                                height: 35,
-                                                width: 35,
-                                                song: songList[index],
-                                                isCreateNew: false,
-                                              );
-                                            },
-                                          );
-                                        },
-                                        child: Text(
-                                          'Add to playlist',
-                                          textAlign: TextAlign.left,
-                                        ),
-                                      ),
-                                    ),
-                                    PopupMenuItem(
-                                      child: FlatButton(
-                                        onPressed: () async {
-                                          Navigator.pop(context);
-                                          await buildShowDialog(context,
-                                              songList, index, controller);
-                                        },
-                                        child: Text(
-                                          widget.playListName == 'All songs' ||
-                                                  widget.playListName ==
-                                                      'Recently added' ||
-                                                  widget.playListName ==
-                                                      'Recently played'
-                                              ? 'Delete song'
-                                              : 'Remove song',
-                                          textAlign: TextAlign.left,
-                                        ),
-                                      ),
-                                    ),
-                                  ];
-                                },
-                              ),
-                              title: Text(
-                                songList[index]['title'],
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontSize: Config.textSize(context, 3.5),
-                                    fontWeight: FontWeight.w400,
-                                    fontFamily: 'Acme'),
-                              ),
-                              subtitle: Text(
-                                songList[index]['artist'],
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontSize: Config.textSize(context, 3),
-                                    fontFamily: 'Acme'),
-                              ),
-                              trailing: CustomButton(
-                                child: controller.nowPlaying['path'] ==
-                                            songList[index]['path'] &&
-                                        controller.isPlaying
-                                    ? Icons.pause
-                                    : Icons.play_arrow,
-                                diameter: 12,
-                                isToggled: controller.nowPlaying['path'] ==
-                                    songList[index]['path'],
-                                onPressed: () async {
-                                  controller.allSongs = widget.songList;
-                                  controller.playlistName = widget.playListName;
-                                  await controller
-                                      .playlistControlOptions(songList[index]);
-                                  controller.isPlaying
-                                      ? padding = 10.0
-                                      : padding = 0.0;
-                                },
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
+                            );
+                          },
+                        )
+                      : SizedBox.expand(),
                 ),
               ],
             ),
@@ -308,9 +351,7 @@ class _PlayListState extends State<PlayList> {
         builder: (context) {
           return AlertDialog(
             title: Text(
-              widget.playListName == 'All songs' ||
-                      widget.playListName == 'Recently added' ||
-                      widget.playListName == 'Recently played'
+              canDelete
                   ? 'Delete "${songList[index]['title']}" from device?'
                   : 'Remove "${songList[index]['title']}" from ${widget.playListName}?',
               style: TextStyle(
@@ -328,9 +369,7 @@ class _PlayListState extends State<PlayList> {
               FlatButton(
                   textColor: Theme.of(context).accentColor,
                   onPressed: () async {
-                    if (widget.playListName == 'All songs' ||
-                        widget.playListName == 'Recently added' ||
-                        widget.playListName == 'Recently played') {
+                    if (canDelete) {
                       await Provider.of<PlayListDB>(context, listen: false)
                           .removeFromDevice(songList[index]);
                       // if current song beign played is deleted its still available from libray

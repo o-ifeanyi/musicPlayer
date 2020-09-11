@@ -16,7 +16,6 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-
   Container buildColoredCircle(Color color1, Color color2) {
     return Container(
       height: 50,
@@ -59,7 +58,7 @@ class _SettingsState extends State<Settings> {
           child: ListView(
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 10, top: 30, bottom: 10),
+                padding: const EdgeInsets.only(left: 15, top: 30, bottom: 10),
                 child: Row(
                   children: [
                     CustomButton(
@@ -91,6 +90,12 @@ class _SettingsState extends State<Settings> {
                     title: Text(
                       'Theme',
                       style: listStyle,
+                    ),
+                    subtitle: Text(
+                      'Change the look of the app',
+                      style: listStyle.copyWith(
+                        fontSize: Config.textSize(context, 3),
+                      ),
                     ),
                     onTap: () {
                       showDialog(
@@ -136,6 +141,12 @@ class _SettingsState extends State<Settings> {
                       'Use album cover',
                       style: listStyle,
                     ),
+                    subtitle: Text(
+                      'Show album cover of the song currently playing',
+                      style: listStyle.copyWith(
+                        fontSize: Config.textSize(context, 3),
+                      ),
+                    ),
                     trailing: Checkbox(
                       activeColor: Theme.of(context).accentColor,
                       value: controller.useArt,
@@ -151,6 +162,12 @@ class _SettingsState extends State<Settings> {
                 title: Text(
                   'Reset playlist',
                   style: listStyle,
+                ),
+                subtitle: Text(
+                  'Remove all playlist you created',
+                  style: listStyle.copyWith(
+                    fontSize: Config.textSize(context, 3),
+                  ),
                 ),
                 onTap: () {
                   showDialog(
@@ -186,6 +203,12 @@ class _SettingsState extends State<Settings> {
                 title: Text(
                   'About',
                   style: listStyle,
+                ),
+                subtitle: Text(
+                  'About vybe player',
+                  style: listStyle.copyWith(
+                    fontSize: Config.textSize(context, 3),
+                  ),
                 ),
                 onTap: () {
                   showDialog(
