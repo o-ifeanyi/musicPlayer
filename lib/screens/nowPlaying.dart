@@ -151,7 +151,7 @@ class _NowPlayingState extends State<NowPlaying> {
                                 height: 35,
                                 width: 35,
                                 isCreateNew: false,
-                                song: controller.nowPlaying,
+                                songs: [controller.nowPlaying],
                               );
                             },
                           );

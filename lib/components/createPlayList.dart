@@ -3,16 +3,18 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/playListDB.dart';
+import 'package:musicPlayer/models/share.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
 class CreatePlayList extends StatefulWidget {
-  CreatePlayList({this.height, this.width, this.isCreateNew = true, this.song});
+  CreatePlayList(
+      {this.height, this.width, this.isCreateNew = true, this.songs});
 
   final double width;
   final double height;
-  final dynamic song; // for adding to playlist from pop up options
+  final List songs; // for adding to playlist from pop up options
   final bool isCreateNew;
 
   @override
@@ -103,16 +105,20 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                 itemBuilder: (context, index) {
                                   return FlatButton(
                                     onPressed: () async {
-                                      await playlistDB.addToPlaylist(
+                                      widget.songs.forEach((song) async {
+                                        await playlistDB.addToPlaylist(
                                           playlistDB.playList[index]['name'],
-                                          widget.song ??
-                                              Provider.of<SongController>(
-                                                      context,
-                                                      listen: false)
-                                                  .nowPlaying);
-                                      if (playlistDB.playList[index]['name'] == 'Favourites') {
-                                        Provider.of<SongController>(context, listen: false).setFavourite(widget.song);
-                                      }
+                                          song,
+                                        );
+                                        if (playlistDB.playList[index]
+                                                ['name'] ==
+                                            'Favourites') {
+                                          Provider.of<SongController>(context,
+                                                  listen: false)
+                                              .setFavourite(song);
+                                        }
+                                      });
+                                      Provider.of<ShareClass>(context, listen: false).reset(notify: true);
                                       Navigator.pop(context);
                                     },
                                     child: index > 0 &&

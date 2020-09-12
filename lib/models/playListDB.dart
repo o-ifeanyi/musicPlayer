@@ -55,14 +55,21 @@ class PlayListDB extends ChangeNotifier {
   }
 
   Future<void> removeFromPlaylist(String playlistName, dynamic song) async {
-    Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
-    var dbPlaylist = db.get(playlistName);
-    List songs = dbPlaylist['songs'];
-    songs.removeWhere((element) => element['path'] == song['path']);
-    db.put(playlistName, {
-      'name': playlistName,
-      'songs': songs,
-    });
+    if (playlistName == 'Recently played') {
+      Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
+      List recentSongs = recentdb.get('Recently played');
+      recentSongs.removeWhere((element) => element['path'] == song['path']);
+      recentdb.put('Recently played', recentSongs);
+    } else {
+      Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
+      var dbPlaylist = db.get(playlistName);
+      List songs = dbPlaylist['songs'];
+      songs.removeWhere((element) => element['path'] == song['path']);
+      db.put(playlistName, {
+        'name': playlistName,
+        'songs': songs,
+      });
+    }
     refresh();
   }
 
@@ -117,10 +124,14 @@ class PlayListDB extends ChangeNotifier {
   Future<void> getRecentlyPlayed() async {
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
-    recentList.clear();
-    songs != null && songs.isNotEmpty
-        ? recentList = [...songs.reversed]
-        : recentList = [];
+    if (songs.isNotEmpty) {
+      recentList.clear();
+      recentList.addAll(songs);
+    }
+    
+    // songs != null && songs.isNotEmpty
+    //     ? recentList = [...songs.reversed]
+    //     : recentList = [];
     notifyListeners();
   }
 
@@ -146,16 +157,13 @@ class PlayListDB extends ChangeNotifier {
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
     if (songs != null && songs.isNotEmpty) {
-      print('im outta here');
       return songs.last;
     } else {
-      print('im outta here');
       return null;
     }
   }
 
   Future<void> refresh() async {
-    getRecentlyPlayed();
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
     Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
     if (db.values.length != 0) {
@@ -163,6 +171,7 @@ class PlayListDB extends ChangeNotifier {
       for (var each in db.values) {
         playList.add(each);
       }
+      await getRecentlyPlayed();
     } else {
       // else block runs just the first time, when db is empty
       // happens when app is run for the first time or after playlist is reset
@@ -179,7 +188,9 @@ class PlayListDB extends ChangeNotifier {
 
   Future<void> clear() async {
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
+    Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
     await db.deleteFromDisk();
+    await recentdb.deleteFromDisk();
     print('deleted');
   }
 }

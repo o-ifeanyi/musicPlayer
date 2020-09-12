@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:move_to_background/move_to_background.dart';
-import 'package:musicPlayer/components/bottomSheetOptions.dart';
 import 'package:musicPlayer/components/createPlayList.dart';
 import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/components/customCard.dart';
+import 'package:musicPlayer/components/libraryBottomSheet.dart';
 import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/playListDB.dart';
@@ -220,7 +220,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                     showModalBottomSheet(
                                       enableDrag: false,
                                       context: context,
-                                      builder: (context) => BottomSheetOptions(
+                                      builder: (context) => LibraryBottomSheet(
                                           playListDB.playList[index]['name']),
                                     );
                                   }

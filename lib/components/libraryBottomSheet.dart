@@ -3,8 +3,8 @@ import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/playListDB.dart';
 import 'package:provider/provider.dart';
 
-class BottomSheetOptions extends StatelessWidget {
-  BottomSheetOptions(this.playlistName);
+class LibraryBottomSheet extends StatelessWidget {
+  LibraryBottomSheet(this.playlistName);
   final playlistName;
   final editingController = TextEditingController();
   @override

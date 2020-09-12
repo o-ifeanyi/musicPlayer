@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:musicPlayer/constants.dart';
 import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/playListDB.dart';
+import 'package:musicPlayer/models/share.dart';
 import 'package:musicPlayer/models/songController.dart';
 import 'package:musicPlayer/screens/splash.dart';
 import 'package:provider/provider.dart';
@@ -21,6 +22,7 @@ void main() {
             create: (_) => ProviderClass(kThemes[theme])),
         ChangeNotifierProvider(create: (_) => PlayListDB()),
         ChangeNotifierProvider(create: (_) => SongController()),
+        ChangeNotifierProvider(create: (_) => ShareClass()),
       ],
       child: MyApp(theme: kThemes[theme]),
     ));
