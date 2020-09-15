@@ -135,7 +135,9 @@ class _SettingsState extends State<Settings> {
               Consumer<SongController>(
                 builder: (context, controller, child) {
                   return ListTile(
-                    onTap: () {},
+                    onTap: () {
+                      controller.setUseArt(!controller.useArt);
+                    },
                     leading: Icon(Icons.image),
                     title: Text(
                       'Use album cover',

@@ -41,9 +41,9 @@ class _CircleDiscState extends State<CircleDisc>
 
   @override
   Widget build(BuildContext context) {
-    widget.isRotating ? startRotation() : stopRotation();
     return Consumer<SongController>(
       builder: (context, controller, child) {
+        widget.isRotating && !controller.useArt ? startRotation() : stopRotation();
         return controller.useArt
             ? Container(
               margin: EdgeInsets.only(top: 30,),

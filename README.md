@@ -26,7 +26,9 @@ Please star⭐ the repo if you like what you see😉.
 - [x] Repeate.
 - [x] Delete.
 - [x] Search.
+- [x] Share music.
 - [x] Create playlist.
+- [x] Delete playlist.
 - [x] Add to playlist.
 - [x] Remove from playlist.
 - [x] Dark Mode.
@@ -39,6 +41,7 @@ Please star⭐ the repo if you like what you see😉.
 |<img src="ss/light2.png" width="400">|<img src="ss/dark2.png" width="400">|
 |<img src="ss/light3.png" width="400">|<img src="ss/dark3.png" width="400">|
 |<img src="ss/light4.png" width="400">|<img src="ss/dark4.png" width="400">|
+|<img src="ss/light5.png" width="400">|<img src="ss/dark5.png" width="400">|
 
 
 ## 🔌 Plugins

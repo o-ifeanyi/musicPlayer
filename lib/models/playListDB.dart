@@ -10,13 +10,13 @@ class PlayListDB extends ChangeNotifier {
 
   List recentList = [];
 
-  static Future<String> getPlaylistPath() async {
+  Future<String> getPlaylistPath() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
     final path = documentDirectory.path + '/playlist.db';
     return path;
   }
 
-  static Future<String> getRecentPath() async {
+  Future<String> getRecentPath() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
     final path = documentDirectory.path + '/recent.db';
     return path;
@@ -36,7 +36,6 @@ class PlayListDB extends ChangeNotifier {
       }
     }
     refresh();
-    notifyListeners();
   }
 
   Future<void> addToPlaylist(String playlistName, dynamic song) async {
@@ -126,12 +125,10 @@ class PlayListDB extends ChangeNotifier {
     List songs = db.get('Recently played');
     if (songs.isNotEmpty) {
       recentList.clear();
-      recentList.addAll(songs);
+      for (var each in songs) {
+        recentList.add(each);
+      }
     }
-    
-    // songs != null && songs.isNotEmpty
-    //     ? recentList = [...songs.reversed]
-    //     : recentList = [];
     notifyListeners();
   }
 
@@ -153,7 +150,6 @@ class PlayListDB extends ChangeNotifier {
   }
 
   Future<dynamic> lastPlayed() async {
-    print('just got called');
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
     if (songs != null && songs.isNotEmpty) {
@@ -165,7 +161,6 @@ class PlayListDB extends ChangeNotifier {
 
   Future<void> refresh() async {
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
-    Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
     if (db.values.length != 0) {
       playList.clear();
       for (var each in db.values) {
@@ -173,6 +168,7 @@ class PlayListDB extends ChangeNotifier {
       }
       await getRecentlyPlayed();
     } else {
+      Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
       // else block runs just the first time, when db is empty
       // happens when app is run for the first time or after playlist is reset
       db.put('Create playlist', {'name': 'Create playlist'});
@@ -191,6 +187,5 @@ class PlayListDB extends ChangeNotifier {
     Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
     await db.deleteFromDisk();
     await recentdb.deleteFromDisk();
-    print('deleted');
   }
 }
