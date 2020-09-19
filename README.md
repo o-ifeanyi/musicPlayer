@@ -52,6 +52,7 @@ Please star⭐ the repo if you like what you see😉.
 |[**Just audio**](https://pub.dev/packages/xml2json)| Play audio|
 |[**Audiotagger**](https://pub.dev/packages/dio)| Get mp3 metadata|
 |[**Path & Path provider**](https://pub.dev/packages/http)| Access storage folders|
+|[**Share**](https://pub.dev/packages/share)| Share songs across devices|
 |[**Shared preferences**](https://pub.dev/packages/epub_view)| Store certain preference e.g dark mode|
 
 
