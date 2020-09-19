@@ -50,9 +50,9 @@ class _CircleDiscState extends State<CircleDisc>
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
-                  image: controller.nowPlaying['image'] == null
+                  image: controller.songArt == null
                       ? AssetImage('images/album_art.png')
-                      : MemoryImage(controller.nowPlaying['image']),
+                      : MemoryImage(controller.songArt),
                   fit: BoxFit.cover,
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'package:audio_session/audio_session.dart';
+import 'package:audiotagger/audiotagger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_media_notification/flutter_media_notification.dart';
 import 'package:just_audio/just_audio.dart';
@@ -22,6 +23,7 @@ class SongController extends ChangeNotifier {
   bool useArt = false;
   dynamic nowPlaying = {};
   dynamic lastPlayed;
+  dynamic songArt;
   AppLifecycleState state;
   PlayListDB playListDB = PlayListDB();
 
@@ -45,6 +47,9 @@ class SongController extends ChangeNotifier {
       pref.setBool('useArt', value);
     });
     useArt = value;
+    if (nowPlaying['path'] != null) {
+      songArt = await Audiotagger().readArtwork(path: nowPlaying['path']);
+    }
     notifyListeners();
   }
 
@@ -56,14 +61,17 @@ class SongController extends ChangeNotifier {
   Future<void> setUp(dynamic song) async {
     if (song != null) {
       nowPlaying = song;
-      isFavourite = await playListDB.isFavourite(nowPlaying);
-      playListDB.saveNowPlaying(nowPlaying);
       currentSongIndex = allSongs
           .indexWhere((element) => element['path'] == nowPlaying['path']);
       player = AudioPlayer();
       duration = await player.setFilePath(nowPlaying['path']);
       songLenght = duration.inSeconds;
       timeLeft = '${duration.inMinutes}:${duration.inSeconds % 60}';
+      if (useArt) {
+        songArt = await Audiotagger().readArtwork(path: song['path']);
+      }
+      isFavourite = await playListDB.isFavourite(nowPlaying);
+      playListDB.saveNowPlaying(nowPlaying);
       getPosition();
       play();
       handleInterruptions();

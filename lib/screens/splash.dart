@@ -23,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 1200),
+      duration: Duration(seconds: 1),
       upperBound: 1.0,
     )..addListener(() {
         if (_controller.isCompleted) {
@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen>
           Provider.of<SongController>(context, listen: false).init();
           // populates playlist from database
           Provider.of<PlayListDB>(context, listen: false).refresh();
-          Future.delayed(Duration(milliseconds: 1800)).then((value) {
+          Future.delayed(Duration(seconds: 2)).then((value) {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => Library()),

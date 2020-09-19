@@ -454,8 +454,8 @@ class _PlayListState extends State<PlayList> {
                       await Provider.of<PlayListDB>(context, listen: false)
                           .removeFromPlaylist(
                               widget.playListName, songList[index]);
-                      Navigator.pop(context);
                       setState(() {});
+                      Navigator.pop(context);
                       // setstate wasnt having the desired effect until after a while
                       Future.delayed(Duration(milliseconds: 500)).then((value) => setState(() {}));
                     }

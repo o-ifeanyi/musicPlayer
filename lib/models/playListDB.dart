@@ -106,18 +106,16 @@ class PlayListDB extends ChangeNotifier {
   }
 
   Future<void> saveNowPlaying(dynamic song) async {
-    if (song != null) {
-      Box db = await Hive.openBox('recent', path: await getRecentPath());
-      List songs = db.get('Recently played');
-      bool notFound = songs.every((element) => element['path'] != song['path']);
-      if (notFound && songs.length < 20) {
-        songs.add(song);
-      } else if (notFound && songs.length == 20) {
-        songs.removeAt(0);
-        songs.add(song);
-      }
-      db.put('Recently played', songs);
+    Box db = await Hive.openBox('recent', path: await getRecentPath());
+    List songs = db.get('Recently played');
+    bool notFound = songs.every((element) => element['path'] != song['path']);
+    if (notFound && songs.length < 20) {
+      songs.add(song);
+    } else if (notFound && songs.length == 20) {
+      songs.removeAt(0);
+      songs.add(song);
     }
+    db.put('Recently played', songs);
   }
 
   Future<void> getRecentlyPlayed() async {

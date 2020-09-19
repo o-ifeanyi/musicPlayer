@@ -103,13 +103,9 @@ class ProviderClass extends ChangeNotifier {
     var audioTagger = Audiotagger();
     var info;
     var fileInfo;
-    List image;
     var date;
     try {
       info = await audioTagger.readTagsAsMap(
-        path: file,
-      );
-      image = await audioTagger.readArtwork(
         path: file,
       );
       fileInfo = File(file);
@@ -119,7 +115,6 @@ class ProviderClass extends ChangeNotifier {
     }
     return {
       'path': file,
-      'image': image,
               'title':
           info != null && info['title'] != ''
               ? info['title']
