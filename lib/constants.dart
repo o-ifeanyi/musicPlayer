@@ -13,6 +13,7 @@ final List kThemes = [
     backgroundColor: Colors.white,
     scaffoldBackgroundColor: Colors.grey[100],
     dividerColor: Colors.black45,
+    fontFamily: 'Acme',
     iconTheme: IconThemeData(
       color: Colors.black,
       opacity: 0.8,
@@ -33,6 +34,7 @@ final List kThemes = [
     backgroundColor: Colors.white,
     scaffoldBackgroundColor: Colors.grey[100],
     dividerColor: Colors.black45,
+    fontFamily: 'Acme',
     iconTheme: IconThemeData(
       color: Colors.black,
       opacity: 0.8,
@@ -55,6 +57,7 @@ final List kThemes = [
     accentColor: Colors.pinkAccent,
     cursorColor: Colors.pinkAccent,
     dividerColor: Colors.white54,
+    fontFamily: 'Acme',
     sliderTheme: SliderThemeData(
       trackHeight: 1.0,
       thumbColor: Colors.pinkAccent,
@@ -73,6 +76,7 @@ final List kThemes = [
     accentColor: Colors.deepOrange,
     cursorColor: Colors.deepOrange,
     dividerColor: Colors.white54,
+    fontFamily: 'Acme',
     sliderTheme: SliderThemeData(
       trackHeight: 1.0,
       thumbColor: Colors.deepOrange,

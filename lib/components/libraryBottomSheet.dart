@@ -7,12 +7,12 @@ class LibraryBottomSheet extends StatelessWidget {
   LibraryBottomSheet(this.playlistName);
   final playlistName;
   final editingController = TextEditingController();
+  
   @override
   Widget build(BuildContext context) {
     TextStyle customTextStyle = TextStyle(
       fontSize: Config.textSize(context, 3.5),
       fontWeight: FontWeight.w400,
-      fontFamily: 'Acme',
     );
     return Container(
       height: Config.yMargin(context, 10),

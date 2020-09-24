@@ -70,7 +70,6 @@ class _NowPlayingState extends State<NowPlaying> {
                         style: TextStyle(
                           fontSize: Config.textSize(context, 5),
                           fontWeight: FontWeight.w400,
-                          fontFamily: 'Acme',
                         ),
                       ),
                       CustomButton(
@@ -103,7 +102,6 @@ class _NowPlayingState extends State<NowPlaying> {
                     style: TextStyle(
                       fontSize: Config.textSize(context, 3.5),
                       fontWeight: FontWeight.w400,
-                      fontFamily: 'Acme',
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -114,7 +112,6 @@ class _NowPlayingState extends State<NowPlaying> {
                     controller.nowPlaying['artist'] ?? '',
                     style: TextStyle(
                       fontSize: Config.textSize(context, 3),
-                      fontFamily: 'Acme',
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -172,14 +169,12 @@ class _NowPlayingState extends State<NowPlaying> {
                                 controller.timePlayed,
                                 style: TextStyle(
                                   fontSize: Config.textSize(context, 3),
-                                  fontFamily: 'Acme',
                                 ),
                               ),
                               Text(
                                 controller.timeLeft,
                                 style: TextStyle(
                                   fontSize: Config.textSize(context, 3),
-                                  fontFamily: 'Acme',
                                 ),
                               ),
                             ],

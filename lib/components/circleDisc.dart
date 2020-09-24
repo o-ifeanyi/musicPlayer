@@ -51,7 +51,7 @@ class _CircleDiscState extends State<CircleDisc>
                 borderRadius: BorderRadius.circular(10),
                 image: DecorationImage(
                   image: controller.songArt == null
-                      ? AssetImage('images/album_art.png')
+                      ? AssetImage('images/album_art.jpg')
                       : MemoryImage(controller.songArt),
                   fit: BoxFit.cover,
                 ),

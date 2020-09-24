@@ -101,7 +101,6 @@ class _SplashScreenState extends State<SplashScreen>
                       fontSize:
                           Config.textSize(context, _curvedAnimation.value * 8),
                       fontWeight: FontWeight.w400,
-                      fontFamily: 'Acme',
                     ),
                   ),
                 )

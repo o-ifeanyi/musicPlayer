@@ -33,9 +33,9 @@ class _PlayingFromState extends State<PlayingFrom> {
                 ),
                 Text('Playing From - ${controller.playlistName}',
                     style: TextStyle(
-                        fontSize: Config.textSize(context, 5),
-                        fontWeight: FontWeight.w400,
-                        fontFamily: 'Acme'),
+                      fontSize: Config.textSize(context, 5),
+                      fontWeight: FontWeight.w400,
+                    ),
                     textAlign: TextAlign.center),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -116,16 +116,16 @@ class _PlayingFromState extends State<PlayingFrom> {
                             songList[index]['title'],
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                fontSize: Config.textSize(context, 3.5),
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Acme'),
+                              fontSize: Config.textSize(context, 3.5),
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                           subtitle: Text(
                             songList[index]['artist'],
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                fontSize: Config.textSize(context, 3),
-                                fontFamily: 'Acme'),
+                              fontSize: Config.textSize(context, 3),
+                            ),
                           ),
                           trailing: CustomButton(
                             diameter: 12,

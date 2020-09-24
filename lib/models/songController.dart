@@ -47,8 +47,10 @@ class SongController extends ChangeNotifier {
       pref.setBool('useArt', value);
     });
     useArt = value;
-    if (nowPlaying['path'] != null) {
-      songArt = await Audiotagger().readArtwork(path: nowPlaying['path']);
+    if (nowPlaying['path'] != null && useArt) {
+      await Audiotagger().readArtwork(path: nowPlaying['path']).then((value) {
+        songArt = value;
+      }).catchError((e) => print(e));
     }
     notifyListeners();
   }
@@ -68,7 +70,9 @@ class SongController extends ChangeNotifier {
       songLenght = duration.inSeconds;
       timeLeft = '${duration.inMinutes}:${duration.inSeconds % 60}';
       if (useArt) {
-        songArt = await Audiotagger().readArtwork(path: song['path']);
+        await Audiotagger().readArtwork(path: nowPlaying['path']).then((value) {
+        songArt = value;
+      }).catchError((e) => print(e));
       }
       isFavourite = await playListDB.isFavourite(nowPlaying);
       playListDB.saveNowPlaying(nowPlaying);
@@ -107,8 +111,7 @@ class SongController extends ChangeNotifier {
     await player.seek(Duration(seconds: currentTime + position.toInt()));
   }
 
-  Future<void> skip(
-      {bool next = false, bool prev = false}) async {
+  Future<void> skip({bool next = false, bool prev = false}) async {
     currentSongIndex =
         allSongs.indexWhere((element) => element['path'] == nowPlaying['path']);
     List shuffled = [...allSongs];
@@ -159,11 +162,11 @@ class SongController extends ChangeNotifier {
 
   Future<void> disposePlayer() async {
     try {
-    if (player.playbackState == AudioPlaybackState.playing ||
-        player.playbackState == AudioPlaybackState.paused) {
-      await player.dispose();
-    }
-    } catch(e) {
+      if (player.playbackState == AudioPlaybackState.playing ||
+          player.playbackState == AudioPlaybackState.paused) {
+        await player.dispose();
+      }
+    } catch (e) {
       debugPrint(e.toString());
     }
     setIsPlaying(false);

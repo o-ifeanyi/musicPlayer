@@ -45,6 +45,9 @@ class ProviderClass extends ChangeNotifier {
   Future<void> getAllSongs() async {
     PermissionStatus permissionStatus = await Permission.storage.request();
     if (permissionStatus.isGranted && Platform.isAndroid) {
+      // externalStorageDirectories includes:
+      // /storage/emulated/0/Android/data/com.onuifeanyi.vybeplayer/files
+      // /storage/1A1C-1205/Android/data/com.onuifeanyi.vybeplayer/files
       List<Directory> deviceStorages = await getExternalStorageDirectories();
       List<Directory> pathToStorage = [];
       for (var dir in deviceStorages) {

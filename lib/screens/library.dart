@@ -126,9 +126,9 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                           Text(
                             'Library',
                             style: TextStyle(
-                                fontSize: Config.textSize(context, 5),
-                                fontWeight: FontWeight.w400,
-                                fontFamily: 'Acme'),
+                              fontSize: Config.textSize(context, 5),
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
                           CustomButton(
                             diameter: 12,
@@ -179,9 +179,9 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                       child: Text(
                         'PlayList',
                         style: TextStyle(
-                            fontSize: Config.textSize(context, 5),
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'Acme'),
+                          fontSize: Config.textSize(context, 5),
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
                     Consumer<PlayListDB>(
@@ -197,7 +197,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                   playListDB.playList[index]['songs'];
                               return GestureDetector(
                                 onTap: () {
-                                  if (index == 0) {
+                                  if (playListDB.playList[index]['name'] == 'Create playlist') {
                                     showDialog(
                                       context: context,
                                       builder: (context) {
@@ -246,9 +246,9 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                       child: Text(
                         'Recent',
                         style: TextStyle(
-                            fontSize: Config.textSize(context, 5),
-                            fontWeight: FontWeight.w400,
-                            fontFamily: 'Acme'),
+                          fontSize: Config.textSize(context, 5),
+                          fontWeight: FontWeight.w400,
+                        ),
                       ),
                     ),
                     Consumer<PlayListDB>(
@@ -338,9 +338,9 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                         : currentSong['title'],
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                        fontSize: Config.textSize(context, 3.5),
-                                        fontWeight: FontWeight.w400,
-                                        fontFamily: 'Acme'),
+                                      fontSize: Config.textSize(context, 3.5),
+                                      fontWeight: FontWeight.w400,
+                                    ),
                                   ),
                                 ),
                                 SizedBox(
@@ -354,8 +354,8 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                         : currentSong['artist'],
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                        fontSize: Config.textSize(context, 3),
-                                        fontFamily: 'Acme'),
+                                      fontSize: Config.textSize(context, 3),
+                                    ),
                                   ),
                                 ),
                               ],

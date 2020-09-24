@@ -48,7 +48,6 @@ class _SettingsState extends State<Settings> {
     TextStyle listStyle = TextStyle(
       fontSize: Config.textSize(context, 3.5),
       fontWeight: FontWeight.w400,
-      fontFamily: 'Acme',
     );
     return SafeArea(
       child: Scaffold(
@@ -72,9 +71,9 @@ class _SettingsState extends State<Settings> {
                     Text(
                       'Settings',
                       style: TextStyle(
-                          fontSize: Config.textSize(context, 5),
-                          fontWeight: FontWeight.w400,
-                          fontFamily: 'Acme'),
+                        fontSize: Config.textSize(context, 5),
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                   ],
                 ),

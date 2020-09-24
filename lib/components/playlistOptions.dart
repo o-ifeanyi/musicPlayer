@@ -22,7 +22,6 @@ class PlaylistOptions extends StatelessWidget {
     TextStyle customTextStyle = TextStyle(
       fontSize: Config.textSize(context, 3.5),
       fontWeight: FontWeight.w400,
-      fontFamily: 'Acme',
     );
     return Container(
       height: 70,

@@ -25,6 +25,18 @@ class _CreatePlayListState extends State<CreatePlayList> {
   bool createNew;
   String playlistName;
   TextEditingController inputFeild = TextEditingController();
+
+  void createPlaylist() {
+    if (inputFeild.text != '') {
+      playlistName = inputFeild.text;
+      Provider.of<PlayListDB>(context, listen: false)
+          .createPlaylist(playlistName);
+      Navigator.pop(context);
+    } else {
+      print('empty feild');
+    }
+  }
+
   @override
   void initState() {
     createNew = widget.isCreateNew;
@@ -42,9 +54,9 @@ class _CreatePlayListState extends State<CreatePlayList> {
     Orientation orientation = MediaQuery.of(context).orientation;
     Size viewsSize = MediaQuery.of(context).size;
     TextStyle textStyle = TextStyle(
-        fontSize: Config.textSize(context, 4),
-        fontWeight: FontWeight.w400,
-        fontFamily: 'Acme');
+      fontSize: Config.textSize(context, 4),
+      fontWeight: FontWeight.w400,
+    );
 
     return Container(
       height: orientation == Orientation.portrait
@@ -91,10 +103,12 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                   TextField(
                                     controller: inputFeild,
                                     keyboardType: TextInputType.name,
+                                    textInputAction: TextInputAction.done,
                                     decoration: InputDecoration(
                                       labelText: 'Name',
                                       labelStyle: textStyle,
                                     ),
+                                    onSubmitted: (_) => createPlaylist(),
                                   ),
                                 ],
                               ),
@@ -118,7 +132,9 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                               .setFavourite(song);
                                         }
                                       });
-                                      Provider.of<ShareClass>(context, listen: false).reset(notify: true);
+                                      Provider.of<ShareClass>(context,
+                                              listen: false)
+                                          .reset(notify: true);
                                       Navigator.pop(context);
                                     },
                                     child: index > 0 &&
@@ -146,17 +162,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
                           ),
                           createNew
                               ? FlatButton(
-                                  onPressed: () {
-                                    if (inputFeild.text != '') {
-                                      playlistName = inputFeild.text;
-                                      Provider.of<PlayListDB>(context,
-                                              listen: false)
-                                          .createPlaylist(playlistName);
-                                      Navigator.pop(context);
-                                    } else {
-                                      print('empty feild');
-                                    }
-                                  },
+                                  onPressed: createPlaylist,
                                   child: Text(
                                     'Create playlist',
                                     style: textStyle,

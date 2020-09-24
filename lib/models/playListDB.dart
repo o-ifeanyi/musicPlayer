@@ -108,11 +108,14 @@ class PlayListDB extends ChangeNotifier {
   Future<void> saveNowPlaying(dynamic song) async {
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
-    bool notFound = songs.every((element) => element['path'] != song['path']);
-    if (notFound && songs.length < 20) {
+    bool found = songs.any((element) => element['path'] == song['path']);
+    if (!found && songs.length < 20) {
       songs.add(song);
-    } else if (notFound && songs.length == 20) {
+    } else if (!found && songs.length == 20) {
       songs.removeAt(0);
+      songs.add(song);
+    } else if (found) {
+      songs.removeWhere((element) => element['path'] == song['path']);
       songs.add(song);
     }
     db.put('Recently played', songs);
@@ -124,7 +127,8 @@ class PlayListDB extends ChangeNotifier {
     if (songs.isNotEmpty) {
       recentList.clear();
       for (var each in songs) {
-        recentList.add(each);
+        // most recent song to be at the top
+        recentList.insert(0, each);
       }
     }
     notifyListeners();
@@ -162,7 +166,13 @@ class PlayListDB extends ChangeNotifier {
     if (db.values.length != 0) {
       playList.clear();
       for (var each in db.values) {
-        playList.add(each);
+        if (each['name'] == 'Create playlist') {
+          playList.insert(0, each);
+        } else if (each['name'] == 'Favourites') {
+          playList.insert(1, each);
+        } else {
+          playList.add(each);
+        }
       }
       await getRecentlyPlayed();
     } else {
