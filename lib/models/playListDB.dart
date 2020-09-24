@@ -166,8 +166,10 @@ class PlayListDB extends ChangeNotifier {
     if (db.values.length != 0) {
       playList.clear();
       for (var each in db.values) {
+        // createplaylist should always be first
         if (each['name'] == 'Create playlist') {
           playList.insert(0, each);
+          // followed by favourites
         } else if (each['name'] == 'Favourites') {
           playList.insert(1, each);
         } else {
