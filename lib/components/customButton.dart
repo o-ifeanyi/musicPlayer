@@ -22,7 +22,7 @@ class _CustomButtonState extends State<CustomButton>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 200),
+      duration: Duration(milliseconds: 150),
       lowerBound: 0.0,
       upperBound: 0.3,
     );
@@ -71,13 +71,13 @@ class _CustomButtonState extends State<CustomButton>
                 boxShadow: <BoxShadow>[
                   BoxShadow(
                     color: Theme.of(context).splashColor,
-                    offset: Offset(6, 6),
+                    offset: Offset(5, 5),
                     blurRadius: 10,
                     spreadRadius: 1.0,
                   ),
                   BoxShadow(
                     color: Theme.of(context).backgroundColor,
-                    offset: Offset(-6, -6),
+                    offset: Offset(-5, -5),
                     blurRadius: 10,
                     spreadRadius: 1.0,
                   ),

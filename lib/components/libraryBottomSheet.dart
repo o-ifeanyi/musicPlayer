@@ -7,6 +7,7 @@ class LibraryBottomSheet extends StatelessWidget {
   LibraryBottomSheet(this.playlistName);
   final playlistName;
   final editingController = TextEditingController();
+  final focusNode = FocusNode();
   
   @override
   Widget build(BuildContext context) {
@@ -15,6 +16,7 @@ class LibraryBottomSheet extends StatelessWidget {
       fontWeight: FontWeight.w400,
     );
     return Container(
+      color: Theme.of(context).scaffoldBackgroundColor,
       height: Config.yMargin(context, 10),
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Consumer<PlayListDB>(
@@ -29,12 +31,14 @@ class LibraryBottomSheet extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (context) {
+                        editingController.text = playlistName;
                         return AlertDialog(
                           title: Text(
                             'Rename playlist',
                             style: customTextStyle,
                           ),
                           content: TextField(
+                            focusNode: focusNode,
                             controller: editingController,
                             decoration: InputDecoration(
                               labelText: 'New name',
@@ -45,7 +49,7 @@ class LibraryBottomSheet extends StatelessWidget {
                               textColor: Theme.of(context).accentColor,
                               onPressed: () async {
                                 String newName = editingController.text;
-                                if (newName != '') {
+                                if (newName != '' && newName != playlistName) {
                                   await playlistDB.editPlaylistName(
                                       playlistName, newName);
                                   Navigator.pop(context);
@@ -60,6 +64,8 @@ class LibraryBottomSheet extends StatelessWidget {
                         );
                       },
                     );
+                    // opens keyboard
+                    FocusScope.of(context).requestFocus(focusNode);
                   }),
               IconButton(
                 icon: Icon(Icons.delete),

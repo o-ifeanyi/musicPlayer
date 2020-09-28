@@ -22,14 +22,14 @@ class ProviderClass extends ChangeNotifier {
 
   void init() async {
     await getAllSongs();
-    recentActivity();
+    sortList();
   }
 
-  void recentActivity() {
-    List newList1 = allSongs;
-    newList1.sort((b, a) => a['recentlyAdded'].compareTo(b['recentlyAdded']));
+  void sortList() {
+    List newList = List.from(allSongs);
+    newList.sort((b, a) => a['recentlyAdded'].compareTo(b['recentlyAdded']));
     // sort arranged it from old to new hence the reverse
-    recentlyAdded.addAll(newList1);
+    recentlyAdded.addAll(newList);
     // sort all songs in alphabetical order
     allSongs.sort(
         (a, b) => a['title'].toLowerCase().compareTo(b['title'].toLowerCase()));

@@ -45,10 +45,10 @@ class _NowPlayingState extends State<NowPlaying> {
     var isPotrait = MediaQuery.of(context).orientation == Orientation.portrait;
     return Consumer<SongController>(
       builder: (context, controller, child) {
-        return SafeArea(
-          child: Scaffold(
-            resizeToAvoidBottomInset: false,
-            body: Container(
+        return Scaffold(
+          resizeToAvoidBottomInset: false,
+          body: SafeArea(
+            child: Container(
               height: MediaQuery.of(context).size.height,
               width: MediaQuery.of(context).size.width,
               padding: const EdgeInsets.fromLTRB(20, 30, 20, 20),

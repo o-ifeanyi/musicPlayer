@@ -106,10 +106,10 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
         await MoveToBackground.moveTaskToBack();
         return false;
       },
-      child: SafeArea(
-        child: Scaffold(
-          resizeToAvoidBottomInset: false,
-          body: Stack(
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: SafeArea(
+          child: Stack(
             children: <Widget>[
               Container(
                 height: MediaQuery.of(context).size.height,
@@ -197,7 +197,8 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                   playListDB.playList[index]['songs'];
                               return GestureDetector(
                                 onTap: () {
-                                  if (playListDB.playList[index]['name'] == 'Create playlist') {
+                                  if (playListDB.playList[index]['name'] ==
+                                      'Create playlist') {
                                     showDialog(
                                       context: context,
                                       builder: (context) {

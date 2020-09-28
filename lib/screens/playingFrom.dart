@@ -19,11 +19,11 @@ class _PlayingFromState extends State<PlayingFrom> {
   Widget build(BuildContext context) {
     bool isPotrait = MediaQuery.of(context).orientation == Orientation.portrait;
 
-    return SafeArea(
-      child: Scaffold(
-        body: Consumer<SongController>(
-          builder: (context, controller, child) {
-            return Column(
+    return Scaffold(
+      body: Consumer<SongController>(
+        builder: (context, controller, child) {
+          return SafeArea(
+            child: Column(
               children: <Widget>[
                 IconButton(
                   icon: Icon(Icons.keyboard_arrow_down),
@@ -89,7 +89,7 @@ class _PlayingFromState extends State<PlayingFrom> {
                     itemBuilder: (context, index) {
                       List songList = controller.allSongs;
                       return AnimatedPadding(
-                        duration: Duration(milliseconds: 400),
+                        duration: Duration(milliseconds: 250),
                         padding: controller.nowPlaying['path'] ==
                                     songList[index]['path'] &&
                                 controller.isPlaying
@@ -151,9 +151,9 @@ class _PlayingFromState extends State<PlayingFrom> {
                   ),
                 ),
               ],
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

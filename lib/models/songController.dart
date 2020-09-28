@@ -49,8 +49,10 @@ class SongController extends ChangeNotifier {
     useArt = value;
     if (nowPlaying['path'] != null && useArt) {
       await Audiotagger().readArtwork(path: nowPlaying['path']).then((value) {
-        songArt = value;
-      }).catchError((e) => print(e));
+        // not sure if this is a fix yet
+        // songArt that were blank had lenght less than 20k
+        value.length < 20000 ? songArt = null : songArt = value;
+      }).catchError((e) => songArt = null);
     }
     notifyListeners();
   }
@@ -71,8 +73,10 @@ class SongController extends ChangeNotifier {
       timeLeft = '${duration.inMinutes}:${duration.inSeconds % 60}';
       if (useArt) {
         await Audiotagger().readArtwork(path: nowPlaying['path']).then((value) {
-        songArt = value;
-      }).catchError((e) => print(e));
+          // not sure if this is a fix yet
+          // songArt that were blank had lenght less than 20k
+        value.length < 20000 ? songArt = null : songArt = value;
+      }).catchError((e) => songArt = null);
       }
       isFavourite = await playListDB.isFavourite(nowPlaying);
       playListDB.saveNowPlaying(nowPlaying);

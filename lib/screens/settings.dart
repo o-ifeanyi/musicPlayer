@@ -16,23 +16,15 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  Container buildColoredCircle(Color color1, Color color2) {
+  Container buildColoredCircle(Color color) {
     return Container(
-      height: 50,
-      width: 50,
+      height: Config.yMargin(context, 7),
+      width: Config.yMargin(context, 7),
       margin: EdgeInsets.only(right: 10),
       decoration: BoxDecoration(
-        border: Border.all(),
+        border: Border.all(color: Theme.of(context).textTheme.bodyText1.color),
         shape: BoxShape.circle,
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          stops: [0.4, 1.0],
-          colors: [
-            color1,
-            color2,
-          ],
-        ),
+        color: color,
       ),
     );
   }
@@ -40,18 +32,22 @@ class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     List<Widget> coloredCircles = [
-      buildColoredCircle(Colors.white, Color(0xFFD71D1D)),
-      buildColoredCircle(Colors.white, Colors.blueAccent),
-      buildColoredCircle(Color(0xFF282C31), Colors.pinkAccent),
-      buildColoredCircle(Color(0xFF282C31), Colors.deepOrange),
+      buildColoredCircle(Colors.white), //white-ish
+      buildColoredCircle(Color(0xFFEBCBDC)), //pink-ish
+      buildColoredCircle(Color(0xFFA5C1EB)), //purple-ish
+      buildColoredCircle(Color(0xFF011025)), //navy blue-ish
+      buildColoredCircle(Color(0xFF282C31)), //gray-ish
+      buildColoredCircle(Color(0xFF2A1E21)), //brown-ish
+      buildColoredCircle(Color(0xFF1C2C29)), //green-ish
+      buildColoredCircle(Color(0xFF1F1F2E)), //dark purple-ish
     ];
     TextStyle listStyle = TextStyle(
       fontSize: Config.textSize(context, 3.5),
       fontWeight: FontWeight.w400,
     );
-    return SafeArea(
-      child: Scaffold(
-        body: Container(
+    return Scaffold(
+      body: SafeArea(
+        child: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: ListView(
@@ -103,7 +99,7 @@ class _SettingsState extends State<Settings> {
                           return AlertDialog(
                             title: Text('Select theme.', style: listStyle),
                             content: Container(
-                              height: 60,
+                              height: Config.yMargin(context, 10),
                               width: MediaQuery.of(context).size.width,
                               child: ListView.builder(
                                 shrinkWrap: true,

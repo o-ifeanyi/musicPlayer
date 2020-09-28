@@ -27,6 +27,7 @@ class PopUpButton extends StatelessWidget {
         fontFamily: 'Acme');
 
     return PopupMenuButton(
+      color: Theme.of(context).dialogBackgroundColor,
       icon: Icon(
         Icons.more_vert,
         size: Config.xMargin(context, 6),

@@ -35,6 +35,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Vibe player',
       theme: Provider.of<ProviderClass>(context).getTheme(),
       home: SplashScreen(theme),

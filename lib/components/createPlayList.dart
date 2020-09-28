@@ -25,6 +25,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
   bool createNew;
   String playlistName;
   TextEditingController inputFeild = TextEditingController();
+  FocusNode focusNode = FocusNode();
 
   void createPlaylist() {
     if (inputFeild.text != '') {
@@ -81,18 +82,17 @@ class _CreatePlayListState extends State<CreatePlayList> {
               padding: EdgeInsets.all(20),
               child: Consumer<PlayListDB>(
                 builder: (context, playlistDB, child) {
+                  if (createNew) {
+                    // opens keyboard
+                    FocusScope.of(context).requestFocus(focusNode);
+                  }
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      createNew
-                          ? Text(
-                              'New playlist',
-                              style: textStyle,
-                            )
-                          : Text(
-                              'Add to playlist',
-                              style: textStyle,
-                            ),
+                      Text(
+                        createNew ? 'New playlist' : 'Add to playlist',
+                        style: textStyle,
+                      ),
                       createNew
                           ? Expanded(
                               child: Column(
@@ -102,6 +102,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                 children: [
                                   TextField(
                                     controller: inputFeild,
+                                    focusNode: focusNode,
                                     keyboardType: TextInputType.name,
                                     textInputAction: TextInputAction.done,
                                     decoration: InputDecoration(

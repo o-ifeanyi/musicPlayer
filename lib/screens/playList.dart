@@ -21,23 +21,16 @@ class PlayList extends StatefulWidget {
 
 class _PlayListState extends State<PlayList> {
   List allSongs;
-  List searchList = [];
+  List searchList;
   double padding = 10.0;
   bool isSearching = false;
   bool canDelete = false;
   TextEditingController input = TextEditingController();
   FocusNode focusNode = FocusNode();
 
-  @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
   void search(String input) {
     searchList.clear();
-    searchList.addAll(widget.songList);
+    searchList = List.from(widget.songList);
     setState(() {
       searchList.retainWhere((element) =>
           element['title'].toLowerCase().contains(input.toLowerCase()) ||
@@ -49,14 +42,14 @@ class _PlayListState extends State<PlayList> {
     setState(() {
       input.clear();
       searchList.clear();
-      searchList.addAll(widget.songList);
+      searchList = List.from(widget.songList);
     });
   }
 
   @override
   void initState() {
     allSongs = widget.songList;
-    searchList.addAll(widget.songList);
+    searchList = List.from(widget.songList);
     canDelete = widget.playListName == 'All songs' ||
         widget.playListName == 'Recently added';
     super.initState();
@@ -70,10 +63,10 @@ class _PlayListState extends State<PlayList> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        body: Stack(
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      body: SafeArea(
+        child: Stack(
           children: <Widget>[
             Container(
               height: MediaQuery.of(context).size.height,
@@ -120,7 +113,12 @@ class _PlayListState extends State<PlayList> {
                             if (isSearching) {
                               resetSearch();
                             } else {
-                              FocusScope.of(context).requestFocus(focusNode);
+                              // textfield isnt built so a little delay allows setState to be called first
+                              Future.delayed(Duration(milliseconds: 100))
+                                  .then((value) {
+                                // opens keyboard
+                                FocusScope.of(context).requestFocus(focusNode);
+                              });
                             }
                             setState(() {
                               isSearching = !isSearching;
@@ -147,7 +145,7 @@ class _PlayListState extends State<PlayList> {
                                   List songList =
                                       isSearching ? searchList : allSongs;
                                   return AnimatedPadding(
-                                    duration: Duration(milliseconds: 400),
+                                    duration: Duration(milliseconds: 250),
                                     padding: controller.nowPlaying['path'] ==
                                                 songList[index]['path'] &&
                                             controller.isPlaying

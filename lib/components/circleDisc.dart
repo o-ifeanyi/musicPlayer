@@ -78,13 +78,15 @@ class _CircleDiscState extends State<CircleDisc>
                         boxShadow: [
                           BoxShadow(
                             color: Theme.of(context).splashColor,
-                            offset: Offset(6, 6),
+                            offset: Offset(5, 5),
                             blurRadius: 10,
+                            spreadRadius: 1.0,
                           ),
                           BoxShadow(
                             color: Theme.of(context).backgroundColor,
-                            offset: Offset(-6, -6),
-                            blurRadius: 15,
+                            offset: Offset(-5, -5),
+                            blurRadius: 10,
+                            spreadRadius: 1.0,
                           ),
                         ],
                       ),
