@@ -105,23 +105,20 @@ class ProviderClass extends ChangeNotifier {
   Future<Map<String, dynamic>> songInfo(String file) async {
     var audioTagger = Audiotagger();
     var info;
-    var fileInfo;
     var date;
     try {
       info = await audioTagger.readTagsAsMap(
         path: file,
       );
-      fileInfo = File(file);
-      date = fileInfo.lastAccessedSync();
+      date = File(file).lastAccessedSync();
     } catch (e) {
       debugPrint(e.toString());
     }
     return {
       'path': file,
-              'title':
-          info != null && info['title'] != ''
-              ? info['title']
-              : file.split('/').last.split('.mp3').first,
+      'title': info != null && info['title'] != ''
+          ? info['title']
+          : file.split('/').last.split('.mp3').first,
       'artist': info != null && info['artist'] != ''
           ? info['artist']
           : 'Unknown artist',
