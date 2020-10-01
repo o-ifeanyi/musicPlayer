@@ -30,8 +30,9 @@ class _CreatePlayListState extends State<CreatePlayList> {
   void createPlaylist() {
     if (inputFeild.text != '') {
       playlistName = inputFeild.text;
-      Provider.of<PlayListDB>(context, listen: false)
-          .createPlaylist(playlistName);
+      final playlistDB = Provider.of<PlayListDB>(context, listen: false);
+      playlistDB.createPlaylist(playlistName);
+      playlistDB.showToast('$playlistName created successfully', context);
       Navigator.pop(context);
     } else {
       print('empty feild');
@@ -60,6 +61,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
     );
 
     return Container(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       height: orientation == Orientation.portrait
           ? viewsSize.height
           : viewsSize.width,
@@ -67,130 +69,132 @@ class _CreatePlayListState extends State<CreatePlayList> {
           ? viewsSize.width
           : viewsSize.height,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Material(
-            elevation: 6.0,
-            color: Colors.transparent,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).scaffoldBackgroundColor,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              height: Config.yMargin(context, widget.height),
-              width: Config.yMargin(context, widget.height),
-              padding: EdgeInsets.all(20),
-              child: Consumer<PlayListDB>(
-                builder: (context, playlistDB, child) {
-                  if (createNew) {
-                    // opens keyboard
-                    FocusScope.of(context).requestFocus(focusNode);
-                  }
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        createNew ? 'New playlist' : 'Add to playlist',
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Material(
+      elevation: 6.0,
+      color: Colors.transparent,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        height: Config.yMargin(context, widget.height),
+        width: Config.yMargin(context, widget.height),
+        padding: EdgeInsets.all(20),
+        child: Consumer<PlayListDB>(
+          builder: (context, playlistDB, child) {
+            if (createNew) {
+              // opens keyboard
+              FocusScope.of(context).requestFocus(focusNode);
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  createNew ? 'New playlist' : 'Add to playlist',
+                  style: textStyle,
+                ),
+                createNew
+                    ? Expanded(
+                        child: Column(
+                          mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              controller: inputFeild,
+                              focusNode: focusNode,
+                              keyboardType: TextInputType.name,
+                              textInputAction: TextInputAction.done,
+                              decoration: InputDecoration(
+                                labelText: 'Name',
+                                labelStyle: textStyle,
+                              ),
+                              onSubmitted: (_) => createPlaylist(),
+                            ),
+                          ],
+                        ),
+                      )
+                    : Expanded(
+                        child: ListView.builder(
+                          itemCount: playlistDB.playList.length,
+                          itemBuilder: (context, index) {
+                            return FlatButton(
+                              onPressed: () async {
+                                widget.songs.forEach((song) async {
+                                  await playlistDB.addToPlaylist(
+                                    playlistDB.playList[index]['name'],
+                                    song,
+                                  );
+                                  if (playlistDB.playList[index]
+                                          ['name'] ==
+                                      'Favourites') {
+                                    Provider.of<SongController>(context,
+                                            listen: false)
+                                        .setFavourite(song);
+                                  }
+                                });
+                                playlistDB.showToast(
+                                    '${widget.songs.length} songs added to ${playlistDB.playList[index]['name']}', context);
+                                Provider.of<ShareClass>(context,
+                                        listen: false)
+                                    .reset(notify: true);
+                                Navigator.pop(context);
+                              },
+                              child: index > 0 &&
+                                      index < playlistDB.playList.length
+                                  ? Text(
+                                      playlistDB.playList[index]['name'],
+                                      style: textStyle,
+                                    )
+                                  : SizedBox.shrink(),
+                            );
+                          },
+                        ),
+                      ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FlatButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        'Cancel',
                         style: textStyle,
                       ),
-                      createNew
-                          ? Expanded(
-                              child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  TextField(
-                                    controller: inputFeild,
-                                    focusNode: focusNode,
-                                    keyboardType: TextInputType.name,
-                                    textInputAction: TextInputAction.done,
-                                    decoration: InputDecoration(
-                                      labelText: 'Name',
-                                      labelStyle: textStyle,
-                                    ),
-                                    onSubmitted: (_) => createPlaylist(),
-                                  ),
-                                ],
-                              ),
-                            )
-                          : Expanded(
-                              child: ListView.builder(
-                                itemCount: playlistDB.playList.length,
-                                itemBuilder: (context, index) {
-                                  return FlatButton(
-                                    onPressed: () async {
-                                      widget.songs.forEach((song) async {
-                                        await playlistDB.addToPlaylist(
-                                          playlistDB.playList[index]['name'],
-                                          song,
-                                        );
-                                        if (playlistDB.playList[index]
-                                                ['name'] ==
-                                            'Favourites') {
-                                          Provider.of<SongController>(context,
-                                                  listen: false)
-                                              .setFavourite(song);
-                                        }
-                                      });
-                                      Provider.of<ShareClass>(context,
-                                              listen: false)
-                                          .reset(notify: true);
-                                      Navigator.pop(context);
-                                    },
-                                    child: index > 0 &&
-                                            index < playlistDB.playList.length
-                                        ? Text(
-                                            playlistDB.playList[index]['name'],
-                                            style: textStyle,
-                                          )
-                                        : SizedBox.shrink(),
-                                  );
-                                },
-                              ),
+                    ),
+                    createNew
+                        ? FlatButton(
+                            onPressed: createPlaylist,
+                            child: Text(
+                              'Create playlist',
+                              style: textStyle,
                             ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FlatButton(
+                          )
+                        : FlatButton(
                             onPressed: () {
-                              Navigator.pop(context);
+                              setState(() {
+                                createNew = true;
+                              });
+                              print(createNew);
                             },
                             child: Text(
-                              'Cancel',
+                              'New playlist',
                               style: textStyle,
                             ),
                           ),
-                          createNew
-                              ? FlatButton(
-                                  onPressed: createPlaylist,
-                                  child: Text(
-                                    'Create playlist',
-                                    style: textStyle,
-                                  ),
-                                )
-                              : FlatButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      createNew = true;
-                                    });
-                                    print(createNew);
-                                  },
-                                  child: Text(
-                                    'New playlist',
-                                    style: textStyle,
-                                  ),
-                                ),
-                        ],
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
+                  ],
+                ),
+              ],
+            );
+          },
+        ),
       ),
+            ),
+          ],
+        ),
     );
   }
 }

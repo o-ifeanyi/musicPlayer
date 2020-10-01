@@ -183,9 +183,10 @@ class _SettingsState extends State<Settings> {
                             FlatButton(
                               textColor: Theme.of(context).accentColor,
                               onPressed: () async {
-                                await Provider.of<PlayListDB>(context,
-                                        listen: false)
-                                    .clear();
+                                final playlistDB = Provider.of<PlayListDB>(context,
+                                        listen: false);
+                                await playlistDB.clear();
+                                playlistDB.showToast('Done', context);
                                 Navigator.pop(context);
                               },
                               child: Text('Continue'),

@@ -8,7 +8,18 @@ class LibraryBottomSheet extends StatelessWidget {
   final playlistName;
   final editingController = TextEditingController();
   final focusNode = FocusNode();
-  
+
+  void rename(PlayListDB playlistDB, BuildContext context) async {
+    String newName = editingController.text;
+    if (newName != '' && newName != playlistName) {
+      await playlistDB.editPlaylistName(playlistName, newName);
+      playlistDB.showToast('Done', context);
+      Navigator.pop(context);
+    } else {
+      print('couldnt rename playlist');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     TextStyle customTextStyle = TextStyle(
@@ -40,21 +51,16 @@ class LibraryBottomSheet extends StatelessWidget {
                           content: TextField(
                             focusNode: focusNode,
                             controller: editingController,
+                            textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
                               labelText: 'New name',
                             ),
+                            onSubmitted: (_) => rename(playlistDB, context),
                           ),
                           actions: [
                             FlatButton(
                               textColor: Theme.of(context).accentColor,
-                              onPressed: () async {
-                                String newName = editingController.text;
-                                if (newName != '' && newName != playlistName) {
-                                  await playlistDB.editPlaylistName(
-                                      playlistName, newName);
-                                  Navigator.pop(context);
-                                }
-                              },
+                              onPressed: () => rename(playlistDB, context),
                               child: Text(
                                 'Done',
                                 style: customTextStyle,
@@ -89,6 +95,7 @@ class LibraryBottomSheet extends StatelessWidget {
                             textColor: Theme.of(context).accentColor,
                             onPressed: () async {
                               await playlistDB.deletePlaylist(playlistName);
+                              playlistDB.showToast('Delete successful!', context);
                               Navigator.pop(context);
                             },
                             child: Text('Continue'),

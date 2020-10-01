@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
+import 'package:musicPlayer/components/toast.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PlayListDB extends ChangeNotifier {
@@ -124,8 +126,8 @@ class PlayListDB extends ChangeNotifier {
   Future<void> getRecentlyPlayed() async {
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
+    recentList.clear();
     if (songs.isNotEmpty) {
-      recentList.clear();
       for (var each in songs) {
         // most recent song to be at the top
         recentList.insert(0, each);
@@ -159,6 +161,16 @@ class PlayListDB extends ChangeNotifier {
     } else {
       return null;
     }
+  }
+
+  void showToast(String message, BuildContext context) {
+    final fToast = FToast();
+    fToast.init(context);
+    fToast.showToast(
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: Duration(seconds: 2),
+      child: CustomToast(message)
+    );
   }
 
   Future<void> refresh() async {
@@ -197,5 +209,6 @@ class PlayListDB extends ChangeNotifier {
     Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
     await db.deleteFromDisk();
     await recentdb.deleteFromDisk();
+    refresh();
   }
 }

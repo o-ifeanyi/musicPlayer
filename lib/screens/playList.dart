@@ -365,9 +365,11 @@ class _PlayListState extends State<PlayList> {
             FlatButton(
                 textColor: Theme.of(context).accentColor,
                 onPressed: () async {
+                  final playlistDB =
+                        Provider.of<PlayListDB>(context, listen: false);
                   if (canDelete) {
-                    await Provider.of<PlayListDB>(context, listen: false)
-                        .removeFromDevice(songList[index]);
+                    await playlistDB.removeFromDevice(songList[index]);
+                    playlistDB.showToast('Delete successful!', context);
                     // if current song beign played is deleted its still available from libray
                     // causing craxy bugs
                     if (controller.nowPlaying['path'] ==
@@ -381,9 +383,9 @@ class _PlayListState extends State<PlayList> {
                     });
                     Navigator.pop(context);
                   } else {
-                    await Provider.of<PlayListDB>(context, listen: false)
-                        .removeFromPlaylist(
-                            widget.playListName, songList[index]);
+                    await playlistDB.removeFromPlaylist(
+                        widget.playListName, songList[index]);
+                    playlistDB.showToast('Removed successfully!', context);
                     setState(() {});
                     Navigator.pop(context);
                     // setstate wasnt having the desired effect until after a while
