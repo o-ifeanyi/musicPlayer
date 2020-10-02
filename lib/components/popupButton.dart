@@ -48,10 +48,8 @@ class PopUpButton extends StatelessWidget {
                   context: context,
                   builder: (context) {
                     return CreatePlayList(
-                      height: 35,
-                      width: 35,
                       songs: [songList[index]],
-                      isCreateNew: false,
+                      createNewPlaylist: false,
                     );
                   },
                 );

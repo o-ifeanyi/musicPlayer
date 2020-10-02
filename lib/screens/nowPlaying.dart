@@ -145,9 +145,7 @@ class _NowPlayingState extends State<NowPlaying> {
                             context: context,
                             builder: (context) {
                               return CreatePlayList(
-                                height: 35,
-                                width: 35,
-                                isCreateNew: false,
+                                createNewPlaylist: false,
                                 songs: [controller.nowPlaying],
                               );
                             },

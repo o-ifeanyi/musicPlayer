@@ -203,9 +203,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                       context: context,
                                       builder: (context) {
                                         return CreatePlayList(
-                                          height: 35,
-                                          width: 35,
-                                          isCreateNew: true,
+                                          createNewPlaylist: true,
                                         );
                                       },
                                     );
