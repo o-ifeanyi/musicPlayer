@@ -31,7 +31,7 @@ class _PlayingFromState extends State<PlayingFrom> {
                     Navigator.pop(context);
                   },
                 ),
-                Text('Playing From - ${controller.playlistName}',
+                Text('Playing From\n${controller.playlistName}',
                     style: TextStyle(
                       fontSize: Config.textSize(context, 5),
                       fontWeight: FontWeight.w400,

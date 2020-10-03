@@ -52,12 +52,16 @@ class CustomCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: Config.textSize(context, 3.5),
-                    fontWeight: FontWeight.w400,
-                  ),
+                SizedBox(
+                  width: Config.xMargin(context, 30),
+                  child: Text(
+                      label,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: Config.textSize(context, 3.5),
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
                 ),
               ],
             ),

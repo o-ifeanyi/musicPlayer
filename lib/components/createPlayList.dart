@@ -29,7 +29,8 @@ class _CreatePlayListState extends State<CreatePlayList> {
       playlistName = inputFeild.text;
       final playlistDB = Provider.of<PlayListDB>(context, listen: false);
       playlistDB.createPlaylist(playlistName);
-      playlistDB.showToast('$playlistName created successfully', context);
+      playlistDB.showToast('Created successfully!', context);
+      inputFeild.clear();
       if (widget.createNewPlaylist) {
         Navigator.pop(context);
       } else {
@@ -111,6 +112,8 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                   TextField(
                                     controller: inputFeild,
                                     focusNode: focusNode,
+                                    maxLength: 14,
+                                    maxLengthEnforced: true,
                                     keyboardType: TextInputType.name,
                                     textInputAction: TextInputAction.done,
                                     decoration: InputDecoration(
@@ -147,8 +150,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                               }
                                             });
                                             playlistDB.showToast(
-                                                '${widget.songs.length} songs added to ${playlistDB.playList[index]['name']}',
-                                                context);
+                                                'Done', context);
                                             Provider.of<ShareClass>(context,
                                                     listen: false)
                                                 .reset(notify: true);
@@ -179,7 +181,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
                           ),
                           createNew
                               ? FlatButton(
-                                textColor: Theme.of(context).accentColor,
+                                  textColor: Theme.of(context).accentColor,
                                   onPressed: createPlaylist,
                                   child: Text(
                                     'Create playlist',
@@ -187,7 +189,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                   ),
                                 )
                               : FlatButton(
-                                textColor: Theme.of(context).accentColor,
+                                  textColor: Theme.of(context).accentColor,
                                   onPressed: () {
                                     setState(() {
                                       createNew = true;

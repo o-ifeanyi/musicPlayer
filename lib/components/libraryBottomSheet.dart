@@ -51,6 +51,8 @@ class LibraryBottomSheet extends StatelessWidget {
                           content: TextField(
                             focusNode: focusNode,
                             controller: editingController,
+                            maxLength: 14,
+                            maxLengthEnforced: true,
                             textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
                               labelText: 'New name',

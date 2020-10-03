@@ -99,11 +99,16 @@ class _PlayListState extends State<PlayList> {
                                   },
                                 ),
                               )
-                            : Text(
-                                widget.playListName,
-                                style: TextStyle(
-                                  fontSize: Config.textSize(context, 5),
-                                  fontWeight: FontWeight.w400,
+                            : SizedBox(
+                                width: Config.defaultSize(context, 55),
+                                child: Text(
+                                  widget.playListName,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontSize: Config.textSize(context, 5),
+                                    fontWeight: FontWeight.w400,
+                                  ),
                                 ),
                               ),
                         CustomButton(
@@ -366,7 +371,7 @@ class _PlayListState extends State<PlayList> {
                 textColor: Theme.of(context).accentColor,
                 onPressed: () async {
                   final playlistDB =
-                        Provider.of<PlayListDB>(context, listen: false);
+                      Provider.of<PlayListDB>(context, listen: false);
                   if (canDelete) {
                     await playlistDB.removeFromDevice(songList[index]);
                     playlistDB.showToast('Delete successful!', context);
