@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/customButton.dart';
 import 'package:musicPlayer/components/playlistOptions.dart';
-import 'package:musicPlayer/components/popupButton.dart';
+import 'package:musicPlayer/components/songTile.dart';
 import 'package:musicPlayer/models/Provider.dart';
 import 'package:musicPlayer/models/config.dart';
 import 'package:musicPlayer/models/playListDB.dart';
 import 'package:musicPlayer/models/share.dart';
 import 'package:musicPlayer/models/songController.dart';
-import 'package:musicPlayer/screens/nowPlaying.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -22,7 +21,6 @@ class PlayList extends StatefulWidget {
 class _PlayListState extends State<PlayList> {
   List allSongs;
   List searchList;
-  double padding = 10.0;
   bool isSearching = false;
   bool canDelete = false;
   TextEditingController input = TextEditingController();
@@ -40,6 +38,7 @@ class _PlayListState extends State<PlayList> {
 
   void resetSearch() {
     setState(() {
+      isSearching = false;
       input.clear();
       searchList.clear();
       searchList = List.from(widget.songList);
@@ -124,10 +123,11 @@ class _PlayListState extends State<PlayList> {
                                 // opens keyboard
                                 FocusScope.of(context).requestFocus(focusNode);
                               });
-                            }
-                            setState(() {
-                              isSearching = !isSearching;
+                              setState(() {
+                              isSearching = true;
                             });
+                            }
+                            
                           },
                         ),
                       ],
@@ -149,124 +149,14 @@ class _PlayListState extends State<PlayList> {
                                 builder: (context, controller, child) {
                                   List songList =
                                       isSearching ? searchList : allSongs;
-                                  return AnimatedPadding(
-                                    duration: Duration(milliseconds: 250),
-                                    padding: controller.nowPlaying['path'] ==
-                                                songList[index]['path'] &&
-                                            controller.isPlaying
-                                        ? EdgeInsets.symmetric(
-                                            vertical: padding)
-                                        : EdgeInsets.all(0),
-                                    child: Consumer<ShareClass>(
-                                      builder: (context, share, child) {
-                                        return ListTile(
-                                          selected:
-                                              controller.nowPlaying['path'] ==
-                                                  songList[index]['path'],
-                                          onTap: () async {
-                                            if (share.isReadyToMark) {
-                                              share.isMarked(songList[index])
-                                                  ? share
-                                                      .remove(songList[index])
-                                                  : share.add(songList[index]);
-                                              setState(() {});
-                                            } else {
-                                              controller.allSongs =
-                                                  widget.songList;
-                                              controller.playlistName =
-                                                  widget.playListName;
-                                              await Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      NowPlaying(
-                                                          currentSong:
-                                                              songList[index]),
-                                                ),
-                                              );
-                                              isSearching = false;
-                                              resetSearch();
-                                              controller.isPlaying
-                                                  ? padding = 10.0
-                                                  : padding = 0.0;
-                                            }
-                                          },
-                                          onLongPress: () {
-                                            setState(() {
-                                              share.isReadyToMark = true;
-                                            });
-                                            share.add(songList[index]);
-                                          },
-                                          contentPadding:
-                                              EdgeInsets.only(right: 20),
-                                          leading: share.isReadyToMark
-                                              ? Checkbox(
-                                                  activeColor: Theme.of(context)
-                                                      .accentColor,
-                                                  value: share.isMarked(
-                                                      songList[index]),
-                                                  onChanged: (bool newValue) {
-                                                    newValue
-                                                        ? share.add(
-                                                            songList[index])
-                                                        : share.remove(
-                                                            songList[index]);
-                                                    setState(() {});
-                                                  },
-                                                )
-                                              : PopUpButton(
-                                                  songList: songList,
-                                                  canDelete: canDelete,
-                                                  controller: controller,
-                                                  index: index,
-                                                  dialogFunction:
-                                                      buildShowDialog,
-                                                ),
-                                          title: Text(
-                                            songList[index]['title'],
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize:
-                                                  Config.textSize(context, 3.5),
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                          subtitle: Text(
-                                            songList[index]['artist'],
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                              fontSize:
-                                                  Config.textSize(context, 3),
-                                            ),
-                                          ),
-                                          trailing: CustomButton(
-                                            child:
-                                                controller.nowPlaying['path'] ==
-                                                            songList[index]
-                                                                ['path'] &&
-                                                        controller.isPlaying
-                                                    ? Icons.pause
-                                                    : Icons.play_arrow,
-                                            diameter: 12,
-                                            isToggled:
-                                                controller.nowPlaying['path'] ==
-                                                    songList[index]['path'],
-                                            onPressed: () async {
-                                              controller.allSongs =
-                                                  widget.songList;
-                                              controller.playlistName =
-                                                  widget.playListName;
-                                              await controller
-                                                  .playlistControlOptions(
-                                                      songList[index]);
-                                              controller.isPlaying
-                                                  ? padding = 10.0
-                                                  : padding = 0.0;
-                                            },
-                                          ),
-                                        );
-                                      },
-                                    ),
+                                  return SongTile(
+                                    index: index,
+                                    playListName: widget.playListName,
+                                    controller: controller,
+                                    songList: songList,
+                                    resetSearch: resetSearch,
+                                    canDelete: canDelete,
+                                    buildShowDialog: buildShowDialog,
                                   );
                                 },
                               );
@@ -380,7 +270,7 @@ class _PlayListState extends State<PlayList> {
                     if (controller.nowPlaying['path'] ==
                         songList[index]['path']) {
                       await controller.skip(next: true);
-                      controller.isPlaying ? padding = 10.0 : padding = 0.0;
+                      // controller.isPlaying ? padding = 10.0 : padding = 0.0;
                     }
                     setState(() {
                       Provider.of<ProviderClass>(context, listen: false)
