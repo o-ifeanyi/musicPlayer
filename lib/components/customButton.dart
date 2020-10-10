@@ -21,7 +21,7 @@ class _CustomButtonState extends State<CustomButton>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      vsync: this,
+      TickerProvider: this,
       duration: Duration(milliseconds: 150),
       lowerBound: 0.0,
       upperBound: 0.3,

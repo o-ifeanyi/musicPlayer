@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     _controller = AnimationController(
-      vsync: this,
+      TickerProvider: this,
       duration: Duration(seconds: 1),
       upperBound: 1.0,
     )..addListener(() {

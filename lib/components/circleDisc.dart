@@ -20,7 +20,7 @@ class _CircleDiscState extends State<CircleDisc>
   void initState() {
     super.initState();
     animationController = new AnimationController(
-      vsync: this,
+      TickerProvider: this,
       duration: new Duration(seconds: 5),
     );
   }
