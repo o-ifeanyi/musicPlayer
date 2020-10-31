@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 
-class ShareClass extends ChangeNotifier {
+class MarkSongs extends ChangeNotifier {
   List markedSongs = [];
   bool isReadyToMark = false;
 

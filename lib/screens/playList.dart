@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/components/customButton.dart';
-import 'package:musicPlayer/components/playlistOptions.dart';
-import 'package:musicPlayer/components/songTile.dart';
-import 'package:musicPlayer/models/Provider.dart';
-import 'package:musicPlayer/models/config.dart';
-import 'package:musicPlayer/models/playListDB.dart';
-import 'package:musicPlayer/models/share.dart';
-import 'package:musicPlayer/models/songController.dart';
+import 'package:musicPlayer/components/custom_button.dart';
+import 'package:musicPlayer/components/playlist_options.dart';
+import 'package:musicPlayer/components/song_tile.dart';
+import 'package:musicPlayer/providers/all_songs.dart';
+import 'package:musicPlayer/util/config.dart';
+import 'package:musicPlayer/providers/playList_database.dart';
+import 'package:musicPlayer/providers/mark_songs.dart';
+import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -56,7 +56,7 @@ class _PlayListState extends State<PlayList> {
 
   @override
   void deactivate() {
-    Provider.of<ShareClass>(context, listen: false).reset();
+    Provider.of<MarkSongs>(context, listen: false).reset();
     super.deactivate();
   }
 
@@ -167,11 +167,11 @@ class _PlayListState extends State<PlayList> {
                 ],
               ),
             ),
-            Consumer<ShareClass>(
-              builder: (context, share, child) {
+            Consumer<MarkSongs>(
+              builder: (context, marker, child) {
                 return Align(
                   alignment: Alignment.bottomCenter,
-                  child: share.isReadyToMark
+                  child: marker.isReadyToMark
                       ? PlaylistOptions(widget.playListName, canDelete)
                       : Consumer<SongController>(
                           builder: (context, controller, child) {

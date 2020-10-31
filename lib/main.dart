@@ -1,10 +1,10 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/constants.dart';
-import 'package:musicPlayer/models/Provider.dart';
-import 'package:musicPlayer/models/playListDB.dart';
-import 'package:musicPlayer/models/share.dart';
-import 'package:musicPlayer/models/songController.dart';
+import 'package:musicPlayer/util/themes.dart';
+import 'package:musicPlayer/providers/all_songs.dart';
+import 'package:musicPlayer/providers/playList_database.dart';
+import 'package:musicPlayer/providers/mark_songs.dart';
+import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:musicPlayer/screens/splash.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,7 +22,7 @@ void main() {
             create: (_) => ProviderClass(kThemes[theme])),
         ChangeNotifierProvider(create: (_) => PlayListDB()),
         ChangeNotifierProvider(create: (_) => SongController()),
-        ChangeNotifierProvider(create: (_) => ShareClass()),
+        ChangeNotifierProvider(create: (_) => MarkSongs()),
       ],
       child: MyApp(theme: kThemes[theme]),
     ));

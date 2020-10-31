@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:musicPlayer/components/customCard.dart';
+import 'package:musicPlayer/components/custom_card.dart';
 
 import 'package:musicPlayer/main.dart';
 import 'package:musicPlayer/screens/library.dart';

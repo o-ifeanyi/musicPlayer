@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/models/config.dart';
+import 'package:musicPlayer/util/config.dart';
 
 class CustomButton extends StatefulWidget {
   CustomButton(
@@ -21,7 +21,7 @@ class _CustomButtonState extends State<CustomButton>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      TickerProvider: this,
+      vsync: this,
       duration: Duration(milliseconds: 150),
       lowerBound: 0.0,
       upperBound: 0.3,

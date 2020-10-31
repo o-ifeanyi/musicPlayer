@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/models/config.dart';
-import 'package:musicPlayer/models/playListDB.dart';
-import 'package:musicPlayer/models/share.dart';
-import 'package:musicPlayer/models/songController.dart';
+import 'package:musicPlayer/util/config.dart';
+import 'package:musicPlayer/providers/playList_database.dart';
+import 'package:musicPlayer/providers/mark_songs.dart';
+import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:provider/provider.dart';
 
 // ignore: must_be_immutable
@@ -31,6 +31,8 @@ class _CreatePlayListState extends State<CreatePlayList> {
       playlistDB.createPlaylist(playlistName);
       playlistDB.showToast('Created successfully!', context);
       inputFeild.clear();
+      // true if its executed from library screen
+      // false if executed from any other screen (add to playlist)
       if (widget.createNewPlaylist) {
         Navigator.pop(context);
       } else {
@@ -115,6 +117,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                     maxLength: 14,
                                     maxLengthEnforced: true,
                                     keyboardType: TextInputType.name,
+                                    textCapitalization: TextCapitalization.sentences,
                                     textInputAction: TextInputAction.done,
                                     decoration: InputDecoration(
                                       labelText: 'Name',
@@ -151,7 +154,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                             });
                                             playlistDB.showToast(
                                                 'Done', context);
-                                            Provider.of<ShareClass>(context,
+                                            Provider.of<MarkSongs>(context,
                                                     listen: false)
                                                 .reset(notify: true);
                                             Navigator.pop(context);

@@ -1,12 +1,12 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/components/customButton.dart';
-import 'package:musicPlayer/constants.dart';
-import 'package:musicPlayer/models/Provider.dart';
-import 'package:musicPlayer/models/config.dart';
-import 'package:musicPlayer/models/playListDB.dart';
-import 'package:musicPlayer/models/songController.dart';
+import 'package:musicPlayer/components/custom_button.dart';
+import 'package:musicPlayer/util/themes.dart';
+import 'package:musicPlayer/providers/all_songs.dart';
+import 'package:musicPlayer/util/config.dart';
+import 'package:musicPlayer/providers/playList_database.dart';
+import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

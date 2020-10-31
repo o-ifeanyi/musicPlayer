@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/components/popupButton.dart';
-import 'package:musicPlayer/models/config.dart';
-import 'package:musicPlayer/models/share.dart';
-import 'package:musicPlayer/models/songController.dart';
-import 'package:musicPlayer/screens/nowPlaying.dart';
+import 'package:musicPlayer/components/popup_button.dart';
+import 'package:musicPlayer/util/config.dart';
+import 'package:musicPlayer/providers/mark_songs.dart';
+import 'package:musicPlayer/providers/song_controller.dart';
+import 'package:musicPlayer/screens/now_playing.dart';
 import 'package:provider/provider.dart';
 
-import 'customButton.dart';
+import 'custom_button.dart';
 
 class SongTile extends StatelessWidget {
   const SongTile({
@@ -37,15 +37,15 @@ class SongTile extends StatelessWidget {
               controller.isPlaying
           ? EdgeInsets.symmetric(vertical: padding)
           : EdgeInsets.all(0),
-      child: Consumer<ShareClass>(
-        builder: (context, share, child) {
+      child: Consumer<MarkSongs>(
+        builder: (context, marker, child) {
           return ListTile(
             selected: controller.nowPlaying['path'] == songList[index]['path'],
             onTap: () async {
-              if (share.isReadyToMark) {
-                share.isMarked(songList[index])
-                    ? share.remove(songList[index])
-                    : share.add(songList[index]);
+              if (marker.isReadyToMark) {
+                marker.isMarked(songList[index])
+                    ? marker.remove(songList[index])
+                    : marker.add(songList[index]);
               } else {
                 controller.allSongs = songList;
                 controller.playlistName = playListName;
@@ -61,18 +61,18 @@ class SongTile extends StatelessWidget {
               }
             },
             onLongPress: () {
-              share.isReadyToMark = true;
-              share.add(songList[index]);
+              marker.isReadyToMark = true;
+              marker.add(songList[index]);
             },
             contentPadding: EdgeInsets.only(right: 20),
-            leading: share.isReadyToMark
+            leading: marker.isReadyToMark
                 ? Checkbox(
                     activeColor: Theme.of(context).accentColor,
-                    value: share.isMarked(songList[index]),
+                    value: marker.isMarked(songList[index]),
                     onChanged: (bool newValue) {
                       newValue
-                          ? share.add(songList[index])
-                          : share.remove(songList[index]);
+                          ? marker.add(songList[index])
+                          : marker.remove(songList[index]);
                     },
                   )
                 : PopUpButton(

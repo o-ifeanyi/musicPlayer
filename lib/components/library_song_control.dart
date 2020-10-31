@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/models/Provider.dart';
-import 'package:musicPlayer/models/config.dart';
-import 'package:musicPlayer/models/songController.dart';
-import 'package:musicPlayer/screens/nowPlaying.dart';
+import 'package:musicPlayer/providers/all_songs.dart';
+import 'package:musicPlayer/util/config.dart';
+import 'package:musicPlayer/providers/song_controller.dart';
+import 'package:musicPlayer/screens/now_playing.dart';
 import 'package:provider/provider.dart';
 
-import 'customButton.dart';
+import 'custom_button.dart';
+
 
 // ignore: must_be_immutable
 class LibrarySongControl extends StatelessWidget {

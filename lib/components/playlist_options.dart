@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/components/createPlayList.dart';
-import 'package:musicPlayer/models/config.dart';
-import 'package:musicPlayer/models/share.dart';
+import 'package:musicPlayer/components/create_playList.dart';
+import 'package:musicPlayer/util/config.dart';
+import 'package:musicPlayer/providers/mark_songs.dart';
 import 'package:provider/provider.dart';
 import 'package:share/share.dart';
 
@@ -11,9 +11,9 @@ class PlaylistOptions extends StatelessWidget {
   final bool canDelete;
   final editingController = TextEditingController();
 
-  List<String> getPaths(ShareClass share) {
+  List<String> getPaths(MarkSongs marker) {
     List<String> paths = [];
-    share.markedSongs.forEach((element) => paths.add(element['path']));
+    marker.markedSongs.forEach((element) => paths.add(element['path']));
     return paths;
   }
 
@@ -42,24 +42,24 @@ class PlaylistOptions extends StatelessWidget {
               blurRadius: 10,
             ),
           ]),
-      child: Consumer<ShareClass>(
-        builder: (context, share, child) {
+      child: Consumer<MarkSongs>(
+        builder: (context, marker, child) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '${share.markedSongs.length}\nselected',
+                '${marker.markedSongs.length}\nselected',
                 style: customTextStyle,
               ),
               IconButton(
                 icon: Icon(Icons.share),
                 onPressed: () async {
                   final RenderBox box = context.findRenderObject();
-                  final paths = getPaths(share);
+                  final paths = getPaths(marker);
                   await Share.shareFiles(paths,
                       sharePositionOrigin:
                           box.localToGlobal(Offset.zero) & box.size);
-                  share.reset(notify: true);
+                  marker.reset(notify: true);
                 },
               ),
               IconButton(
@@ -69,7 +69,7 @@ class PlaylistOptions extends StatelessWidget {
                     context: context,
                     builder: (context) {
                       return CreatePlayList(
-                        songs: share.markedSongs,
+                        songs: marker.markedSongs,
                         createNewPlaylist: false,
                       );
                     },

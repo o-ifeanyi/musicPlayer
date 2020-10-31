@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/models/config.dart';
-import 'package:musicPlayer/models/songController.dart';
+import 'package:musicPlayer/util/config.dart';
+import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:provider/provider.dart';
 
 class CircleDisc extends StatefulWidget {
@@ -20,7 +20,7 @@ class _CircleDiscState extends State<CircleDisc>
   void initState() {
     super.initState();
     animationController = new AnimationController(
-      TickerProvider: this,
+      vsync: this,
       duration: new Duration(seconds: 5),
     );
   }

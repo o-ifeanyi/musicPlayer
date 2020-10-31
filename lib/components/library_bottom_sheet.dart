@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/models/config.dart';
-import 'package:musicPlayer/models/playListDB.dart';
+import 'package:musicPlayer/util/config.dart';
+import 'package:musicPlayer/providers/playList_database.dart';
 import 'package:provider/provider.dart';
 
 class LibraryBottomSheet extends StatelessWidget {

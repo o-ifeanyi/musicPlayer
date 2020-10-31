@@ -3,7 +3,7 @@ import 'package:audiotagger/audiotagger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_media_notification/flutter_media_notification.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:musicPlayer/models/playListDB.dart';
+import 'package:musicPlayer/providers/playList_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SongController extends ChangeNotifier {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/models/config.dart';
+import 'package:musicPlayer/util/config.dart';
 
 class CustomToast extends StatelessWidget {
   final String message;
