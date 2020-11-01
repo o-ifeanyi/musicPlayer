@@ -7,13 +7,13 @@ import 'package:share/share.dart';
 
 class PlaylistOptions extends StatelessWidget {
   PlaylistOptions(this.playlistName, this.canDelete);
-  final playlistName;
+  final String playlistName;
   final bool canDelete;
   final editingController = TextEditingController();
 
   List<String> getPaths(MarkSongs marker) {
     List<String> paths = [];
-    marker.markedSongs.forEach((element) => paths.add(element['path']));
+    marker.markedSongs.forEach((element) => paths.add(element.path));
     return paths;
   }
 

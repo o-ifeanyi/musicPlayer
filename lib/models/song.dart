@@ -9,6 +9,9 @@ class Song {
   String year;
   DateTime dateAdded;
 
+  Song({this.path, this.title, this.artist, this.genre, this.album, this.year,
+      this.dateAdded});
+
   Song.fromMap(Map<dynamic, dynamic> info, {String filePath}) {
     if (info == null) {
       return;

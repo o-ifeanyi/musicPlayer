@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:musicPlayer/screens/edit_info.dart';
 import 'package:musicPlayer/util/config.dart';
 import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:share/share.dart';
@@ -8,6 +9,7 @@ enum Options {
   AddToPlaylist,
   DeleteRemove,
   Share,
+  EditInfo,
 }
 
 class PopUpButton extends StatelessWidget {
@@ -75,6 +77,16 @@ class PopUpButton extends StatelessWidget {
                 subject: songList[index]['title'],
                 sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
             break;
+          case Options.EditInfo:
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (ctx) => EditInfo(
+                  song: songList[index],
+                ),
+              ),
+            );
+            break;
           default:
         }
       },
@@ -97,6 +109,12 @@ class PopUpButton extends StatelessWidget {
             text: 'Share',
             icon: Icons.share,
             value: Options.Share,
+          ),
+          _popupItem(
+            context: context,
+            text: 'Edit info',
+            icon: Icons.edit,
+            value: Options.EditInfo,
           ),
         ];
       },

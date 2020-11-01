@@ -3,6 +3,7 @@ import 'package:audiotagger/audiotagger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_media_notification/flutter_media_notification.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:musicPlayer/models/song.dart';
 import 'package:musicPlayer/providers/playList_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,14 +16,14 @@ class SongController extends ChangeNotifier {
   String timeLeft = '';
   String timePlayed = '';
   String playlistName; // this is assigned from playlist screen
-  List allSongs; // this is assigned from playlist screen
+  List<Song> allSongs; // this is assigned from playlist screen
   bool isFavourite = false;
   bool isShuffled = false;
   bool isRepeat = false;
   bool isPlaying = false;
   bool useArt = false;
-  dynamic nowPlaying = {};
-  dynamic lastPlayed;
+  Song nowPlaying;
+  Song lastPlayed;
   dynamic songArt;
   AppLifecycleState state;
   PlayListDB playListDB = PlayListDB();
@@ -37,7 +38,7 @@ class SongController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setFavourite(dynamic song) async {
+  Future<void> setFavourite(Song song) async {
     isFavourite = await playListDB.isFavourite(song);
     notifyListeners();
   }
@@ -47,8 +48,8 @@ class SongController extends ChangeNotifier {
       pref.setBool('useArt', value);
     });
     useArt = value;
-    if (nowPlaying['path'] != null && useArt) {
-      await Audiotagger().readArtwork(path: nowPlaying['path']).then((value) {
+    if (nowPlaying.path != null && useArt) {
+      await Audiotagger().readArtwork(path: nowPlaying.path).then((value) {
         // not sure if this is a fix yet
         // songArt that were blank had lenght less than 20k
         value.length < 20000 ? songArt = null : songArt = value;
@@ -62,17 +63,17 @@ class SongController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setUp(dynamic song) async {
+  Future<void> setUp(Song song) async {
     if (song != null) {
       nowPlaying = song;
       currentSongIndex = allSongs
-          .indexWhere((element) => element['path'] == nowPlaying['path']);
+          .indexWhere((element) => element.path == nowPlaying.path);
       player = AudioPlayer();
-      duration = await player.setFilePath(nowPlaying['path']);
+      duration = await player.setFilePath(nowPlaying.path);
       songLenght = duration.inSeconds;
       timeLeft = '${duration.inMinutes}:${duration.inSeconds % 60}';
       if (useArt) {
-        await Audiotagger().readArtwork(path: nowPlaying['path']).then((value) {
+        await Audiotagger().readArtwork(path: nowPlaying.path).then((value) {
           // not sure if this is a fix yet
           // songArt that were blank had lenght less than 20k
         value.length < 20000 ? songArt = null : songArt = value;
@@ -117,7 +118,7 @@ class SongController extends ChangeNotifier {
 
   Future<void> skip({bool next = false, bool prev = false}) async {
     currentSongIndex =
-        allSongs.indexWhere((element) => element['path'] == nowPlaying['path']);
+        allSongs.indexWhere((element) => element.path == nowPlaying.path);
     List shuffled = [...allSongs];
     await disposePlayer();
     try {
@@ -126,7 +127,7 @@ class SongController extends ChangeNotifier {
       } else if (isShuffled) {
         shuffled.shuffle();
         currentSongIndex = shuffled
-            .indexWhere((element) => element['path'] == nowPlaying['path']);
+            .indexWhere((element) => element.path == nowPlaying.path);
         nowPlaying = next
             ? shuffled[currentSongIndex += 1]
             : shuffled[currentSongIndex -= 1];
@@ -144,16 +145,16 @@ class SongController extends ChangeNotifier {
     }
   }
 
-  Future<void> playlistControlOptions(dynamic playlistNowPlaying) async {
+  Future<void> playlistControlOptions(Song playlistNowPlaying) async {
     // if nothing is currently playing
-    if (nowPlaying['path'] == null) {
+    if (nowPlaying?.path == null) {
       await setUp(playlistNowPlaying);
       setIsPlaying(true);
       // if the song currently playing is taped on
-    } else if (nowPlaying['path'] == playlistNowPlaying['path']) {
+    } else if (nowPlaying?.path == playlistNowPlaying.path) {
       isPlaying ? pause() : play();
       // if a different song is selected
-    } else if (nowPlaying['path'] != playlistNowPlaying['path']) {
+    } else if (nowPlaying?.path != playlistNowPlaying.path) {
       disposePlayer();
       await setUp(playlistNowPlaying);
       setIsPlaying(true);
@@ -191,8 +192,8 @@ class SongController extends ChangeNotifier {
       return;
     else
       MediaNotification.showNotification(
-        title: nowPlaying['title'],
-        author: nowPlaying['artist'],
+        title: nowPlaying.title,
+        author: nowPlaying.artist,
         isPlaying: isPlaying,
       );
   }

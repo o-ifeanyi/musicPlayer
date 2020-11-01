@@ -15,17 +15,21 @@ import 'package:provider/provider.dart';
 import 'package:flutter_media_notification/flutter_media_notification.dart';
 
 class Library extends StatefulWidget {
+  static const String pageId = '/library';
   @override
   _LibraryState createState() => _LibraryState();
 }
 
 class _LibraryState extends State<Library> with WidgetsBindingObserver {
   SongController _controller;
-  dynamic currentSong;
-  void openPlaylist({String title, List songList}) {
+  void openPlaylist({String title}) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => PlayList(title, songList)),
+      MaterialPageRoute(
+        builder: (context) => PlayList(
+          playListName: title,
+        ),
+      ),
     );
   }
 
@@ -50,10 +54,10 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
 
   void showNotification() {
     _controller = Provider.of<SongController>(context, listen: false);
-    if (_controller.nowPlaying['path'] != null) {
+    if (_controller.nowPlaying.path != null) {
       MediaNotification.showNotification(
-        title: _controller.nowPlaying['title'],
-        author: _controller.nowPlaying['artist'],
+        title: _controller.nowPlaying.title,
+        author: _controller.nowPlaying.artist,
         isPlaying: _controller.isPlaying,
       );
     }
@@ -69,7 +73,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
     }
     //if app goes to background show notification
     if (state == AppLifecycleState.paused &&
-        _controller.nowPlaying['path'] != null) {
+        _controller.nowPlaying?.path != null) {
       showNotification();
       MediaNotification.setListener('play', () => _controller.play());
       MediaNotification.setListener('pause', () => _controller.pause());
@@ -126,11 +130,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                             diameter: 12,
                             child: Icons.settings,
                             onPressed: () async {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Settings()),
-                              );
+                              Navigator.pushNamed(context, Settings.pageId);
                             },
                           ),
                         ],
@@ -148,9 +148,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: GestureDetector(
                             onTap: () {
-                              openPlaylist(
-                                  title: 'All songs',
-                                  songList: provider.allSongs);
+                              openPlaylist(title: 'All songs');
                             },
                             child: CustomCard(
                               height: 30,
@@ -185,8 +183,9 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                             scrollDirection: Axis.horizontal,
                             itemCount: playListDB.playList.length,
                             itemBuilder: (_, index) {
-                              List songList =
-                                  playListDB.playList[index]['songs'];
+                              int songCount = index > 0
+                                  ? playListDB.playList[index]['songs'].length
+                                  : null;
                               return GestureDetector(
                                 onTap: () {
                                   if (playListDB.playList[index]['name'] ==
@@ -202,8 +201,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                   } else {
                                     openPlaylist(
                                         title: playListDB.playList[index]
-                                            ['name'],
-                                        songList: songList);
+                                            ['name']);
                                   }
                                 },
                                 onLongPress: () {
@@ -223,7 +221,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                                     width: 30,
                                     label: playListDB.playList[index]['name'],
                                     child: getPlaylistIcon(index),
-                                    numOfSongs: songList?.length,
+                                    numOfSongs: songCount,
                                   ),
                                 ),
                               );
@@ -251,20 +249,12 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                             scrollDirection: Axis.horizontal,
                             itemCount: 2,
                             itemBuilder: (context, index) {
-                              List recentSongList = [];
                               return GestureDetector(
                                 onTap: () {
-                                  recentSongList = index == 0
-                                      ? Provider.of<ProviderClass>(context,
-                                              listen: false)
-                                          .recentlyAdded
-                                      : playlistDB.recentList;
                                   openPlaylist(
-                                    title: index == 0
-                                        ? 'Recently added'
-                                        : 'Recently played',
-                                    songList: recentSongList,
-                                  );
+                                      title: index == 0
+                                          ? 'Recently added'
+                                          : 'Recently played');
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.all(20),
@@ -288,7 +278,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                   ],
                 ),
               ),
-              LibrarySongControl(currentSong: currentSong),
+              LibrarySongControl(),
             ],
           ),
         ),

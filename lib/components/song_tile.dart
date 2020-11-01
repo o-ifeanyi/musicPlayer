@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/popup_button.dart';
+import 'package:musicPlayer/models/song.dart';
 import 'package:musicPlayer/util/config.dart';
 import 'package:musicPlayer/providers/mark_songs.dart';
 import 'package:musicPlayer/providers/song_controller.dart';
@@ -20,7 +21,7 @@ class SongTile extends StatelessWidget {
     @required this.buildShowDialog,
   }) : super(key: key);
 
-  final List songList;
+  final List<Song> songList;
   final String playListName;
   final bool canDelete;
   final SongController controller;
@@ -33,14 +34,14 @@ class SongTile extends StatelessWidget {
     double padding = 10.0;
     return AnimatedPadding(
       duration: Duration(milliseconds: 250),
-      padding: controller.nowPlaying['path'] == songList[index]['path'] &&
+      padding: controller.nowPlaying?.path == songList[index].path &&
               controller.isPlaying
           ? EdgeInsets.symmetric(vertical: padding)
           : EdgeInsets.all(0),
       child: Consumer<MarkSongs>(
         builder: (context, marker, child) {
           return ListTile(
-            selected: controller.nowPlaying['path'] == songList[index]['path'],
+            selected: controller.nowPlaying?.path == songList[index].path,
             onTap: () async {
               if (marker.isReadyToMark) {
                 marker.isMarked(songList[index])
@@ -83,7 +84,7 @@ class SongTile extends StatelessWidget {
                     dialogFunction: buildShowDialog,
                   ),
             title: Text(
-              songList[index]['title'],
+              songList[index].title,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: Config.textSize(context, 3.5),
@@ -91,20 +92,20 @@ class SongTile extends StatelessWidget {
               ),
             ),
             subtitle: Text(
-              songList[index]['artist'],
+              songList[index].artist,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                 fontSize: Config.textSize(context, 3),
               ),
             ),
             trailing: CustomButton(
-              child: controller.nowPlaying['path'] == songList[index]['path'] &&
+              child: controller.nowPlaying?.path == songList[index].path &&
                       controller.isPlaying
                   ? Icons.pause
                   : Icons.play_arrow,
               diameter: 12,
               isToggled:
-                  controller.nowPlaying['path'] == songList[index]['path'],
+                  controller.nowPlaying?.path == songList[index].path,
               onPressed: () async {
                 controller.allSongs = songList;
                 controller.playlistName = playListName;

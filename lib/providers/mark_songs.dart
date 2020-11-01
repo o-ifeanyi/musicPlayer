@@ -1,7 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:musicPlayer/models/song.dart';
 
 class MarkSongs extends ChangeNotifier {
-  List markedSongs = [];
+  List<Song> markedSongs = [];
   bool isReadyToMark = false;
 
   void isMarking() {
@@ -9,13 +10,13 @@ class MarkSongs extends ChangeNotifier {
     notifyListeners();
   }
 
-  void add(dynamic song) {
+  void add(Song song) {
     markedSongs.add(song);
     notifyListeners();
   }
 
-  void remove(dynamic song) {
-    markedSongs.removeWhere((element) => element['path'] == song['path']);
+  void remove(Song song) {
+    markedSongs.removeWhere((element) => element.path == song.path);
     isMarking();
     notifyListeners();
   }
@@ -28,7 +29,7 @@ class MarkSongs extends ChangeNotifier {
     }
   }
 
-  bool isMarked(dynamic song) {
-    return markedSongs.any((element) => element['path'] == song['path']);
+  bool isMarked(Song song) {
+    return markedSongs.any((element) => element.path == song.path);
   }
 }

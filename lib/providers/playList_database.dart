@@ -5,12 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hive/hive.dart';
 import 'package:musicPlayer/components/toast.dart';
+import 'package:musicPlayer/models/song.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PlayListDB extends ChangeNotifier {
-  List playList = [];
+  List<Map<dynamic, dynamic>> playList = [];
 
-  List recentList = [];
+  List<Song> recentList = [];
 
   Future<String> getPlaylistPath() async {
     Directory documentDirectory = await getApplicationDocumentsDirectory();
@@ -40,13 +41,13 @@ class PlayListDB extends ChangeNotifier {
     refresh();
   }
 
-  Future<void> addToPlaylist(String playlistName, dynamic song) async {
+  Future<void> addToPlaylist(String playlistName, Song song) async {
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
     var dbPlaylist = db.get(playlistName);
     List songs = dbPlaylist['songs'];
-    bool found = songs.any((element) => element['path'] == song['path']);
+    bool found = songs.any((element) => element['path'] == song.path);
     if (!found) {
-      songs.add(song);
+      songs.add(song.toMap());
       db.put(playlistName, {
         'name': playlistName,
         'songs': songs,
@@ -55,17 +56,17 @@ class PlayListDB extends ChangeNotifier {
     refresh();
   }
 
-  Future<void> removeFromPlaylist(String playlistName, dynamic song) async {
+  Future<void> removeFromPlaylist(String playlistName, Song song) async {
     if (playlistName == 'Recently played') {
       Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
       List recentSongs = recentdb.get('Recently played');
-      recentSongs.removeWhere((element) => element['path'] == song['path']);
+      recentSongs.removeWhere((element) => element['path'] == song.path);
       recentdb.put('Recently played', recentSongs);
     } else {
       Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
       var dbPlaylist = db.get(playlistName);
       List songs = dbPlaylist['songs'];
-      songs.removeWhere((element) => element['path'] == song['path']);
+      songs.removeWhere((element) => element['path'] == song.path);
       db.put(playlistName, {
         'name': playlistName,
         'songs': songs,
@@ -74,63 +75,64 @@ class PlayListDB extends ChangeNotifier {
     refresh();
   }
 
-  Future<bool> isFavourite(dynamic song) async {
+  Future<bool> isFavourite(Song song) async {
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
     var dbPlaylist = db.get('Favourites');
     List songs = dbPlaylist['songs'];
-    return songs.any((element) => element['path'] == song['path']);
+    return songs.any((element) => element['path'] == song.path);
   }
 
-  Future<void> removeFromDevice(dynamic song) async {
+  Future<void> removeFromDevice(Song song) async {
     // delete from all created playlist
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
-    for (var each in playList) {
-      var dbPlaylist = db.get(each['name']);
-      List songs = dbPlaylist['songs'];
+    for (var eachDB in db.values) {
+      List songs = eachDB['songs'];
       // ? because first thing in the list is createplaylist with no songs list
-      songs?.removeWhere((element) => element['path'] == song['path']);
-      db.put(each['name'], {
-        'name': each['name'],
+      songs?.removeWhere((element) => element['path'] == song.path);
+      db.put(eachDB['name'], {
+        'name': eachDB['name'],
         'songs': songs,
       });
     }
     // delete from recently played
     Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
     List songs = recentdb.get('Recently played');
-    songs.removeWhere((element) => element['path'] == song['path']);
+    songs.removeWhere((element) => element['path'] == song.path);
     recentdb.put('Recently played', songs);
     // delete from device
-    var deviceFile = File(song['path']);
+    var deviceFile = File(song.path);
     if (deviceFile.existsSync()) {
       deviceFile.deleteSync();
     }
     refresh();
   }
 
-  Future<void> saveNowPlaying(dynamic song) async {
+  Future<void> saveNowPlaying(Song song) async {
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
-    bool found = songs.any((element) => element['path'] == song['path']);
+    bool found = songs.any((element) => element['path'] == song.path);
     if (!found && songs.length < 20) {
-      songs.add(song);
+      songs.add(song.toMap());
     } else if (!found && songs.length == 20) {
       songs.removeAt(0);
-      songs.add(song);
+      songs.add(song.toMap());
     } else if (found) {
-      songs.removeWhere((element) => element['path'] == song['path']);
-      songs.add(song);
+      songs.removeWhere((element) => element['path'] == song.path);
+      songs.add(song.toMap());
     }
     db.put('Recently played', songs);
   }
 
   Future<void> getRecentlyPlayed() async {
+    print('recently played gotten');
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
-    recentList.clear();
     if (songs.isNotEmpty) {
+      recentList.clear();
       for (var each in songs) {
+        print(each['artist']);
         // most recent song to be at the top
-        recentList.insert(0, each);
+        recentList.insert(0, Song.fromMap(each));
       }
     }
     notifyListeners();
@@ -147,6 +149,37 @@ class PlayListDB extends ChangeNotifier {
     refresh();
   }
 
+  Future<void> replaceSong(Song newSong) async {
+    // replace in all created playlist
+    Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
+    for (var eachDB in db.values) {
+      List songs = eachDB['songs'];
+      if (songs != null) {
+        // ? because first thing in the list is createplaylist with no songs list
+        final index = songs.indexWhere((song) => song['path'] == newSong.path);
+        print(index);
+        if (index != -1 && index != null) {
+          songs.replaceRange(index, index + 1, [newSong.toMap()]);
+        }
+      }
+      db.put(eachDB['name'], {
+        'name': eachDB['name'],
+        'songs': songs,
+      });
+    }
+    // replace in recently played
+    Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
+    List songs = recentdb.get('Recently played');
+    final index = songs.indexWhere((song) => song['path'] == newSong.path);
+    print(index);
+    if (index != -1) {
+      // replace
+      songs.replaceRange(index, index + 1, [newSong.toMap()]);
+    }
+    recentdb.put('Recently played', songs);
+    refresh();
+  }
+
   Future<void> deletePlaylist(String playlistName) async {
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
     db.delete(playlistName);
@@ -157,7 +190,7 @@ class PlayListDB extends ChangeNotifier {
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
     if (songs != null && songs.isNotEmpty) {
-      return songs.last;
+      return Song.fromMap(songs.last);
     } else {
       return null;
     }
@@ -166,11 +199,24 @@ class PlayListDB extends ChangeNotifier {
   void showToast(String message, BuildContext context) {
     final fToast = FToast();
     fToast.init(context);
+    fToast.removeQueuedCustomToasts();
     fToast.showToast(
-      gravity: ToastGravity.BOTTOM,
-      toastDuration: Duration(seconds: 2),
-      child: CustomToast(message)
-    );
+        gravity: ToastGravity.BOTTOM,
+        toastDuration: Duration(seconds: 2),
+        child: CustomToast(message));
+  }
+
+  List<Song> extract(List songs) {
+    // returns a list of type Song from a list of type Map
+    List<Song> newList = [];
+    songs.forEach((song) {
+      newList.add(Song.fromMap(song));
+    });
+    return newList;
+  }
+
+  Future<void> init() async {
+    return refresh();
   }
 
   Future<void> refresh() async {

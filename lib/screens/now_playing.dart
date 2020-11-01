@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/circle_disc.dart';
 import 'package:musicPlayer/components/create_playList.dart';
 import 'package:musicPlayer/components/custom_button.dart';
+import 'package:musicPlayer/models/song.dart';
 import 'package:musicPlayer/util/config.dart';
 import 'package:musicPlayer/providers/playList_database.dart';
 import 'package:musicPlayer/screens/playing_from.dart';
@@ -11,7 +12,8 @@ import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:provider/provider.dart';
 
 class NowPlaying extends StatefulWidget {
-  final currentSong;
+  static const String pageId = '/nowPlaying';
+  final Song currentSong;
   NowPlaying({this.currentSong});
   @override
   _NowPlayingState createState() => _NowPlayingState();
@@ -24,10 +26,10 @@ class _NowPlayingState extends State<NowPlaying> {
   Future<void> setUp() async {
     player = Provider.of<SongController>(context, listen: false);
     // if no song is beign played
-    if (player.nowPlaying['path'] == null) {
+    if (player.nowPlaying?.path == null) {
       await player.setUp(widget.currentSong);
       // if a different song was selected
-    } else if (player.nowPlaying['path'] != widget.currentSong['path']) {
+    } else if (player.nowPlaying?.path != widget.currentSong.path) {
       player.disposePlayer();
       nowPlaying = widget.currentSong;
       await player.setUp(nowPlaying);
@@ -76,10 +78,7 @@ class _NowPlayingState extends State<NowPlaying> {
                         diameter: 12,
                         child: Icons.list,
                         onPressed: () async {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (_) => PlayingFrom()),
-                          );
+                          Navigator.pushNamed(context, PlayingFrom.pageId);
                         },
                       ),
                     ],
@@ -98,7 +97,7 @@ class _NowPlayingState extends State<NowPlaying> {
                     height: Config.xMargin(context, 3),
                   ),
                   Text(
-                    controller.nowPlaying['title'] ?? '',
+                    controller.nowPlaying.title ?? '',
                     style: TextStyle(
                       fontSize: Config.textSize(context, 3.5),
                       fontWeight: FontWeight.w400,
@@ -109,7 +108,7 @@ class _NowPlayingState extends State<NowPlaying> {
                     height: Config.xMargin(context, 1),
                   ),
                   Text(
-                    controller.nowPlaying['artist'] ?? '',
+                    controller.nowPlaying.artist ?? '',
                     style: TextStyle(
                       fontSize: Config.textSize(context, 3),
                     ),

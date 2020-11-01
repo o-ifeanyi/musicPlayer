@@ -32,12 +32,9 @@ class _SplashScreenState extends State<SplashScreen>
           // initialises things like shuffle, repeat, last played
           Provider.of<SongController>(context, listen: false).init();
           // populates playlist from database
-          Provider.of<PlayListDB>(context, listen: false).refresh();
+          Provider.of<PlayListDB>(context, listen: false).init();
           Future.delayed(Duration(seconds: 2)).then((value) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => Library()),
-            );
+            Navigator.pushReplacementNamed(context, Library.pageId);
           });
         }
       });

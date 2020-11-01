@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Settings extends StatefulWidget {
+  static const String pageId = '/settings';
   @override
   _SettingsState createState() => _SettingsState();
 }

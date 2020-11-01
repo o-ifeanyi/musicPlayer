@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/circle_disc.dart';
 import 'package:musicPlayer/components/custom_button.dart';
+import 'package:musicPlayer/models/song.dart';
 import 'package:musicPlayer/util/config.dart';
 import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PlayingFrom extends StatefulWidget {
+  static const String pageId = '/playingFrom';
   @override
   _PlayingFromState createState() => _PlayingFromState();
 }
 
 class _PlayingFromState extends State<PlayingFrom> {
-  dynamic nowPlaying;
+  Song nowPlaying;
   double padding = 10.0;
 
   @override
@@ -87,19 +89,19 @@ class _PlayingFromState extends State<PlayingFrom> {
                   child: ListView.builder(
                     itemCount: controller.allSongs.length,
                     itemBuilder: (context, index) {
-                      List songList = controller.allSongs;
+                      List<Song> songList = controller.allSongs;
                       return AnimatedPadding(
                         duration: Duration(milliseconds: 250),
-                        padding: controller.nowPlaying['path'] ==
-                                    songList[index]['path'] &&
+                        padding: controller.nowPlaying.path ==
+                                    songList[index].path &&
                                 controller.isPlaying
                             ? EdgeInsets.symmetric(vertical: padding)
                             : EdgeInsets.all(0),
                         child: ListTile(
                           onTap: () async {
                             nowPlaying = songList[index];
-                            if (controller.nowPlaying['path'] ==
-                                nowPlaying['path']) {
+                            if (controller.nowPlaying.path ==
+                                nowPlaying.path) {
                               Navigator.pop(context);
                             } else {
                               await controller
@@ -109,11 +111,11 @@ class _PlayingFromState extends State<PlayingFrom> {
                                 ? padding = 10.0
                                 : padding = 0.0;
                           },
-                          selected: controller.nowPlaying['path'] ==
-                              songList[index]['path'],
+                          selected: controller.nowPlaying.path ==
+                              songList[index].path,
                           contentPadding: EdgeInsets.symmetric(horizontal: 20),
                           title: Text(
-                            songList[index]['title'],
+                            songList[index].title,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: Config.textSize(context, 3.5),
@@ -121,7 +123,7 @@ class _PlayingFromState extends State<PlayingFrom> {
                             ),
                           ),
                           subtitle: Text(
-                            songList[index]['artist'],
+                            songList[index].artist,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: Config.textSize(context, 3),
@@ -129,10 +131,10 @@ class _PlayingFromState extends State<PlayingFrom> {
                           ),
                           trailing: CustomButton(
                             diameter: 12,
-                            isToggled: controller.nowPlaying['path'] ==
-                                songList[index]['path'],
-                            child: controller.nowPlaying['path'] ==
-                                        songList[index]['path'] &&
+                            isToggled: controller.nowPlaying.path ==
+                                songList[index].path,
+                            child: controller.nowPlaying.path ==
+                                        songList[index].path &&
                                     controller.isPlaying
                                 ? Icons.pause
                                 : Icons.play_arrow,
