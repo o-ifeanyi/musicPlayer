@@ -81,7 +81,7 @@ class _EditInfoImageState extends State<EditInfoImage> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Icon(Icons.image),
+                Icon(Icons.image, color: Colors.white,),
                 SizedBox(
                   width: 10,
                 ),

@@ -172,20 +172,15 @@ class _PlayListState extends State<PlayList> {
                                   ? searchList.length
                                   : allSongs.length,
                               itemBuilder: (context, index) {
-                                return Consumer<SongController>(
-                                  builder: (context, controller, child) {
-                                    List<Song> songList =
-                                        isSearching ? searchList : allSongs;
-                                    return SongTile(
-                                      index: index,
-                                      playListName: widget.playListName,
-                                      controller: controller,
-                                      songList: songList,
-                                      resetSearch: resetSearch,
-                                      canDelete: canDelete,
-                                      buildShowDialog: buildShowDialog,
-                                    );
-                                  },
+                                List<Song> songList =
+                                    isSearching ? searchList : allSongs;
+                                return SongTile(
+                                  index: index,
+                                  songList: songList,
+                                  playListName: widget.playListName,
+                                  resetSearch: resetSearch,
+                                  canDelete: canDelete,
+                                  buildShowDialog: buildShowDialog,
                                 );
                               },
                             )
@@ -263,16 +258,15 @@ class _PlayListState extends State<PlayList> {
     );
   }
 
-  buildShowDialog(BuildContext context, List<Song> songList, int index,
-      SongController controller) async {
+  buildShowDialog(BuildContext context, Song song) async {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(
             canDelete
-                ? 'Delete "${songList[index].title}" from device?'
-                : 'Remove "${songList[index].title}" from ${widget.playListName}?',
+                ? 'Delete "${song.title}" from device?'
+                : 'Remove "${song.title}" from ${widget.playListName}?',
             style: TextStyle(
               fontSize: Config.textSize(context, 3.5),
               fontWeight: FontWeight.w400,
@@ -290,23 +284,25 @@ class _PlayListState extends State<PlayList> {
                 onPressed: () async {
                   final playlistDB =
                       Provider.of<PlayListDB>(context, listen: false);
+                  final controller =
+                      Provider.of<SongController>(context, listen: false);
                   if (canDelete) {
-                    await playlistDB.removeFromDevice(songList[index]);
+                    await playlistDB.removeFromDevice(song);
                     playlistDB.showToast('Delete successful!', context);
                     // if current song beign played is deleted its still available from libray
                     // causing craxy bugs
-                    if (controller.nowPlaying?.path == songList[index].path) {
+                    if (controller.nowPlaying?.path == song.path) {
                       await controller.skip(next: true);
                     }
                     setState(() {
                       Provider.of<ProviderClass>(context, listen: false)
-                          .removeSong(songList[index]);
+                          .removeSong(song);
                       allSongs = getSongs();
                     });
                     Navigator.pop(context);
                   } else {
                     await playlistDB.removeFromPlaylist(
-                        widget.playListName, songList[index]);
+                        widget.playListName, song);
                     playlistDB.showToast('Removed successfully!', context);
                     setState(() {
                       allSongs = getSongs();

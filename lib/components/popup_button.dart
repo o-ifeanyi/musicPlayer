@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:musicPlayer/models/song.dart';
 import 'package:musicPlayer/screens/edit_info.dart';
 import 'package:musicPlayer/util/config.dart';
-import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:share/share.dart';
 import 'create_playList.dart';
 
@@ -14,18 +14,14 @@ enum Options {
 
 class PopUpButton extends StatelessWidget {
   PopUpButton({
-    @required this.songList,
+    @required this.song,
     @required this.canDelete,
-    @required this.index,
-    @required this.controller,
     @required this.dialogFunction,
   });
 
-  final List songList;
+  final Song song;
   final bool canDelete;
-  final SongController controller;
   final Function dialogFunction;
-  final int index;
 
   PopupMenuItem _popupItem(
       {BuildContext context, String text, IconData icon, Options value}) {
@@ -41,7 +37,10 @@ class PopUpButton extends StatelessWidget {
                 fontWeight: FontWeight.w400,
                 fontFamily: 'Acme'),
           ),
-          Icon(icon),
+          Icon(
+            icon,
+            size: Config.textSize(context, 5),
+          ),
         ],
       ),
     );
@@ -62,19 +61,19 @@ class PopUpButton extends StatelessWidget {
               context: context,
               builder: (context) {
                 return CreatePlayList(
-                  songs: [songList[index]],
+                  songs: [song],
                   createNewPlaylist: false,
                 );
               },
             );
             break;
           case Options.DeleteRemove:
-            await dialogFunction(context, songList, index, controller);
+            await dialogFunction(context, song);
             break;
           case Options.Share:
             final RenderBox box = context.findRenderObject();
-            await Share.shareFiles([songList[index]['path']],
-                subject: songList[index]['title'],
+            await Share.shareFiles([song.path],
+                subject: song.title,
                 sharePositionOrigin: box.localToGlobal(Offset.zero) & box.size);
             break;
           case Options.EditInfo:
@@ -82,7 +81,7 @@ class PopUpButton extends StatelessWidget {
               context,
               MaterialPageRoute(
                 builder: (ctx) => EditInfo(
-                  song: songList[index],
+                  song: song,
                 ),
               ),
             );

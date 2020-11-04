@@ -3,6 +3,7 @@ import 'package:musicPlayer/components/custom_button.dart';
 import 'package:musicPlayer/components/edit_info_image.dart';
 import 'package:musicPlayer/models/song.dart';
 import 'package:musicPlayer/providers/all_songs.dart';
+import 'package:musicPlayer/services/song_info.dart';
 import 'package:musicPlayer/util/config.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,7 @@ class EditInfo extends StatefulWidget {
 
 class _EditInfoState extends State<EditInfo> {
   final _formKey = GlobalKey<FormState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _trackNameController = TextEditingController();
   final _artistNameController = TextEditingController();
   final _albumNameController = TextEditingController();
@@ -25,6 +27,7 @@ class _EditInfoState extends State<EditInfo> {
   String _title;
   String _artist;
   String _imagePath;
+  bool _isLoading = false;
 
   void _setImage(String path) {
     _imagePath = path;
@@ -45,6 +48,7 @@ class _EditInfoState extends State<EditInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       body: SafeArea(
         child: Container(
           height: MediaQuery.of(context).size.height,
@@ -135,27 +139,70 @@ class _EditInfoState extends State<EditInfo> {
                         ],
                       ),
                       SizedBox(height: Config.yMargin(context, 2)),
-                      Container(
-                        height: 50,
-                        alignment: Alignment.center,
-                        child: Text('Fetch song info'),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                              color: Theme.of(context).splashColor,
-                              offset: Offset(5, 5),
-                              blurRadius: 10,
-                              spreadRadius: 1.0,
-                            ),
-                            BoxShadow(
-                              color: Theme.of(context).backgroundColor,
-                              offset: Offset(-5, -5),
-                              blurRadius: 10,
-                              spreadRadius: 1.0,
-                            ),
-                          ],
+                      InkWell(
+                        borderRadius: BorderRadius.circular(10),
+                        onTap: () async {
+                          final isValid = _formKey.currentState.validate();
+                          if (!isValid) {
+                            return;
+                          }
+                          setState(() {
+                            _isLoading = true;
+                          });
+                          final songInfo =
+                              await SongInfo.getSongInfo(_title, _artist);
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          // title and artist is required to make the search
+                          // if lenght is 2, onlt title and artist was gotten
+                          if (songInfo.isEmpty || songInfo.length == 2) {
+                            _scaffoldKey.currentState.hideCurrentSnackBar();
+                            _scaffoldKey.currentState.showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Something went wrong, try again later',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                backgroundColor: Theme.of(context).accentColor,
+                              ),
+                            );
+                            return;
+                          }
+                          _trackNameController.text = songInfo['title'];
+                          _artistNameController.text = songInfo['artist'];
+                          _albumNameController.text = songInfo['album'];
+                          _genreController.text = songInfo['genre'];
+                          _yearController.text = songInfo['year'];
+                        },
+                        child: Container(
+                          height: 50,
+                          alignment: Alignment.center,
+                          child: _isLoading
+                              ? CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                )
+                              : Text('Fetch song info'),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Theme.of(context).scaffoldBackgroundColor,
+                            boxShadow: <BoxShadow>[
+                              BoxShadow(
+                                color: Theme.of(context).splashColor,
+                                offset: Offset(5, 5),
+                                blurRadius: 10,
+                                spreadRadius: 1.0,
+                              ),
+                              BoxShadow(
+                                color: Theme.of(context).backgroundColor,
+                                offset: Offset(-5, -5),
+                                blurRadius: 10,
+                                spreadRadius: 1.0,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       SizedBox(height: Config.yMargin(context, 2)),
@@ -191,6 +238,9 @@ class _EditInfoState extends State<EditInfo> {
                               validator: (val) {
                                 if (val.isEmpty) {
                                   return 'This field should not be empty';
+                                }
+                                if (val.toLowerCase().contains('unknown artist')) {
+                                  return 'This field is required to make the search';
                                 }
                                 return null;
                               },

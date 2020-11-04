@@ -33,6 +33,7 @@
 /android/app/key.properties
 /android/app/vybekey.jks
 /android/.gitignore/
+/lib/services/secrets.dart
 
 # Web related
 lib/generated_plugin_registrant.dart

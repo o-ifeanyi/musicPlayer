@@ -66,8 +66,8 @@ class SongController extends ChangeNotifier {
   Future<void> setUp(Song song) async {
     if (song != null) {
       nowPlaying = song;
-      currentSongIndex = allSongs
-          .indexWhere((element) => element.path == nowPlaying.path);
+      currentSongIndex =
+          allSongs.indexWhere((element) => element.path == nowPlaying.path);
       player = AudioPlayer();
       duration = await player.setFilePath(nowPlaying.path);
       songLenght = duration.inSeconds;
@@ -76,8 +76,8 @@ class SongController extends ChangeNotifier {
         await Audiotagger().readArtwork(path: nowPlaying.path).then((value) {
           // not sure if this is a fix yet
           // songArt that were blank had lenght less than 20k
-        value.length < 20000 ? songArt = null : songArt = value;
-      }).catchError((e) => songArt = null);
+          value.length < 20000 ? songArt = null : songArt = value;
+        }).catchError((e) => songArt = null);
       }
       isFavourite = await playListDB.isFavourite(nowPlaying);
       playListDB.saveNowPlaying(nowPlaying);
@@ -88,7 +88,7 @@ class SongController extends ChangeNotifier {
   }
 
   void getPosition() {
-    player.getPositionStream().listen(
+    player.positionStream.listen(
       (event) async {
         currentTime = event.inSeconds;
         timePlayed = '${event.inMinutes}:${event.inSeconds % 60}';
@@ -126,8 +126,8 @@ class SongController extends ChangeNotifier {
         nowPlaying = nowPlaying;
       } else if (isShuffled) {
         shuffled.shuffle();
-        currentSongIndex = shuffled
-            .indexWhere((element) => element.path == nowPlaying.path);
+        currentSongIndex =
+            shuffled.indexWhere((element) => element.path == nowPlaying.path);
         nowPlaying = next
             ? shuffled[currentSongIndex += 1]
             : shuffled[currentSongIndex -= 1];
@@ -167,10 +167,7 @@ class SongController extends ChangeNotifier {
 
   Future<void> disposePlayer() async {
     try {
-      if (player.playbackState == AudioPlaybackState.playing ||
-          player.playbackState == AudioPlaybackState.paused) {
-        await player.dispose();
-      }
+      await player.dispose();
     } catch (e) {
       debugPrint(e.toString());
     }
@@ -200,9 +197,9 @@ class SongController extends ChangeNotifier {
 
   void handleInterruptions() {
     AudioSession.instance.then((session) async {
-      player.playbackStateStream.listen((event) {
+      player.playbackEventStream.listen((event) {
         // Activate session only if a song is playing
-        if (event == AudioPlaybackState.playing) {
+        if (player.playing) {
           session.setActive(true);
         }
       }).onError((e) => print(e));

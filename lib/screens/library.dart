@@ -129,7 +129,7 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                           CustomButton(
                             diameter: 12,
                             child: Icons.settings,
-                            onPressed: () async {
+                            onPressed: () {
                               Navigator.pushNamed(context, Settings.pageId);
                             },
                           ),

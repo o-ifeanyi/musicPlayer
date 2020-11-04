@@ -124,13 +124,11 @@ class PlayListDB extends ChangeNotifier {
   }
 
   Future<void> getRecentlyPlayed() async {
-    print('recently played gotten');
     Box db = await Hive.openBox('recent', path: await getRecentPath());
     List songs = db.get('Recently played');
     if (songs.isNotEmpty) {
       recentList.clear();
       for (var each in songs) {
-        print(each['artist']);
         // most recent song to be at the top
         recentList.insert(0, Song.fromMap(each));
       }
@@ -157,7 +155,6 @@ class PlayListDB extends ChangeNotifier {
       if (songs != null) {
         // ? because first thing in the list is createplaylist with no songs list
         final index = songs.indexWhere((song) => song['path'] == newSong.path);
-        print(index);
         if (index != -1 && index != null) {
           songs.replaceRange(index, index + 1, [newSong.toMap()]);
         }
@@ -171,9 +168,7 @@ class PlayListDB extends ChangeNotifier {
     Box recentdb = await Hive.openBox('recent', path: await getRecentPath());
     List songs = recentdb.get('Recently played');
     final index = songs.indexWhere((song) => song['path'] == newSong.path);
-    print(index);
     if (index != -1) {
-      // replace
       songs.replaceRange(index, index + 1, [newSong.toMap()]);
     }
     recentdb.put('Recently played', songs);

@@ -38,7 +38,7 @@ class ProviderClass extends ChangeNotifier {
       album: newSong.album,
       genre: newSong.genre,
       year: newSong.year,
-      artwork: imagePath,
+      artwork: imagePath, // ignored if it is null
     );
     final successful = await tagger.writeTags(
       path: path,
@@ -53,14 +53,13 @@ class ProviderClass extends ChangeNotifier {
     await playlistDB.replaceSong(newSong);
     successful
         ? playlistDB.showToast('Edited successfully', context)
-        : playlistDB.showToast('Edited successfully', context);
+        : playlistDB.showToast('Something went wrong', context);
 
     notifyListeners();
   }
 
   void sortList() {
     List<Song> newList = List.from(allSongs);
-    print(newList[0].dateAdded);
     newList.sort((b, a) => a.dateAdded.compareTo(b.dateAdded));
     // sort arranged it from old to new hence the reverse
     recentlyAdded.addAll(newList);

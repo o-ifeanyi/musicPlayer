@@ -24,9 +24,10 @@ dependencies:
   hive: ^1.4.3
   share: ^0.6.5
   fluttertoast: ^7.1.1
-  just_audio: ^0.2.2
+  just_audio: ^0.5.5
   audiotagger: ^1.1.0
   audio_session: ^0.0.4
+  dio: ^3.0.10
   flutter_media_notification: ^1.2.6
   move_to_background: ^1.0.1
 
