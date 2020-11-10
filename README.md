@@ -31,6 +31,8 @@ Please star⭐ the repo if you like what you see😉.
 - [x] Delete playlist.
 - [x] Add to playlist.
 - [x] Remove from playlist.
+- [x] Edit song info.
+- [x] Search song lyrics.
 - [x] Dark Mode.
 
 ## 📸 ScreenShots
