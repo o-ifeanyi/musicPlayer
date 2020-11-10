@@ -5,6 +5,7 @@ import 'package:flutter_media_notification/flutter_media_notification.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:musicPlayer/models/song.dart';
 import 'package:musicPlayer/providers/playList_database.dart';
+import 'package:musicPlayer/services/lyrics.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SongController extends ChangeNotifier {
@@ -15,6 +16,7 @@ class SongController extends ChangeNotifier {
   int currentSongIndex;
   String timeLeft = '';
   String timePlayed = '';
+  List<String> lyrics = [];
   String playlistName; // this is assigned from playlist screen
   List<Song> allSongs; // this is assigned from playlist screen
   bool isFavourite = false;
@@ -40,6 +42,11 @@ class SongController extends ChangeNotifier {
 
   Future<void> setFavourite(Song song) async {
     isFavourite = await playListDB.isFavourite(song);
+    notifyListeners();
+  }
+
+  Future<void> getLyrics() async {
+    lyrics = await Lyrics.getLyrics(nowPlaying?.artist, nowPlaying?.title);
     notifyListeners();
   }
 
@@ -175,6 +182,7 @@ class SongController extends ChangeNotifier {
     currentTime = 0;
     timeLeft = '';
     timePlayed = '';
+    lyrics = [];
     notifyListeners();
   }
 

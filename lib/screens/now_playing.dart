@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/components/circle_disc.dart';
+import 'package:musicPlayer/components/now_playing_display.dart';
 import 'package:musicPlayer/components/create_playList.dart';
 import 'package:musicPlayer/components/custom_button.dart';
 import 'package:musicPlayer/models/song.dart';
@@ -85,7 +85,7 @@ class _NowPlayingState extends State<NowPlaying> {
                   ),
                   isPotrait
                       ? Expanded(
-                          child: CircleDisc(
+                          child: NowPlayingDisplay(
                             iconSize: 16,
                             isRotating: controller.isPlaying,
                           ),

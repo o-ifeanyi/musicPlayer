@@ -71,6 +71,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
+  csslib:
+    dependency: transitive
+    description:
+      name: csslib
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.16.2"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -142,6 +149,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.4.3"
+  html:
+    dependency: "direct main"
+    description:
+      name: html
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.14.0+4"
   http:
     dependency: transitive
     description:
@@ -371,6 +385,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  smooth_page_indicator:
+    dependency: "direct main"
+    description:
+      name: smooth_page_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.2.0"
   source_span:
     dependency: transitive
     description:

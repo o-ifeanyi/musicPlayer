@@ -28,6 +28,8 @@ dependencies:
   audiotagger: ^1.1.0
   audio_session: ^0.0.4
   dio: ^3.0.10
+  html: ^0.14.0+3
+  smooth_page_indicator: ^0.2.0
   flutter_media_notification: ^1.2.6
   move_to_background: ^1.0.1
 
