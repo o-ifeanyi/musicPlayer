@@ -26,7 +26,7 @@ void main() {
     runApp(MultiProvider(
       providers: [
         ChangeNotifierProvider(
-            create: (_) => ProviderClass(kThemes[theme])),
+            create: (_) => ProviderClass(themeData: kThemes[theme])),
         ChangeNotifierProvider(create: (_) => PlayListDB()),
         ChangeNotifierProvider(create: (_) => SongController()),
         ChangeNotifierProvider(create: (_) => MarkSongs()),

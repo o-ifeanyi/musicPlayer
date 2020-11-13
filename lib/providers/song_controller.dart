@@ -16,9 +16,9 @@ class SongController extends ChangeNotifier {
   int currentSongIndex;
   String timeLeft = '';
   String timePlayed = '';
-  List<String> lyrics = [];
   String playlistName; // this is assigned from playlist screen
   List<Song> allSongs; // this is assigned from playlist screen
+  List<String> lyrics = [];
   bool isFavourite = false;
   bool isShuffled = false;
   bool isRepeat = false;
@@ -45,8 +45,40 @@ class SongController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getLyrics() async {
-    lyrics = await Lyrics.getLyrics(nowPlaying?.artist, nowPlaying?.title);
+  Future<void> manageLyrics({BuildContext context, bool delete}) async {
+    final audioTagger = Audiotagger();
+    String lyricsValue = delete ? '' : lyrics.join('\n').trim();
+    bool successful = await audioTagger.writeTag(
+      path: nowPlaying?.path,
+      tagField: 'lyrics',
+      value: lyricsValue,
+    );
+    successful
+        ? playListDB.showToast('Done', context)
+        : playListDB.showToast('Something went wrong', context,
+            isSuccess: false);
+    if (!delete) return;
+    lyrics = [];
+    notifyListeners();
+  }
+
+  Future<void> getLyrics(BuildContext context) async {
+    final audioTagger = Audiotagger();
+    var info;
+    try {
+      info = await audioTagger.readTagsAsMap(path: nowPlaying?.path);
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    if (info == null || info['lyrics'] == '') {
+      lyrics = await Lyrics.getLyrics(nowPlaying?.artist, nowPlaying?.title)
+          .timeout(Duration(seconds: 10), onTimeout: () =>[]);
+      lyrics.isEmpty
+          ? playListDB.showToast('Try again later', context, isSuccess: false)
+          : playListDB.showToast('Done', context);
+    } else {
+      lyrics = (info['lyrics'] as String).split('\n');
+    }
     notifyListeners();
   }
 

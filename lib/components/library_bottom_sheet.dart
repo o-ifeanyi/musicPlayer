@@ -42,6 +42,10 @@ class LibraryBottomSheet extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (context) {
+                        // opens keyboard
+                        final keyboard = FocusScope.of(context);
+                        if (!keyboard.hasPrimaryFocus)
+                          keyboard.requestFocus(focusNode);
                         editingController.text = playlistName;
                         return AlertDialog(
                           title: Text(
@@ -72,8 +76,6 @@ class LibraryBottomSheet extends StatelessWidget {
                         );
                       },
                     );
-                    // opens keyboard
-                    FocusScope.of(context).requestFocus(focusNode);
                   }),
               IconButton(
                 icon: Icon(Icons.delete),
@@ -97,7 +99,8 @@ class LibraryBottomSheet extends StatelessWidget {
                             textColor: Theme.of(context).accentColor,
                             onPressed: () async {
                               await playlistDB.deletePlaylist(playlistName);
-                              playlistDB.showToast('Delete successful!', context);
+                              playlistDB.showToast(
+                                  'Delete successful!', context);
                               Navigator.pop(context);
                             },
                             child: Text('Continue'),

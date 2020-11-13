@@ -44,6 +44,10 @@ class _NowPlayingDisplay extends State<NowPlayingDisplay>
 
   @override
   Widget build(BuildContext context) {
+    TextStyle customTextStyle = TextStyle(
+      fontSize: Config.textSize(context, 3.5),
+      fontWeight: FontWeight.w400,
+    );
     return Consumer<SongController>(
       builder: (context, controller, child) {
         widget.isRotating && !controller.useArt
@@ -100,41 +104,114 @@ class _NowPlayingDisplay extends State<NowPlayingDisplay>
                     );
                   },
                 ),
-          Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            margin: EdgeInsets.only(top: 30),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                    color: Theme.of(context).textTheme.bodyText1.color)),
-            child: controller.lyrics.isEmpty
-                ? Center(
-                    child: FlatButton(
-                      padding: EdgeInsets.all(20),
-                      child: _isLoading
-                          ? CircularProgressIndicator(strokeWidth: 2)
-                          : Text('Get lyrics'),
-                      onPressed: () async {
-                        setState(() {
-                          _isLoading = true;
-                        });
-                        try {
-                          await controller.getLyrics();
-                        } catch (err) {
-                          print(err);
-                        }
-                        setState(() {
-                          _isLoading = false;
-                        });
-                      },
+          Stack(
+            children: [
+              Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                margin: EdgeInsets.only(top: 30),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                        color: Theme.of(context).textTheme.bodyText1.color)),
+                child: controller.lyrics.isEmpty
+                    ? Center(
+                        child: FlatButton(
+                          padding: EdgeInsets.all(20),
+                          child: _isLoading
+                              ? CircularProgressIndicator(strokeWidth: 2)
+                              : Text('Get lyrics'),
+                          onPressed: () async {
+                            setState(() {
+                              _isLoading = true;
+                            });
+                            try {
+                              await controller.getLyrics(context);
+                            } catch (err) {
+                              print(err);
+                            }
+                            setState(() {
+                              _isLoading = false;
+                            });
+                          },
+                        ),
+                      )
+                    : ListWheelScrollView(
+                        itemExtent: 35,
+                        children: controller.lyrics
+                            .map((eachLine) => Text(
+                                  eachLine,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                  ),
+                                ))
+                            .toList(),
+                        diameterRatio: 1.0,
+                      ),
+              ),
+              if (controller.lyrics.isNotEmpty) ...[
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.save_alt_outlined,
+                      size: Config.textSize(context, 5),
                     ),
-                  )
-                : ListWheelScrollView(
-                    itemExtent: 30,
-                    children: controller.lyrics.map((e) => Text(e)).toList(),
-                    diameterRatio: 1.0,
+                    onPressed: () async => await controller.manageLyrics(
+                      context: context,
+                      delete: false,
+                    ),
                   ),
+                ),
+                Positioned(
+                  bottom: 10,
+                  left: 10,
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.delete_outlined,
+                      size: Config.textSize(context, 5),
+                    ),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(
+                              'Delete lyrics for "${controller.nowPlaying?.title}"?',
+                              style: customTextStyle,
+                            ),
+                            actions: [
+                              FlatButton(
+                                textColor: Theme.of(context).accentColor,
+                                onPressed: () => Navigator.pop(context),
+                                child: Text(
+                                  'No',
+                                ),
+                              ),
+                              FlatButton(
+                                textColor: Theme.of(context).accentColor,
+                                onPressed: () async {
+                                  await controller.manageLyrics(
+                                    context: context,
+                                    delete: true,
+                                  );
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  'Yes',
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  ),
+                )
+              ]
+            ],
           ),
         ];
         return Container(

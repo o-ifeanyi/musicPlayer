@@ -10,16 +10,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ProviderClass extends ChangeNotifier {
-  ProviderClass(this._themeData);
+  ProviderClass({this.themeData});
 
-  ThemeData _themeData;
+  ThemeData themeData;
   List<Song> allSongs = [];
   List<Song> recentlyAdded = [];
 
-  getTheme() => _themeData;
+  getTheme() => themeData;
 
   setTheme(ThemeData themeData) {
-    _themeData = themeData;
+    themeData = themeData;
     notifyListeners();
   }
 
@@ -53,7 +53,7 @@ class ProviderClass extends ChangeNotifier {
     await playlistDB.replaceSong(newSong);
     successful
         ? playlistDB.showToast('Edited successfully', context)
-        : playlistDB.showToast('Something went wrong', context);
+        : playlistDB.showToast('Something went wrong', context, isSuccess: false);
 
     notifyListeners();
   }

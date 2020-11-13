@@ -142,6 +142,7 @@ class _EditInfoState extends State<EditInfo> {
                       InkWell(
                         borderRadius: BorderRadius.circular(10),
                         onTap: () async {
+                          // title and artist is required to make the search
                           final isValid = _formKey.currentState.validate();
                           if (!isValid) {
                             return;
@@ -154,9 +155,7 @@ class _EditInfoState extends State<EditInfo> {
                           setState(() {
                             _isLoading = false;
                           });
-                          // title and artist is required to make the search
-                          // if lenght is 2, onlt title and artist was gotten
-                          if (songInfo.isEmpty || songInfo.length == 2) {
+                          if (songInfo.isEmpty) {
                             _scaffoldKey.currentState.hideCurrentSnackBar();
                             _scaffoldKey.currentState.showSnackBar(
                               SnackBar(
@@ -171,11 +170,15 @@ class _EditInfoState extends State<EditInfo> {
                             );
                             return;
                           }
-                          _trackNameController.text = songInfo['title'];
-                          _artistNameController.text = songInfo['artist'];
-                          _albumNameController.text = songInfo['album'];
-                          _genreController.text = songInfo['genre'];
-                          _yearController.text = songInfo['year'];
+                          setState(() {
+                            _title = songInfo['title'];
+                            _artist = songInfo['artist'];
+                            _trackNameController.text = songInfo['title'];
+                            _artistNameController.text = songInfo['artist'];
+                            _albumNameController.text = songInfo['album'];
+                            _genreController.text = songInfo['genre'];
+                            _yearController.text = songInfo['year'];
+                          });
                         },
                         child: Container(
                           height: 50,
@@ -239,7 +242,9 @@ class _EditInfoState extends State<EditInfo> {
                                 if (val.isEmpty) {
                                   return 'This field should not be empty';
                                 }
-                                if (val.toLowerCase().contains('unknown artist')) {
+                                if (val
+                                    .toLowerCase()
+                                    .contains('unknown artist')) {
                                   return 'This field is required to make the search';
                                 }
                                 return null;

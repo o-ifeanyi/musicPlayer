@@ -41,6 +41,14 @@ class PlayListDB extends ChangeNotifier {
     refresh();
   }
 
+  Future<int> getLenght(String playlistName) async{
+    print('started');
+    Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
+    var dbPlaylist = db.get(playlistName);
+    List songs = dbPlaylist['songs'];
+    return songs?.length;
+  }
+
   Future<void> addToPlaylist(String playlistName, Song song) async {
     Box db = await Hive.openBox('playlist', path: await getPlaylistPath());
     var dbPlaylist = db.get(playlistName);
@@ -191,14 +199,14 @@ class PlayListDB extends ChangeNotifier {
     }
   }
 
-  void showToast(String message, BuildContext context) {
+  void showToast(String message, BuildContext context, {bool isSuccess = true}) {
     final fToast = FToast();
     fToast.init(context);
     fToast.removeQueuedCustomToasts();
     fToast.showToast(
         gravity: ToastGravity.BOTTOM,
         toastDuration: Duration(seconds: 2),
-        child: CustomToast(message));
+        child: CustomToast(message, isSuccess,));
   }
 
   List<Song> extract(List songs) {
