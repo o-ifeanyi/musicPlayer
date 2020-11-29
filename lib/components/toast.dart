@@ -15,8 +15,7 @@ class CustomToast extends StatelessWidget {
             ? Colors.green.withOpacity(0.5)
             : Colors.red.withOpacity(0.5),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
+      child: Wrap(
         children: [
           if (isSuccessMsg)
             Icon(
@@ -28,6 +27,8 @@ class CustomToast extends StatelessWidget {
           ),
           Text(
             message,
+            softWrap: true,
+            maxLines: 2,
             style: TextStyle(
               fontSize: Config.textSize(context, 4),
               fontWeight: FontWeight.w400,

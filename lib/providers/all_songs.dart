@@ -60,7 +60,10 @@ class ProviderClass extends ChangeNotifier {
 
   void sortList() {
     List<Song> newList = List.from(allSongs);
-    newList.sort((b, a) => a.dateAdded.compareTo(b.dateAdded));
+    newList.sort((b, a) {
+      if (a.dateAdded == null || b.dateAdded == null) return -1;
+      return a.dateAdded.compareTo(b.dateAdded);
+    });
     // sort arranged it from old to new hence the reverse
     recentlyAdded.addAll(newList);
     // sort all songs in alphabetical order
@@ -138,12 +141,10 @@ class ProviderClass extends ChangeNotifier {
   Future<Song> songInfo(String file) async {
     var audioTagger = Audiotagger();
     var info;
-    // var date;
     try {
       info = await audioTagger.readTagsAsMap(
         path: file,
       );
-      // date = File(file).lastAccessedSync();
     } catch (e) {
       debugPrint(e.toString());
     }

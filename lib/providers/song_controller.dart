@@ -3,6 +3,7 @@ import 'package:audiotagger/audiotagger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_media_notification/flutter_media_notification.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:musicPlayer/models/http_exception.dart';
 import 'package:musicPlayer/models/song.dart';
 import 'package:musicPlayer/providers/playList_database.dart';
 import 'package:musicPlayer/services/lyrics.dart';
@@ -54,7 +55,8 @@ class SongController extends ChangeNotifier {
       value: lyricsValue,
     );
     successful
-        ? playListDB.showToast('Done', context)
+        ? playListDB.showToast(
+            delete ? 'Lyrics deleted' : 'Lyrics saved', context)
         : playListDB.showToast('Something went wrong', context,
             isSuccess: false);
     if (!delete) return;
@@ -71,11 +73,15 @@ class SongController extends ChangeNotifier {
       debugPrint(e.toString());
     }
     if (info == null || info['lyrics'] == '') {
-      lyrics = await Lyrics.getLyrics(nowPlaying?.artist, nowPlaying?.title)
-          .timeout(Duration(seconds: 10), onTimeout: () =>[]);
-      lyrics.isEmpty
-          ? playListDB.showToast('Try again later', context, isSuccess: false)
-          : playListDB.showToast('Done', context);
+      try {
+        lyrics = await Lyrics.getLyrics(nowPlaying?.artist, nowPlaying?.title)
+            .timeout(Duration(seconds: 20), onTimeout: () => []);
+        playListDB.showToast('Done', context);
+      } on CustomException catch (err) {
+        playListDB.showToast(err.message, context, isSuccess: false);
+      } catch (error) {
+        print(error);
+      }
     } else {
       lyrics = (info['lyrics'] as String).split('\n');
     }

@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:html/parser.dart' as parser;
+import 'package:musicPlayer/models/http_exception.dart';
 import 'package:musicPlayer/services/secrets.dart';
 
 class Lyrics {
@@ -9,6 +10,9 @@ class Lyrics {
       print('dot guy');
       title = title.split(RegExp(r'\d{1,2}\. ')).last;
       print(title);
+    }
+    if (artist.toLowerCase().contains('unknown artist')) {
+      throw CustomException('Artist name is required, try editing song info');
     }
     var result = '';
     var songLink0;
@@ -22,6 +26,10 @@ class Lyrics {
     try {
       print('\nGoogling ==> $url');
       var response = await dio.get(url);
+      if (response.statusCode == 429) {
+        print('${response.statusCode} ==> too much request');
+        throw CustomException('Too many request, try again later');
+      }
       var document = parser.parse(response.data);
       final links = document.querySelectorAll('a');
       print(links.length);
@@ -33,9 +41,17 @@ class Lyrics {
           songLink1 = link.attributes['href'].split('q=').last.split('&').first;
         }
       }
+    } on CustomException catch (err) {
+      throw err;
+    } on DioError catch (err) {
+      print(err);
+      if (err.message.contains('Failed host lookup')) {
+        throw CustomException('Please check your network and try again');
+      }
+      throw CustomException('Something went wrong, try again later');
     } catch (e) {
       print(e);
-      return [];
+      throw CustomException('Something went wrong, try again later');
     }
     try {
       print('getting from azlyrics');
@@ -44,10 +60,13 @@ class Lyrics {
       var document = parser.parse(response.data);
       var divs = document.querySelectorAll('div');
       for (var div in divs) {
-        if (div.className == '' && div.innerHtml.contains(RegExp(r'<!--.+-->'))) {
+        if (div.className == '' &&
+            div.innerHtml.contains(RegExp(r'<!--.+-->'))) {
           result = div.innerHtml
               .replaceAll('<br>', '')
               .replaceAll(RegExp(r'<!--.+-->'), '')
+              .replaceAll('<i>[', '')
+              .replaceAll(':]</i>', '')
               .trim();
           break;
         }
@@ -60,20 +79,23 @@ class Lyrics {
       print('getting from absolute lyrics');
       print('songlink1 == $songLink1');
       if (songLink1 == null) {
-        return [];
+        throw CustomException('Sorry, lyrics not found');
       }
       var response = await dio.get(songLink1);
       var document = parser.parse(response.data);
       var lyricsBody = document.querySelector('#view_lyrics');
       if (lyricsBody == null) {
         print(lyricsBody);
-        return [];
+        throw CustomException('Sorry, lyrics not found');
       }
       result = lyricsBody.innerHtml
           .replaceAll('<br>', '')
           .replaceAll(RegExp(r'\[.+\]'), '')
           .replaceAll(RegExp(r'-?&amp;#\d{5};'), '')
           .trim();
+      if (result == null) {
+        throw CustomException('Sorry, lyrics not found');
+      }
     }
     return List<String>.from(result.split('\n'));
   }

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:musicPlayer/models/http_exception.dart';
 import 'package:musicPlayer/services/secrets.dart';
 
 class SongInfo {
@@ -15,6 +16,9 @@ class SongInfo {
       print(songTitle);
       // return {};
     }
+    if (songArtist.toLowerCase().contains('unknown artist')) {
+      throw CustomException('Artist name is required');
+    }
     try {
       var response = await dio.get(
         url,
@@ -27,11 +31,14 @@ class SongInfo {
           },
         ),
       );
+      if (response.statusCode == 429) {
+        throw CustomException('Too many request, try again later');
+      }
       if (response.data['total'] == 0) {
         print('empty');
         print(response.statusCode);
         print(response.data);
-        return {};
+        throw CustomException('Info not available');
       }
       // print(response.data[0]);
       info['title'] = response.data['data'][0]['title'];
@@ -52,14 +59,22 @@ class SongInfo {
         print('empty album info');
         print(response.statusCode);
         print(response.data);
-        return {};
+        throw CustomException('Info not available, try again later');
       }
       info['album'] = response.data['title'];
       info['genre'] = response.data['genres']['data'][0]['name'];
       info['year'] = response.data['release_date'];
+    } on CustomException catch (err) {
+      throw err;
+    } on DioError catch (err) {
+      print(err);
+      if (err.message.contains('Failed host lookup')) {
+        throw CustomException('Please check your network and try again');
+      }
+      throw CustomException('Something went wrong, try again later');
     } catch (err) {
       print(err);
-      return {};
+      throw CustomException('Something went wrong, try again later');
     }
     return info;
   }
