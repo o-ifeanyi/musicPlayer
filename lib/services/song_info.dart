@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:musicPlayer/models/http_exception.dart';
+import 'package:musicPlayer/models/exception.dart';
 import 'package:musicPlayer/services/secrets.dart';
 
 class SongInfo {

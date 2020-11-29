@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:html/parser.dart' as parser;
-import 'package:musicPlayer/models/http_exception.dart';
+import 'package:musicPlayer/models/exception.dart';
 import 'package:musicPlayer/services/secrets.dart';
 
 class Lyrics {

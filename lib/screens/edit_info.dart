@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/custom_button.dart';
 import 'package:musicPlayer/components/edit_info_image.dart';
-import 'package:musicPlayer/models/http_exception.dart';
+import 'package:musicPlayer/models/exception.dart';
 import 'package:musicPlayer/models/song.dart';
 import 'package:musicPlayer/providers/all_songs.dart';
 import 'package:musicPlayer/providers/playList_database.dart';
@@ -20,7 +20,6 @@ class EditInfo extends StatefulWidget {
 
 class _EditInfoState extends State<EditInfo> {
   final _formKey = GlobalKey<FormState>();
-  // final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _trackNameController = TextEditingController();
   final _artistNameController = TextEditingController();
   final _albumNameController = TextEditingController();
