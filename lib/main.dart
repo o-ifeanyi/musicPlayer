@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Vibe player',
-      theme: Provider.of<ProviderClass>(context).getTheme(),
+      theme: Provider.of<ProviderClass>(context).theme,
       home: SplashScreen(theme),
       routes: {
         Library.pageId: (ctx) => Library(),

@@ -117,6 +117,7 @@ class _NowPlayingDisplay extends State<NowPlayingDisplay>
                 child: controller.lyrics.isEmpty
                     ? Center(
                         child: FlatButton(
+                          splashColor: Theme.of(context).accentColor.withOpacity(0.5),
                           padding: EdgeInsets.all(20),
                           child: _isLoading
                               ? CircularProgressIndicator(strokeWidth: 2)

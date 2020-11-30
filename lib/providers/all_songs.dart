@@ -16,10 +16,10 @@ class ProviderClass extends ChangeNotifier {
   List<Song> allSongs = [];
   List<Song> recentlyAdded = [];
 
-  getTheme() => themeData;
+  ThemeData get theme => themeData;
 
-  setTheme(ThemeData themeData) {
-    themeData = themeData;
+  setTheme(ThemeData data) {
+    themeData = data;
     notifyListeners();
   }
 

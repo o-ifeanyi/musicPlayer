@@ -65,8 +65,7 @@ class Lyrics {
           result = div.innerHtml
               .replaceAll('<br>', '')
               .replaceAll(RegExp(r'<!--.+-->'), '')
-              .replaceAll('<i>[', '')
-              .replaceAll(':]</i>', '')
+              .replaceAll(RegExp(r'<i>.+</i>'), '')
               .trim();
           break;
         }

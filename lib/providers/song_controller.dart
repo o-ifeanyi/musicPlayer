@@ -75,7 +75,10 @@ class SongController extends ChangeNotifier {
     if (info == null || info['lyrics'] == '') {
       try {
         lyrics = await Lyrics.getLyrics(nowPlaying?.artist, nowPlaying?.title)
-            .timeout(Duration(seconds: 20), onTimeout: () => []);
+            .timeout(
+          Duration(seconds: 20),
+          onTimeout: () => throw CustomException('Taking too long, try again later'),
+        );
         playListDB.showToast('Done', context);
       } on CustomException catch (err) {
         playListDB.showToast(err.message, context, isSuccess: false);
