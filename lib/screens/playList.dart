@@ -176,6 +176,7 @@ class _PlayListState extends State<PlayList> {
                                     isSearching ? searchList : allSongs;
                                 return SongTile(
                                   index: index,
+                                  allSongs: allSongs,
                                   songList: songList,
                                   playListName: widget.playListName,
                                   resetSearch: resetSearch,

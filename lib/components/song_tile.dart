@@ -13,6 +13,7 @@ class SongTile extends StatelessWidget {
   const SongTile({
     Key key,
     @required this.songList,
+    @required this.allSongs,
     @required this.canDelete,
     @required this.index,
     @required this.resetSearch,
@@ -21,6 +22,7 @@ class SongTile extends StatelessWidget {
   }) : super(key: key);
 
   final List<Song> songList;
+  final List<Song> allSongs;
   final String playListName;
   final bool canDelete;
   final int index;
@@ -48,7 +50,7 @@ class SongTile extends StatelessWidget {
                         ? marker.remove(songList[index])
                         : marker.add(songList[index]);
                   } else {
-                    controller.allSongs = songList;
+                    controller.allSongs = allSongs;
                     controller.playlistName = playListName;
                     await Navigator.push(
                       context,
@@ -105,7 +107,7 @@ class SongTile extends StatelessWidget {
                   isToggled:
                       controller.nowPlaying?.path == songList[index].path,
                   onPressed: () async {
-                    controller.allSongs = songList;
+                    controller.allSongs = allSongs;
                     controller.playlistName = playListName;
                     await controller.playlistControlOptions(songList[index]);
                     controller.isPlaying ? padding = 10.0 : padding = 0.0;
