@@ -1,6 +1,8 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
+import 'package:musicPlayer/providers/identify_controller.dart';
 import 'package:musicPlayer/screens/edit_info.dart';
+import 'package:musicPlayer/screens/identify.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,6 +32,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => PlayListDB()),
         ChangeNotifierProvider(create: (_) => SongController()),
         ChangeNotifierProvider(create: (_) => MarkSongs()),
+        ChangeNotifierProvider(create: (_) => IdentifyController()),
       ],
       child: MyApp(theme: kThemes[theme]),
     ));
@@ -52,6 +55,7 @@ class MyApp extends StatelessWidget {
         NowPlaying.pageId: (ctx) => NowPlaying(),
         PlayList.pageId: (ctx) => PlayList(),
         PlayingFrom.pageId: (ctx) => PlayingFrom(),
+        Identify.pageId: (ctx) => Identify(),
         Settings.pageId: (ctx) => Settings(),
       },
     );

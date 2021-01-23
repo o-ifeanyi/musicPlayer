@@ -6,6 +6,7 @@ import 'package:musicPlayer/components/custom_card.dart';
 import 'package:musicPlayer/components/library_bottom_sheet.dart';
 import 'package:musicPlayer/components/library_song_control.dart';
 import 'package:musicPlayer/providers/all_songs.dart';
+import 'package:musicPlayer/screens/identify.dart';
 import 'package:musicPlayer/util/config.dart';
 import 'package:musicPlayer/providers/playList_database.dart';
 import 'package:musicPlayer/providers/song_controller.dart';
@@ -126,6 +127,15 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
+                          Spacer(),
+                          CustomButton(
+                            diameter: 12,
+                            child: Icons.keyboard_voice_rounded,
+                            onPressed: () {
+                              Navigator.pushNamed(context, Identify.pageId);
+                            },
+                          ),
+                          SizedBox(width: 15),
                           CustomButton(
                             diameter: 12,
                             child: Icons.settings,
