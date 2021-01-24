@@ -14,6 +14,19 @@ class IdentifiedSong extends StatefulWidget {
 
 class _IdentifiedSongState extends State<IdentifiedSong> {
   bool _isOpen = false;
+  IdentifyController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Provider.of<IdentifyController>(context, listen: false);
+  }
+
+  @override
+  void deactivate() {
+    super.deactivate();
+    _controller.reset();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +57,7 @@ class _IdentifiedSongState extends State<IdentifiedSong> {
               ),
               Text(
                 song.title,
+                textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: Config.textSize(context, 5),
                   fontWeight: FontWeight.w400,

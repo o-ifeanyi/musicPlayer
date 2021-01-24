@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/providers/all_songs.dart';
-import 'package:musicPlayer/providers/identify_controller.dart';
 import 'package:musicPlayer/util/config.dart';
 import 'package:musicPlayer/providers/playList_database.dart';
 import 'package:musicPlayer/providers/song_controller.dart';
@@ -34,8 +33,6 @@ class _SplashScreenState extends State<SplashScreen>
           Provider.of<SongController>(context, listen: false).init();
           // populates playlist from database
           Provider.of<PlayListDB>(context, listen: false).init();
-          // gets song identifier ready
-          Provider.of<IdentifyController>(context, listen: false).init();
           Future.delayed(Duration(seconds: 2)).then((value) {
             Navigator.pushReplacementNamed(context, Library.pageId);
           });

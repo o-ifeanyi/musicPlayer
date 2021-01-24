@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:musicPlayer/components/custom_button.dart';
+import 'package:musicPlayer/components/history_bottom_sheet.dart';
 import 'package:musicPlayer/providers/identify_controller.dart';
 import 'package:musicPlayer/util/config.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,8 @@ class _IdentifyState extends State<Identify>
   @override
   void initState() {
     super.initState();
+    // gets song identifier ready
+    Provider.of<IdentifyController>(context, listen: false).init();
     _controller = new AnimationController(
       vsync: this,
     );
@@ -45,8 +48,8 @@ class _IdentifyState extends State<Identify>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding:
-                        const EdgeInsets.only(left: 15, top: 30, bottom: 10, right: 15),
+                    padding: const EdgeInsets.only(
+                        left: 15, top: 30, bottom: 10, right: 15),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -58,7 +61,15 @@ class _IdentifyState extends State<Identify>
                         CustomButton(
                           child: Icons.history,
                           diameter: 12,
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () async {
+                            await controller.loadIdentifiedSong();
+                            await showModalBottomSheet(
+                              backgroundColor: Colors.transparent,
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (context) => HistoryBottomSheet(),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -70,7 +81,8 @@ class _IdentifyState extends State<Identify>
                   Expanded(
                     child: Container(
                       alignment: Alignment.center,
-                      margin: EdgeInsets.only(bottom: Config.yMargin(context, 2)),
+                      margin:
+                          EdgeInsets.only(bottom: Config.yMargin(context, 2)),
                       child: Stack(
                         children: [
                           Align(
@@ -109,7 +121,7 @@ class _IdentifyState extends State<Identify>
                                     ? 'Tap to Cancel'
                                     : 'Tap to Listen',
                                 style: TextStyle(
-                                  fontSize: Config.textSize(context, 4),
+                                  fontSize: Config.textSize(context, 4.5),
                                 ),
                               ),
                             ),
