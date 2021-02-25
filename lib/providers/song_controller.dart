@@ -234,14 +234,17 @@ class SongController extends ChangeNotifier {
   }
 
   void showNotification() {
-    if (state != AppLifecycleState.paused)
+    if (state != AppLifecycleState.paused) {
       return;
-    else
+    }
+    else {
       MediaNotification.showNotification(
         title: nowPlaying.title,
         author: nowPlaying.artist,
         isPlaying: isPlaying,
       );
+    }
+      
   }
 
   void handleInterruptions() {

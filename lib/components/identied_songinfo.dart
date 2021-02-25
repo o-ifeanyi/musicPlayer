@@ -65,9 +65,13 @@ class _IdentifiedSongState extends State<IdentifiedSong> {
               ),
               Text(
                 'By ${song.artist}',
+                textAlign: TextAlign.center,
                 style: grayText,
               ),
               Wrap(
+                alignment: WrapAlignment.center,
+                // runAlignment: WrapAlignment.center,
+                // crossAxisAlignment: WrapCrossAlignment.center,s
                 spacing: 10,
                 children: [
                   Text(

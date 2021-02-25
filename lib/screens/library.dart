@@ -70,12 +70,11 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
     _controller.state = state;
     // if app comes to the foregroung hide notification
     if (state == AppLifecycleState.resumed) {
-      MediaNotification.hideNotification();
+      // MediaNotification.hideNotification();
     }
     //if app goes to background show notification
     if (state == AppLifecycleState.paused &&
         _controller.nowPlaying?.path != null) {
-      showNotification();
       MediaNotification.setListener('play', () => _controller.play());
       MediaNotification.setListener('pause', () => _controller.pause());
       MediaNotification.setListener('next', () async {

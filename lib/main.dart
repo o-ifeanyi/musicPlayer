@@ -18,7 +18,7 @@ import 'package:musicPlayer/providers/mark_songs.dart';
 import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:musicPlayer/screens/splash.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   AudioSession.instance.then((session) {
     session.configure(AudioSessionConfiguration.music());
