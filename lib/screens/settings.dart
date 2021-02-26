@@ -215,7 +215,7 @@ class _SettingsState extends State<Settings> {
                     builder: (context) {
                       return AboutDialog(
                         applicationName: 'Vybe player',
-                        applicationVersion: '1.0',
+                        applicationVersion: '2.0',
                         applicationIcon: Container(
                           width: Config.xMargin(context, 20),
                           height: Config.yMargin(context, 15),

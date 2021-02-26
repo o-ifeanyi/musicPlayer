@@ -7,9 +7,7 @@ class Lyrics {
   static Future<List<String>> getLyrics(String artist, String title) async {
     Dio dio = Dio();
     if (title.startsWith(RegExp(r'\d{1,2}\. '))) {
-      print('dot guy');
       title = title.split(RegExp(r'\d{1,2}\. ')).last;
-      print(title);
     }
     if (artist.toLowerCase().contains('unknown artist')) {
       throw CustomException('Artist name is required, try editing song info');
@@ -24,15 +22,12 @@ class Lyrics {
     final url = 'https://www.google.com/search?q=$query';
 
     try {
-      print('\nGoogling ==> $url');
       var response = await dio.get(url);
       if (response.statusCode == 429) {
-        print('${response.statusCode} ==> too much request');
         throw CustomException('Too many request, try again later');
       }
       var document = parser.parse(response.data);
       final links = document.querySelectorAll('a');
-      print(links.length);
       for (var link in links) {
         if (link.attributes['href'].contains('$kLyricsLink0/lyrics')) {
           songLink0 = link.attributes['href'].split('q=').last.split('&').first;
@@ -54,8 +49,6 @@ class Lyrics {
       throw CustomException('Something went wrong, try again later');
     }
     try {
-      print('getting from azlyrics');
-      print('songlink0 == $songLink0');
       var response = await dio.get(songLink0);
       var document = parser.parse(response.data);
       var divs = document.querySelectorAll('div');
@@ -75,8 +68,6 @@ class Lyrics {
         throw Error();
       }
     } catch (e) {
-      print('getting from absolute lyrics');
-      print('songlink1 == $songLink1');
       if (songLink1 == null) {
         throw CustomException('Sorry, lyrics not found');
       }
@@ -84,7 +75,6 @@ class Lyrics {
       var document = parser.parse(response.data);
       var lyricsBody = document.querySelector('#view_lyrics');
       if (lyricsBody == null) {
-        print(lyricsBody);
         throw CustomException('Sorry, lyrics not found');
       }
       result = lyricsBody.innerHtml

@@ -85,10 +85,7 @@ class _NowPlayingState extends State<NowPlaying> {
                   ),
                   isPotrait
                       ? Expanded(
-                          child: NowPlayingDisplay(
-                            iconSize: 16,
-                            isRotating: controller.isPlaying,
-                          ),
+                          child: NowPlayingDisplay(),
                         )
                       : SizedBox(
                           height: Config.xMargin(context, 1),

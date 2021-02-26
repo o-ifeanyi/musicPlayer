@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:musicPlayer/components/now_playing_display.dart';
+import 'package:musicPlayer/components/cirecle_disc.dart';
 import 'package:musicPlayer/components/custom_button.dart';
 import 'package:musicPlayer/models/song.dart';
 import 'package:musicPlayer/util/config.dart';
@@ -59,14 +59,11 @@ class _PlayingFromState extends State<PlayingFrom> {
                       ),
                       isPotrait
                           ? Expanded(
-                              child: Container(
-                                margin: controller.useArt
+                              child: Padding(
+                                padding: controller.useArt
                                     ? EdgeInsets.symmetric(horizontal: 25)
                                     : EdgeInsets.symmetric(horizontal: 10),
-                                child: NowPlayingDisplay(
-                                  iconSize: 10,
-                                  isRotating: controller.isPlaying,
-                                ),
+                                child: CircleDisc(iconSize: 8),
                               ),
                             )
                           : SizedBox.shrink(),

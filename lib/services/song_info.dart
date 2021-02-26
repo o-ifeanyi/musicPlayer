@@ -11,10 +11,7 @@ class SongInfo {
     // song titile that start with e.g '14. blabla' dont get any result
 
     if (songTitle.startsWith(RegExp(r'\d{1,2}\. '))) {
-      print('dot guy');
       songTitle = songTitle.split(RegExp(r'\d{1,2}\. ')).last;
-      print(songTitle);
-      // return {};
     }
     if (songArtist.toLowerCase().contains('unknown artist')) {
       throw CustomException('Artist name is required');
@@ -35,12 +32,8 @@ class SongInfo {
         throw CustomException('Too many request, try again later');
       }
       if (response.data['total'] == 0) {
-        print('empty');
-        print(response.statusCode);
-        print(response.data);
         throw CustomException('Info not available');
       }
-      // print(response.data[0]);
       info['title'] = response.data['data'][0]['title'];
       info['artist'] = response.data['data'][0]['artist']['name'];
       int albumId = response.data['data'][0]['album']['id'];
@@ -56,9 +49,6 @@ class SongInfo {
         ),
       );
       if (response.data == null) {
-        print('empty album info');
-        print(response.statusCode);
-        print(response.data);
         throw CustomException('Info not available, try again later');
       }
       info['album'] = response.data['title'];

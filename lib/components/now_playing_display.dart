@@ -4,43 +4,16 @@ import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-class NowPlayingDisplay extends StatefulWidget {
-  final double iconSize;
-  final bool isRotating;
-  NowPlayingDisplay({this.iconSize, this.isRotating});
+import 'cirecle_disc.dart';
 
+class NowPlayingDisplay extends StatefulWidget {
   @override
   _NowPlayingDisplay createState() => _NowPlayingDisplay();
 }
 
-class _NowPlayingDisplay extends State<NowPlayingDisplay>
-    with SingleTickerProviderStateMixin {
-  AnimationController _animationController;
+class _NowPlayingDisplay extends State<NowPlayingDisplay> {
   bool _isLoading = false;
   int _pageIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = new AnimationController(
-      vsync: this,
-      duration: new Duration(seconds: 5),
-    );
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  stopRotation() {
-    _animationController.stop();
-  }
-
-  startRotation() {
-    _animationController.repeat();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,9 +23,6 @@ class _NowPlayingDisplay extends State<NowPlayingDisplay>
     );
     return Consumer<SongController>(
       builder: (context, controller, child) {
-        widget.isRotating && !controller.useArt
-            ? startRotation()
-            : stopRotation();
         List<Widget> display = [
           controller.useArt
               ? Container(
@@ -68,42 +38,7 @@ class _NowPlayingDisplay extends State<NowPlayingDisplay>
                   ),
                   child: null,
                 )
-              : AnimatedBuilder(
-                  animation: _animationController,
-                  builder: (context, child) {
-                    return Transform.rotate(
-                      angle: _animationController.value * 6.3,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 30),
-                        child: Center(
-                          child: Icon(
-                            Icons.music_note,
-                            color: Theme.of(context).splashColor,
-                            size: Config.yMargin(context, widget.iconSize),
-                          ),
-                        ),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Theme.of(context).scaffoldBackgroundColor,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Theme.of(context).splashColor,
-                              offset: Offset(5, 5),
-                              blurRadius: 10,
-                              spreadRadius: 1.0,
-                            ),
-                            BoxShadow(
-                              color: Theme.of(context).backgroundColor,
-                              offset: Offset(-5, -5),
-                              blurRadius: 10,
-                              spreadRadius: 1.0,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+              : CircleDisc(iconSize: 16),
           Stack(
             children: [
               Container(
