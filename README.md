@@ -17,6 +17,19 @@ Please star⭐ the repo if you like what you see😉.
 * Any IDE with Flutter SDK installed (ie. IntelliJ, Android Studio, VSCode etc)
 * A little knowledge of Dart and Flutter
 
+## 💻 Setup
+- Create a secrets.dart file under services folder and add the following
+  - const String kTag0 = 'azlyrics';
+  - const String kTag1 = 'absolutelyrics';
+  - const String kLyricsLink0 = 'www.azlyrics.com';
+  - const String kLyricsLink1 = 'www.absolutelyrics.com';
+- To fetch song info you'll need an API key from deezer
+  - const String kApiKey = '<DEEZER API KEY>';
+- For song recognition feature, sign up on acecloud and create a project
+  - const String kHost = '<ACRCLOUD PROJECT HOST>';
+  - const String kAccessKey = '<ACRCLOUD ACCESS KEY>';
+  - const String kAccessSecret = '<ACRCLOUD SECRET KEY>';
+
 ## ✨ Features
 - [x] Play.
 - [x] Pause.
