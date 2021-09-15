@@ -18,7 +18,7 @@ Please star⭐ the repo if you like what you see😉.
 * A little knowledge of Dart and Flutter
 
 ## 🛠 Setup
-- Create a secrets.dart file under services folder and add the following
+- Create a secrets.dart file under lib/services folder and add the following
   - const String kTag0 = 'azlyrics';
   - const String kTag1 = 'absolutelyrics';
   - const String kLyricsLink0 = 'www.azlyrics.com';
