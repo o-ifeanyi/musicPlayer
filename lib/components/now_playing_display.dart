@@ -51,9 +51,16 @@ class _NowPlayingDisplay extends State<NowPlayingDisplay> {
                         color: Theme.of(context).textTheme.bodyText1.color)),
                 child: controller.lyrics.isEmpty
                     ? Center(
-                        child: FlatButton(
-                          splashColor: Theme.of(context).accentColor.withOpacity(0.5),
-                          padding: EdgeInsets.all(20),
+                        child: TextButton(
+                          style: ButtonStyle(
+                              overlayColor: MaterialStateProperty.all(
+                                Theme.of(context)
+                                    .colorScheme
+                                    .secondary
+                                    .withOpacity(0.5),
+                              ),
+                              padding: MaterialStateProperty.all(
+                                  EdgeInsets.all(20))),
                           child: _isLoading
                               ? CircularProgressIndicator(strokeWidth: 2)
                               : Text('Get lyrics'),
@@ -119,15 +126,31 @@ class _NowPlayingDisplay extends State<NowPlayingDisplay> {
                               style: customTextStyle,
                             ),
                             actions: [
-                              FlatButton(
-                                textColor: Theme.of(context).accentColor,
+                              TextButton(
+                                style: ButtonStyle(
+                                  textStyle: MaterialStateProperty.all(
+                                    TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                  ),
+                                ),
                                 onPressed: () => Navigator.pop(context),
                                 child: Text(
                                   'No',
                                 ),
                               ),
-                              FlatButton(
-                                textColor: Theme.of(context).accentColor,
+                              TextButton(
+                                style: ButtonStyle(
+                                  textStyle: MaterialStateProperty.all(
+                                    TextStyle(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                  ),
+                                ),
                                 onPressed: () async {
                                   await controller.manageLyrics(
                                     context: context,

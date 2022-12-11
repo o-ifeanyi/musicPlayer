@@ -176,16 +176,27 @@ class _SettingsState extends State<Settings> {
                               'This would delete the playlist you created.',
                               style: listStyle),
                           actions: [
-                            FlatButton(
-                              textColor: Theme.of(context).accentColor,
+                            TextButton(
+                              style: ButtonStyle(
+                                textStyle: MaterialStateProperty.all(TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                )),
+                              ),
                               onPressed: () => Navigator.pop(context),
                               child: Text('Cancel'),
                             ),
-                            FlatButton(
-                              textColor: Theme.of(context).accentColor,
+                            TextButton(
+                              style: ButtonStyle(
+                                textStyle: MaterialStateProperty.all(TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                )),
+                              ),
                               onPressed: () async {
-                                final playlistDB = Provider.of<PlayListDB>(context,
-                                        listen: false);
+                                final playlistDB = Provider.of<PlayListDB>(
+                                    context,
+                                    listen: false);
                                 await playlistDB.clear();
                                 playlistDB.showToast('Done', context);
                                 Navigator.pop(context);

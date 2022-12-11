@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:musicPlayer/util/config.dart';
 import 'package:musicPlayer/providers/playList_database.dart';
 import 'package:musicPlayer/providers/mark_songs.dart';
@@ -112,12 +113,14 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   TextField(
+                                    maxLengthEnforcement:
+                                        MaxLengthEnforcement.enforced,
                                     controller: inputFeild,
                                     focusNode: focusNode,
                                     maxLength: 14,
-                                    maxLengthEnforced: true,
                                     keyboardType: TextInputType.name,
-                                    textCapitalization: TextCapitalization.sentences,
+                                    textCapitalization:
+                                        TextCapitalization.sentences,
                                     textInputAction: TextInputAction.done,
                                     decoration: InputDecoration(
                                       labelText: 'Name',
@@ -135,7 +138,7 @@ class _CreatePlayListState extends State<CreatePlayList> {
                                   // create playlist is at index 0
                                   return index > 0 &&
                                           index < playlistDB.playList.length
-                                      ? FlatButton(
+                                      ? TextButton(
                                           onPressed: () async {
                                             widget.songs.forEach((song) async {
                                               await playlistDB.addToPlaylist(
@@ -172,8 +175,15 @@ class _CreatePlayListState extends State<CreatePlayList> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          FlatButton(
-                            textColor: Theme.of(context).accentColor,
+                          TextButton(
+                            style: ButtonStyle(
+                              textStyle: MaterialStateProperty.all(
+                                TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                              ),
+                            ),
                             onPressed: () {
                               Navigator.pop(context);
                             },
@@ -183,16 +193,30 @@ class _CreatePlayListState extends State<CreatePlayList> {
                             ),
                           ),
                           createNew
-                              ? FlatButton(
-                                  textColor: Theme.of(context).accentColor,
+                              ? TextButton(
+                                  style: ButtonStyle(
+                                    textStyle: MaterialStateProperty.all(
+                                      TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                    ),
+                                  ),
                                   onPressed: createPlaylist,
                                   child: Text(
                                     'Create playlist',
                                     style: textStyle,
                                   ),
                                 )
-                              : FlatButton(
-                                  textColor: Theme.of(context).accentColor,
+                              : TextButton(
+                                  style: ButtonStyle(
+                                    textStyle: MaterialStateProperty.all(
+                                      TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                    ),
+                                  ),
                                   onPressed: () {
                                     setState(() {
                                       createNew = true;

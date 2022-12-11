@@ -45,7 +45,7 @@ class HistoryBottomSheet extends StatelessWidget {
                             ),
                           ),
                           Spacer(),
-                          FlatButton.icon(
+                          TextButton.icon(
                             icon: Icon(Icons.clear_rounded),
                             onPressed: () async {
                               await showDialog(
@@ -58,13 +58,27 @@ class HistoryBottomSheet extends StatelessWidget {
                                     ),
                                   ),
                                   actions: [
-                                    FlatButton(
-                                      textColor: Theme.of(context).accentColor,
+                                    TextButton(
+                                      style: ButtonStyle(
+                                        textStyle: MaterialStateProperty.all(
+                                          TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary),
+                                        ),
+                                      ),
                                       onPressed: () => Navigator.pop(context),
                                       child: Text('No'),
                                     ),
-                                    FlatButton(
-                                      textColor: Theme.of(context).accentColor,
+                                    TextButton(
+                                      style: ButtonStyle(
+                                        textStyle: MaterialStateProperty.all(
+                                          TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary),
+                                        ),
+                                      ),
                                       onPressed: () async {
                                         await controller.clearHistory();
                                         Navigator.pop(context);
@@ -107,16 +121,28 @@ class HistoryBottomSheet extends StatelessWidget {
                                       ),
                                     ),
                                     actions: [
-                                      FlatButton(
-                                        textColor:
-                                            Theme.of(context).accentColor,
+                                      TextButton(
+                                        style: ButtonStyle(
+                                          textStyle: MaterialStateProperty.all(
+                                            TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary),
+                                          ),
+                                        ),
                                         onPressed: () =>
                                             Navigator.pop(context, false),
                                         child: Text('No'),
                                       ),
-                                      FlatButton(
-                                        textColor:
-                                            Theme.of(context).accentColor,
+                                      TextButton(
+                                        style: ButtonStyle(
+                                          textStyle: MaterialStateProperty.all(
+                                            TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary),
+                                          ),
+                                        ),
                                         onPressed: () =>
                                             Navigator.pop(context, true),
                                         child: Text('Yes'),

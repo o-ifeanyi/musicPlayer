@@ -274,14 +274,22 @@ class _PlayListState extends State<PlayList> {
             ),
           ),
           actions: [
-            FlatButton(
-                textColor: Theme.of(context).accentColor,
+            TextButton(
+                style: ButtonStyle(
+                  textStyle: MaterialStateProperty.all(TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                  )),
+                ),
                 onPressed: () {
                   Navigator.pop(context);
                 },
                 child: Text('No')),
-            FlatButton(
-                textColor: Theme.of(context).accentColor,
+            TextButton(
+                style: ButtonStyle(
+                  textStyle: MaterialStateProperty.all(TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                  )),
+                ),
                 onPressed: () async {
                   final playlistDB =
                       Provider.of<PlayListDB>(context, listen: false);
