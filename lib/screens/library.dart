@@ -13,7 +13,7 @@ import 'package:musicPlayer/providers/song_controller.dart';
 import 'package:musicPlayer/screens/playList.dart';
 import 'package:musicPlayer/screens/settings.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_media_notification/flutter_media_notification.dart';
+// import 'package:flutter_media_notification/flutter_media_notification.dart';
 
 class Library extends StatefulWidget {
   static const String pageId = '/library';
@@ -56,11 +56,13 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
   void showNotification() {
     _controller = Provider.of<SongController>(context, listen: false);
     if (_controller.nowPlaying.path != null) {
-      MediaNotification.showNotification(
-        title: _controller.nowPlaying.title,
-        author: _controller.nowPlaying.artist,
-        isPlaying: _controller.isPlaying,
-      );
+      print("Here add the notification code");
+      // TODO : Here add notification code
+      // MediaNotification.showNotification(
+      //   title: _controller.nowPlaying.title,
+      //   author: _controller.nowPlaying.artist,
+      //   isPlaying: _controller.isPlaying,
+      // );
     }
   }
 
@@ -75,16 +77,17 @@ class _LibraryState extends State<Library> with WidgetsBindingObserver {
     //if app goes to background show notification
     if (state == AppLifecycleState.paused &&
         _controller.nowPlaying?.path != null) {
-      MediaNotification.setListener('play', () => _controller.play());
-      MediaNotification.setListener('pause', () => _controller.pause());
-      MediaNotification.setListener('next', () async {
-        await _controller.skip(next: true);
-        showNotification();
-      });
-      MediaNotification.setListener('prev', () async {
-        await _controller.skip(prev: true);
-        showNotification();
-      });
+      print("Here add controller code");
+      // MediaNotification.setListener('play', () => _controller.play());
+      // MediaNotification.setListener('pause', () => _controller.pause());
+      // MediaNotification.setListener('next', () async {
+      //   await _controller.skip(next: true);
+      //   showNotification();
+      // });
+      // MediaNotification.setListener('prev', () async {
+      //   await _controller.skip(prev: true);
+      //   showNotification();
+      // });
     }
     super.didChangeAppLifecycleState(state);
   }

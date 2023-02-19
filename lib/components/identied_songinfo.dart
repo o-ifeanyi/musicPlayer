@@ -87,10 +87,19 @@ class _IdentifiedSongState extends State<IdentifiedSong> {
                 controller.lyrics.isEmpty
                     ? Center(
                         child: Center(
-                          child: FlatButton(
-                            splashColor:
-                                Theme.of(context).accentColor.withOpacity(0.5),
-                            padding: EdgeInsets.all(20),
+                          child: TextButton(
+                            style: ButtonStyle(
+                              overlayColor: MaterialStateProperty.all(
+                                  Theme.of(context)
+                                      .colorScheme
+                                      .secondary
+                                      .withOpacity(0.5)),
+                              padding: MaterialStateProperty.all(
+                                EdgeInsets.all(
+                                  20,
+                                ),
+                              ),
+                            ),
                             child: controller.isSearchingLyrics
                                 ? CircularProgressIndicator(strokeWidth: 2)
                                 : Text(

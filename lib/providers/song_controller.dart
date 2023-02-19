@@ -1,7 +1,7 @@
 import 'package:audio_session/audio_session.dart';
 import 'package:audiotagger/audiotagger.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter_media_notification/flutter_media_notification.dart';
+// import 'package:flutter_media_notification/flutter_media_notification.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:musicPlayer/models/exception.dart';
 import 'package:musicPlayer/models/song.dart';
@@ -77,7 +77,8 @@ class SongController extends ChangeNotifier {
         lyrics = await Lyrics.getLyrics(nowPlaying?.artist, nowPlaying?.title)
             .timeout(
           Duration(seconds: 20),
-          onTimeout: () => throw CustomException('Taking too long, try again later'),
+          onTimeout: () =>
+              throw CustomException('Taking too long, try again later'),
         );
         playListDB.showToast('Done', context);
       } on CustomException catch (err) {
@@ -236,15 +237,14 @@ class SongController extends ChangeNotifier {
   void showNotification() {
     if (state != AppLifecycleState.paused) {
       return;
+    } else {
+      print("Here show notification");
+      // MediaNotification.showNotification(
+      //   title: nowPlaying.title,
+      //   author: nowPlaying.artist,
+      //   isPlaying: isPlaying,
+      // );
     }
-    else {
-      MediaNotification.showNotification(
-        title: nowPlaying.title,
-        author: nowPlaying.artist,
-        isPlaying: isPlaying,
-      );
-    }
-      
   }
 
   void handleInterruptions() {

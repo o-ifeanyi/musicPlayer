@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:musicPlayer/util/config.dart';
 import 'package:musicPlayer/providers/playList_database.dart';
 import 'package:provider/provider.dart';
@@ -53,10 +54,10 @@ class LibraryBottomSheet extends StatelessWidget {
                             style: customTextStyle,
                           ),
                           content: TextField(
+                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
                             focusNode: focusNode,
                             controller: editingController,
                             maxLength: 14,
-                            maxLengthEnforced: true,
                             textInputAction: TextInputAction.done,
                             decoration: InputDecoration(
                               labelText: 'New name',
@@ -64,8 +65,15 @@ class LibraryBottomSheet extends StatelessWidget {
                             onSubmitted: (_) => rename(playlistDB, context),
                           ),
                           actions: [
-                            FlatButton(
-                              textColor: Theme.of(context).accentColor,
+                            TextButton(
+                              style: ButtonStyle(
+                                textStyle: MaterialStateProperty.all(
+                                  TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
+                                  ),
+                                ),
+                              ),
                               onPressed: () => rename(playlistDB, context),
                               child: Text(
                                 'Done',
@@ -90,13 +98,27 @@ class LibraryBottomSheet extends StatelessWidget {
                           style: customTextStyle,
                         ),
                         actions: [
-                          FlatButton(
-                            textColor: Theme.of(context).accentColor,
+                          TextButton(
+                            style: ButtonStyle(
+                              textStyle: MaterialStateProperty.all(
+                                TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                              ),
+                            ),
                             onPressed: () => Navigator.pop(context),
                             child: Text('Cancel'),
                           ),
-                          FlatButton(
-                            textColor: Theme.of(context).accentColor,
+                          TextButton(
+                            style: ButtonStyle(
+                              textStyle: MaterialStateProperty.all(
+                                TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                              ),
+                            ),
                             onPressed: () async {
                               await playlistDB.deletePlaylist(playlistName);
                               playlistDB.showToast(
